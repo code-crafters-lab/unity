@@ -5,7 +5,6 @@ plugins {
 
 description = "Unity Build"
 group = "org.codecrafterslab"
-version = "1.0.0-SNAPSHOT"
 
 subprojects {
     group = "org.codecrafterslab.unity"
