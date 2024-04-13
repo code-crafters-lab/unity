@@ -29,13 +29,6 @@ subprojects {
 }
 
 allprojects {
-    publishing {
-        repositories {
-            maven {
-                name = "dev"
-                url = uri("${rootProject.buildDir}/publications/repos")
-            }
-        }
-    }
+
 }
 
