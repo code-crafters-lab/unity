@@ -9,7 +9,7 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
- * 需要部署的项目使用此插件
+ * 需要发布到 maven 仓库的项目使用此插件
  */
 public class DeployedPlugin implements Plugin<Project> {
 

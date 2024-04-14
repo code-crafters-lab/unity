@@ -182,6 +182,14 @@ public class LibraryHandler {
             return modules;
         }
 
+        public void module(String name, Action<Module> action) {
+//            ObjectFactory objects = this.project.getObjects();
+            Module module = new Module(name);
+            action.execute(module);
+            this.modules.add(module);
+//            LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
+        }
+
         public List<String> getPlugins() {
             return plugins;
         }
