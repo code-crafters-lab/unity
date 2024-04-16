@@ -7,10 +7,6 @@ plugins {
     idea
 }
 
-//sourceCompatibility
-//targetCompatibility = 17
-
-
 configurations {
 
     val annotationProcessor = configurations.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME)
@@ -44,8 +40,8 @@ configurations {
 
     all {
         resolutionStrategy {
-            cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
-            cacheChangingModulesFor(10, TimeUnit.SECONDS)
+//            cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
+//            cacheChangingModulesFor(10, TimeUnit.SECONDS)
         }
     }
 
@@ -66,11 +62,8 @@ repositories {
 dependencies {
 //    annotationProcessor("org.projectlombok:lombok:1.18.24")
 
-    implementation(platform("org.springframework:spring-framework-bom:6.1.6"))
-//    implementation("org.springframework:spring-context")
+    implementation(platform("org.springframework:spring-framework-bom:5.3.34"))
     implementation("org.springframework:spring-core")
-//    implementation("org.springframework:spring-web")
-//    implementation("org.apache.maven:maven-embedder:3.9.6")
     implementation("org.apache.maven:maven-artifact:3.9.6")
 
 //  implementation(libs.spring.boot)
@@ -117,6 +110,10 @@ gradlePlugin {
         create("bom") {
             id = "com.voc.bom"
             implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
+        }
+        create("anno") {
+            id = "com.voc.anno"
+            implementationClass = "org.codecrafterslab.build.AnnotationProcessorPlugin"
         }
 //        create("lib") {
 //            id = "com.voc.app.info"

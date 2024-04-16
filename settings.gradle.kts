@@ -12,6 +12,7 @@ pluginManagement {
 
     plugins {
         id("io.github.coffee377.auto-include") version "0.2.0-alpha"
+        id("com.google.protobuf") version "0.9.4"
     }
 }
 

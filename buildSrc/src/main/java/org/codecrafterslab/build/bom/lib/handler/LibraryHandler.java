@@ -14,6 +14,7 @@ import org.springframework.util.PropertyPlaceholderHelper;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class LibraryHandler {
 
@@ -199,7 +200,8 @@ public class LibraryHandler {
         }
 
         public void setModules(List<Object> modules) {
-            this.modules = modules.stream().map((input) -> (input instanceof Module module) ? module : new Module((String) input)).toList();
+            this.modules = modules.stream().map((input) -> (input instanceof Module) ? (Module) input : new Module((String) input))
+                    .collect(Collectors.toList());
         }
 
         public void setImports(List<String> imports) {
@@ -213,7 +215,8 @@ public class LibraryHandler {
         public Object methodMissing(String name, Object args) {
             if (args instanceof Object[] && ((Object[]) args).length == 1) {
                 Object arg = ((Object[]) args)[0];
-                if (arg instanceof Closure<?> closure) {
+                if (arg instanceof Closure<?>) {
+                    Closure closure = (Closure) arg;
                     ModuleHandler moduleHandler = new ModuleHandler();
                     closure.setResolveStrategy(Closure.DELEGATE_FIRST);
                     closure.setDelegate(moduleHandler);

@@ -28,7 +28,14 @@ subprojects {
     }
 }
 
-allprojects {
-
+configurations.all {
+    resolutionStrategy {
+//        eachDependency {
+//            if (requested.group == "org.projectlombok" && requested.name == "lombok") {
+//                println(requested)
+//                useVersion("1.18.26")
+//            }
+//        }
+    }
 }
 

@@ -4,19 +4,6 @@ plugins {
 
 bom {
     effectiveBomArtifact()
-//    library("ActiveMQ", "6.1.1") {
-//        group("org.apache.activemq") {
-//            setModules(listOf("activemq-amqp", "activemq-blueprint"))
-//        }
-//        links {
-//            site("https://activemq.apache.org")
-//            docs("https://activemq.apache.org/components/classic/documentation")
-//            releaseNotes { version ->
-//                "https://activemq.apache.org/components/classic/download/classic-%02d-%02d-%02d"
-//                    .format(version.componentInts())
-//            }
-//        }
-//    }
     library("Spring Boot", "2.5.15") {
         group("org.springframework.boot") {
             imports = listOf("spring-boot-dependencies")
@@ -27,4 +14,15 @@ bom {
             setModules(listOf("api", "cache", "server"))
         }
     }
+    library("protobuf", "4.26.1") {
+        group("com.google.protobuf") {
+            imports = listOf("protobuf-bom")
+        }
+    }
+    library("grpc", "1.63.0") {
+        group("io.grpc") {
+            imports = listOf("grpc-bom")
+        }
+    }
+
 }
