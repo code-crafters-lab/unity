@@ -1,6 +1,5 @@
 package org.codecrafterslab.unity.exception.core;
 
-
 import org.codecrafterslab.unity.exception.api.Module;
 import org.codecrafterslab.unity.exception.api.ModuleStatus;
 
@@ -19,11 +18,12 @@ public enum BizStatus implements ModuleStatus {
         }
     },
 
-
+    /* 基础定义 */
     UN_IMPLEMENTED_METHOD("未实现的方法"),
     OUT_OF_MODULE_CODE_RANGE("%s 超出模块编码范围 %s"),
     OUT_OF_ERROR_CODE_RANGE("%s 超出错误编码范围 %s"),
 
+    /* 认证相关 */
     UNAUTHORIZED("未经认证的用户", 401),
     INVALID_BEARER_TOKEN("无效的令牌", 412),
     ACCOUNT_EXPIRED("账户密钥已过期"),
@@ -32,8 +32,10 @@ public enum BizStatus implements ModuleStatus {
     ACCOUNT_EXISTS("用户已存在"),
     USERNAME_NOT_FOUND("用户不存在"),
     BAD_CREDENTIALS("密钥凭证错误", 400),
+
     INVALID_USERNAME_OR_PASSWORD("无效的用户名或密码", 400),
     OAUTH2_AUTHENTICATION_EXCEPTION("OAuth2 认证异常", 400),
+    AUTHENTICATION_PROVIDER_NOT_FOUND("未找到相应的认证处理器"),
     UNBOUND_USER("未绑定系统用户"),
     ALREADY_BOUND_USER("已绑定其他系统用户，请解绑后重新绑定"),
     INCORRECT_TEMPORARY_AUTHORIZATION_CODE("错误的临时授权码", 400),
@@ -42,12 +44,10 @@ public enum BizStatus implements ModuleStatus {
     NOT_FOUND("请求接口地址不存在", 404),
     BAD_REQUEST("错误的请求", 400),
     UN_SUPPORTED_METHOD("不支持的请求方法", 405),
-
-    AUTHENTICATION_PROVIDER_NOT_FOUND("未找到相应的认证处理器"),
     INTERNAL_SERVER_ERROR("服务器内部错误"),
     JSON_SERIALIZE_EXCEPTION("序列化异常"),
     JSON_DESERIALIZE_EXCEPTION("反序列化异常"),
-
+    
     ENTITY_VALIDATED_ERROR("实体属性校验错误", 400),
     REQUEST_ADDRESS_NOT_MATCH("请求地址与实体ID不一致"),
     INSERT_DATA_ERROR("新增数据异常"),

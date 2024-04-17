@@ -7,6 +7,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -41,12 +42,16 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(MavenPublishPlugin.class);
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
+
         /* 发布到项目根目录下 */
         File repositoryLocation = new File(project.getRootProject().getLayout().getBuildDirectory().get().getAsFile(), "maven-repository");
-        publishing.getRepositories().maven((mavenRepository) -> {
-            mavenRepository.setName("project");
-            mavenRepository.setUrl(repositoryLocation.toURI());
-        });
+
+        Action<MavenArtifactRepository> mavenArtifactRepositoryAction = repository -> {
+            repository.setName("project");
+            repository.setUrl(repositoryLocation.toURI());
+        };
+        project.getRepositories().maven(mavenArtifactRepositoryAction);
+        publishing.getRepositories().maven(mavenArtifactRepositoryAction);
         project.getTasks()
                 .matching((task) -> task.getName().equals(PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME))
                 .all((task) -> setUpProjectRepository(project, task, repositoryLocation));

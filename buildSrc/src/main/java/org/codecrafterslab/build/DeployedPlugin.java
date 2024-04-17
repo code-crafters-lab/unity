@@ -18,26 +18,29 @@ public class DeployedPlugin implements Plugin<Project> {
      */
     public static final String GENERATE_POM_TASK_NAME = "generatePomFileForMavenPublication";
 
+    public static final String MAVEN_PUBLICATION_NAME = "maven";
+
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(MavenRepositoryPlugin.class);
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-        MavenPublication mavenPublication = publishing.getPublications().create("maven", MavenPublication.class);
-        project.afterEvaluate((evaluated) ->
-                project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
-                    if (((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).isEnabled()) {
-                        project.getComponents()
-                                .matching((component) -> component.getName().equals("java"))
-                                .all(mavenPublication::from);
-                    }
-                })
+        MavenPublication mavenPublication = publishing.getPublications().create(MAVEN_PUBLICATION_NAME, MavenPublication.class);
+        project.afterEvaluate((evaluated) -> {
+                    project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
+                        if (((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).isEnabled()) {
+                            project.getComponents()
+                                    .matching((component) -> component.getName().equals("java"))
+                                    .all(mavenPublication::from);
+                        }
+                    });
+
+                }
         );
-        project.getPlugins()
-                .withType(JavaPlatformPlugin.class)
-                .all((javaPlugin) -> project.getComponents()
+        project.getPlugins().withType(JavaPlatformPlugin.class).all((javaPlugin) ->
+                project.getComponents()
                         .matching((component) -> component.getName().equals("javaPlatform"))
                         .all(mavenPublication::from)
-                );
+        );
     }
 
 }

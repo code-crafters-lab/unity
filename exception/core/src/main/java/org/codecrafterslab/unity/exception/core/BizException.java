@@ -5,10 +5,19 @@ import org.codecrafterslab.unity.exception.api.Status;
 
 /**
  * @author Wu Yujie
+ * @since 0.1.0
  */
-public class BizException extends RuntimeException {
-    private int code;
-    private int httpStatus;
+public final class BizException extends RuntimeException implements Status {
+    private final int code;
+    private final int httpStatus;
+
+    public int getCode() {
+        return code;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
 
     /**
      * @param code       错误编码

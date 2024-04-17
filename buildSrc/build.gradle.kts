@@ -88,10 +88,7 @@ tasks {
     }
 
     withType<JavaCompile> {
-//        options.sor
-//        options.release.set(8)
         options.encoding = "UTF-8"
-//    options.compilerArgs.add("-Xlint:deprecation")
     }
 
     withType<KotlinCompile> {
@@ -107,13 +104,21 @@ tasks {
 
 gradlePlugin {
     plugins {
-        create("bom") {
-            id = "com.voc.bom"
-            implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
+        create("deployed") {
+            id = "com.voc.deployed"
+            implementationClass = "org.codecrafterslab.build.DeployedPlugin"
+        }
+        create("optional") {
+            id = "com.voc.deployed"
+            implementationClass = "org.codecrafterslab.build.optional.OptionalDependenciesPlugin"
         }
         create("anno") {
             id = "com.voc.anno"
             implementationClass = "org.codecrafterslab.build.AnnotationProcessorPlugin"
+        }
+        create("bom") {
+            id = "com.voc.bom"
+            implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
         }
 //        create("lib") {
 //            id = "com.voc.app.info"

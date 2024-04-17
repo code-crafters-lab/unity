@@ -15,11 +15,8 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import org.gradle.jvm.tasks.Jar;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AnnotationProcessorPlugin implements Plugin<Project> {
-    private static final Logger log = LoggerFactory.getLogger(AnnotationProcessorPlugin.class);
 
     @Override
     public void apply(@NotNull Project project) {
@@ -27,19 +24,7 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
         configureJavaCompile(project);
         configureJar(project);
         configureClean(project);
-        project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-//            SourceSetContainer sourceSets = project.getExtensions()
-//                    .getByType(JavaPluginExtension.class)
-//                    .getSourceSets();
-//            sourceSets.all((sourceSet) -> {
-//                project.getConfigurations()
-//                        .getByName(sourceSet.getCompileClasspathConfigurationName())
-//                        .extendsFrom(annotationConfiguration);
-//                project.getConfigurations()
-//                        .getByName(sourceSet.getRuntimeClasspathConfigurationName())
-//                        .extendsFrom(annotationConfiguration);
-//            });
-        });
+        configureJavadoc(project);
     }
 
     /**
@@ -84,16 +69,6 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
             } else if (JavaVersion.current().isJava11Compatible()) {
                 options.getRelease().set(11);
             }
-//            project.getLogger().warn(" <<<<<< {} >>>>>>", options.getRelease().get());
-
-//                    FileCollection annotationProcessorPath = options.getAnnotationProcessorPath();
-//
-//                    Configuration configuration = evaluated.getConfigurations().getByName(JavaPlugin.TEST_ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
-//                    if (annotationProcessorPath != null) {
-//                        annotationProcessorPath.plus(configuration);
-//                    } else {
-//                        options.setAnnotationProcessorPath(configuration);
-//                    }
         }));
     }
 
@@ -114,14 +89,23 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
 
         Configuration testCompileOnlyConfiguration = configurations.getByName(JavaPlugin.TEST_COMPILE_ONLY_CONFIGURATION_NAME);
         testCompileOnlyConfiguration.extendsFrom(compileOnlyConfiguration, testAnnotationConfiguration);
+
+//        project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
+//            SourceSetContainer sourceSets = project.getExtensions()
+//                    .getByType(JavaPluginExtension.class)
+//                    .getSourceSets();
+//            sourceSets.all((sourceSet) -> {
+//                project.getConfigurations()
+//                        .getByName(sourceSet.getCompileClasspathConfigurationName())
+//                        .extendsFrom(annotationConfiguration);
+//                project.getConfigurations()
+//                        .getByName(sourceSet.getRuntimeClasspathConfigurationName())
+//                        .extendsFrom(annotationConfiguration);
+//            });
+//        });
     }
 
-    /**
-     * 注解处理器配置添加到编译环境 & 依赖缓存时间配置
-     *
-     * @param project Project
-     */
-    public void configureConfigurations(Project project) {
+    public void configureJavadoc(Project project) {
         project.getTasks().withType(Javadoc.class, new Action<Javadoc>() {
             @Override
             public void execute(@NotNull Javadoc javadoc) {
@@ -148,7 +132,7 @@ public class AnnotationProcessorPlugin implements Plugin<Project> {
             /* 动态版本依赖缓存 10 minutes */
 //            resolutionStrategy.cacheDynamicVersionsFor(10, TimeUnit.MINUTES);
             /* SNAPSHOT版本依赖缓存 0 seconds */
-//            resolutionStrategy.cacheChangingModulesFor(10, TimeUnit.SECONDS);
+//            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS);
         }));
     }
 

@@ -1,3 +1,5 @@
+import io.github.coffee377.gradle.plugin.extensions.AutoIncludeProjectExtension
+
 rootProject.name = "unity"
 
 pluginManagement {
@@ -16,6 +18,17 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    versionCatalogs {
+
+    }
+}
+
 plugins {
     id("io.github.coffee377.auto-include")
+}
+
+configure<AutoIncludeProjectExtension> {
+//    exclude(".*gateway$")
+//    exclude(".*dict-api$")
 }

@@ -28,6 +28,10 @@ subprojects {
     }
 }
 
+allprojects {
+//    apply(plugin = "")
+}
+
 configurations.all {
     resolutionStrategy {
 //        eachDependency {
