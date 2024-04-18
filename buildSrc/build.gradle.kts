@@ -66,6 +66,9 @@ dependencies {
     implementation("org.springframework:spring-core")
     implementation("org.apache.maven:maven-artifact:3.9.6")
 
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
+
+
 //  implementation(libs.spring.boot)
 //  implementation(libs.dependency.management)
 //  implementation(libs.semantic.versioning)
@@ -92,7 +95,7 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+//        kotlinOptions.jvmTarget = "1.8"
     }
 
     register("lib", Copy::class.java) {
@@ -119,6 +122,10 @@ gradlePlugin {
         create("bom") {
             id = "com.voc.bom"
             implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
+        }
+        create("grpc") {
+            id = "com.voc.grpc"
+            implementationClass = "org.codecrafterslab.build.GRPCPlugin"
         }
 //        create("lib") {
 //            id = "com.voc.app.info"
