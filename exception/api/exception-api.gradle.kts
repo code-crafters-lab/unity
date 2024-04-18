@@ -1,2 +1,3 @@
-
-
+plugins {
+    com.voc.anno
+}

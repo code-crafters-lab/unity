@@ -7,7 +7,6 @@ package org.codecrafterslab.unity.dict.api;
  * @author Wu Yujie
  */
 public interface DictionaryItem<V> {
-
     /**
      * 字典项实际值
      *
@@ -28,7 +27,7 @@ public interface DictionaryItem<V> {
      * @return 排序
      */
     Integer getSort();
-    
+
     /**
      * 字典项描述
      *

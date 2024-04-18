@@ -29,6 +29,7 @@ plugins {
 }
 
 configure<AutoIncludeProjectExtension> {
-//    exclude(".*gateway$")
+    exclude(".*gateway$")
+//    exclude(".*exception.*")
 //    exclude(".*dict-api$")
 }

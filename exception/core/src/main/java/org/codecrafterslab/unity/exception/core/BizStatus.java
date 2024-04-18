@@ -20,6 +20,7 @@ public enum BizStatus implements ModuleStatus {
 
     /* 基础定义 */
     UN_IMPLEMENTED_METHOD("未实现的方法"),
+    UN_SUPPORTED_VALUE("不受支持的参数值", 400),
     OUT_OF_MODULE_CODE_RANGE("%s 超出模块编码范围 %s"),
     OUT_OF_ERROR_CODE_RANGE("%s 超出错误编码范围 %s"),
 
@@ -47,7 +48,7 @@ public enum BizStatus implements ModuleStatus {
     INTERNAL_SERVER_ERROR("服务器内部错误"),
     JSON_SERIALIZE_EXCEPTION("序列化异常"),
     JSON_DESERIALIZE_EXCEPTION("反序列化异常"),
-    
+
     ENTITY_VALIDATED_ERROR("实体属性校验错误", 400),
     REQUEST_ADDRESS_NOT_MATCH("请求地址与实体ID不一致"),
     INSERT_DATA_ERROR("新增数据异常"),

@@ -1,9 +1,14 @@
 package org.codecrafterslab.unity.dict.api;
 
+import org.codecrafterslab.unity.exception.core.BizException;
+import org.codecrafterslab.unity.exception.core.BizStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -13,6 +18,8 @@ import java.util.stream.Collectors;
  * @author Wu Yujie
  */
 public interface EnumDictItem<V> extends DictionaryItem<V> {
+
+    Logger log = LoggerFactory.getLogger(EnumDictItem.class);
 
     /**
      * {@link Enum#ordinal()}
@@ -64,9 +71,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     @Deprecated
     default boolean eq(Object value) {
-        return this == value
-                || name().equalsIgnoreCase(String.valueOf(value))
-                || getValue().equals(value);
+        return this == value || name().equalsIgnoreCase(String.valueOf(value)) || getValue().equals(value);
     }
 
     /**
@@ -104,8 +109,8 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> Optional<T> findByValue(Class<T> type, Object value) {
-        return findByCondition(type, item -> item.getValue().equals(value)).stream().findFirst();
+    static <T extends EnumDictItem<?>> T findByValue(Class<T> type, Object value) {
+        return findByCondition(type, item -> item.getValue().equals(value)).stream().findFirst().orElse(null);
     }
 
     /**
@@ -117,23 +122,43 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> Optional<T> findByCode(Class<T> type, String code) {
-        return findByCondition(type, item -> item.name().equalsIgnoreCase(code)).stream().findFirst();
+    static <T extends EnumDictItem<?>> T findByCode(Class<T> type, String code) {
+        return findByCondition(type, item -> item.name().equalsIgnoreCase(code)).stream().findFirst().orElse(null);
+    }
+
+    /**
+     * @param type Class<T>
+     * @param <T>  枚举类型
+     * @return 业务异常
+     */
+    static <T extends EnumDictItem<?>> BizException unsupported(Class<T> type, Object arg) {
+        if (log.isWarnEnabled()) {
+            String values = findAll(type).stream()
+                    .map(d -> d.getCode() + "/" + d.getValue().toString())
+                    .collect(Collectors.joining(","));
+            log.warn("不受支持的值 {} in [{}]", arg, values);
+        }
+        return new BizException(BizStatus.UN_SUPPORTED_VALUE);
     }
 
     /**
      * 根据枚举的{@link EnumDictItem#name()}来查找.
      *
-     * @param type        Class<T>
-     * @param valueOrCode 字典项实际值或编码
-     * @param <T>         枚举类型
+     * @param type      Class<T>
+     * @param parameter 字典项实际值或编码
+     * @param <T>       枚举类型
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T find(Class<T> type, Object valueOrCode) {
-        return findByCondition(type, item ->
-                item.getValue().equals(valueOrCode) || item.name().equalsIgnoreCase(valueOrCode.toString())
-        ).stream().findFirst().orElse(null);
+    static <T extends EnumDictItem<?>> T find(Class<T> type, Object parameter) {
+        T result;
+        if (parameter instanceof String) {
+            result = findByCode(type, (String) parameter);
+            if (!Objects.isNull(result)) return result;
+        }
+        result = findByValue(type, parameter);
+        if (Objects.isNull(result)) throw unsupported(type, parameter);
+        return result;
     }
 
 }

@@ -47,6 +47,15 @@ configurations {
 
 }
 
+
+sourceSets {
+    create("dependency-management") {
+        java {
+            srcDirs("src/dependency-management")
+        }
+    }
+}
+
 repositories {
     mavenLocal()
     maven {

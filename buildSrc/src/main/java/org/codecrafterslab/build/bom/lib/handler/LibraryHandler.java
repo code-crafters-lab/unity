@@ -10,6 +10,7 @@ import org.gradle.api.Action;
 import org.gradle.api.InvalidUserCodeException;
 import org.gradle.api.InvalidUserDataException;
 import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -183,12 +184,22 @@ public class LibraryHandler {
             return modules;
         }
 
+//        public void module(String name, Exclusion... exclusions) {
+//            Module module = new Module(name, Arrays.asList(exclusions));
+//            this.modules.add(module);
+//        }
+
+        public void module(String name, String... exclusions) {
+            List<Exclusion> list = Arrays.stream(exclusions).filter(StringUtils::hasText).map(Exclusion::new).toList();
+            Module module = new Module(name, list);
+            this.modules.add(module);
+        }
+
+        @Deprecated
         public void module(String name, Action<Module> action) {
-//            ObjectFactory objects = this.project.getObjects();
             Module module = new Module(name);
             action.execute(module);
             this.modules.add(module);
-//            LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
         }
 
         public List<String> getPlugins() {
