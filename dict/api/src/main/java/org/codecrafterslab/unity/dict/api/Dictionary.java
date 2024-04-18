@@ -5,7 +5,7 @@ import java.util.Collection;
 /**
  * @author Wu Yujie
  */
-public interface Dictionary<Item extends DictionaryItem<?>> {
+public interface Dictionary<V> {
 
     /**
      * 字典编码
@@ -24,5 +24,5 @@ public interface Dictionary<Item extends DictionaryItem<?>> {
     /**
      * @return 字典项集合
      */
-    Collection<Item> getItems();
+    <Item extends DictionaryItem<V>> Collection<Item> getItems();
 }

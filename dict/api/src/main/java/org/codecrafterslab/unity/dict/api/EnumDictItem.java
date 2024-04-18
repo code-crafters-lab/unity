@@ -121,4 +121,19 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
         return findByCondition(type, item -> item.name().equalsIgnoreCase(code)).stream().findFirst();
     }
 
+    /**
+     * 根据枚举的{@link EnumDictItem#name()}来查找.
+     *
+     * @param type        Class<T>
+     * @param valueOrCode 字典项实际值或编码
+     * @param <T>         枚举类型
+     * @return 查找到的结果
+     * @see #findByCondition(Class, Predicate)
+     */
+    static <T extends EnumDictItem<?>> T find(Class<T> type, Object valueOrCode) {
+        return findByCondition(type, item ->
+                item.getValue().equals(valueOrCode) || item.name().equalsIgnoreCase(valueOrCode.toString())
+        ).stream().findFirst().orElse(null);
+    }
+
 }
