@@ -1,8 +1,10 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.config;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Wu Yujie
@@ -12,9 +14,7 @@ public class MockMvcConfiguration implements MockMvcBuilderCustomizer {
 
     @Override
     public void customize(ConfigurableMockMvcBuilder<?> builder) {
-        builder.alwaysDo(mvcResult -> {
-            mvcResult.getResponse().setCharacterEncoding("UTF-8");
-        });
+        builder.defaultResponseCharacterEncoding(StandardCharsets.UTF_8);
     }
 
 }

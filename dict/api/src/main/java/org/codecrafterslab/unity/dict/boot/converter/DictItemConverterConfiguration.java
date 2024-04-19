@@ -1,6 +1,5 @@
 package org.codecrafterslab.unity.dict.boot.converter;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.FormatterRegistry;
@@ -11,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @since 0.2.0
  */
 @Configuration
-@ConditionalOnWebApplication
 public class DictItemConverterConfiguration implements WebMvcConfigurer {
 
     /**

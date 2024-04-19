@@ -46,11 +46,9 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     runtimeOnly("ch.qos.logback:logback-classic")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-//    implementation("org.springframework.boot:spring-boot-starter-actuator")
-//    testImplementation("javax.servlet:javax.servlet-api")
-//    testImplementation("org.springframework.boot:spring-boot-starter-web")
 }
 
 tasks.test {
@@ -72,19 +70,27 @@ configurations.annotationProcessor {
         dependencies.forEach {
             if (it.version == null && it is ExternalDependency) {
                 if ("${it.group}:${it.name}" == "org.projectlombok:lombok") {
-                    it.version {
-                        require("1.18.26")
-                    }
+                    it.version { require("1.18.26") }
                 }
-                if ("${it.group}:${it.name}" == "org.springframework.boot:spring-boot-starter-test") {
-                    it.version {
-                        require("2.5.15")
-                    }
+                if ("${it.group}:${it.name}" == "org.springframework.boot:spring-boot-configuration-processor") {
+                    it.version { require("2.5.15") }
                 }
                 println("=> ${it.group}:${it.name}:${it.version}")
             }
         }
     }
 }
+
+//testing {
+//    suites {
+//        getting(JvmTestSuite::class) {
+//            useJUnitJupiter()
+//        }
+//    }
+//}
+//tasks.test {
+//    useJUnitPlatform()
+//}
+
 
 

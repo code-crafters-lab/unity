@@ -4,6 +4,7 @@ import org.codecrafterslab.unity.exception.core.BizException;
 import org.codecrafterslab.unity.exception.core.BizStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ResolvableType;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,9 +84,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      */
     static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<T> predicate) {
-        if (type.isEnum()) {
-            return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
-        }
+        if (type.isEnum()) return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
         return Collections.emptyList();
     }
 
@@ -101,6 +100,22 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
     }
 
     /**
+     * 获取值的泛型类型
+     *
+     * @param type 实现了{@link EnumDictItem}的枚举类
+     * @param <T>  枚举类型
+     * @return Class<?>
+     * @since 0.2.0
+     */
+    static <T extends EnumDictItem<?>> Class<?> getValueType(Class<T> type) {
+        ResolvableType resolvableType = ResolvableType.forClass(type).as(EnumDictItem.class);
+        if (ResolvableType.NONE.equals(resolvableType)) {
+            throw new IllegalArgumentException("Cannot determine EnumDictItem's generic type for class " + type.getName());
+        }
+        return resolvableType.getGeneric().resolve();
+    }
+
+    /**
      * 根据枚举的{@link EnumDictItem#getValue()}来查找.
      *
      * @param type  Class<T>
@@ -110,7 +125,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @see #findByCondition(Class, Predicate)
      */
     static <T extends EnumDictItem<?>> T findByValue(Class<T> type, Object value) {
-        return findByCondition(type, item -> item.getValue().equals(value)).stream().findFirst().orElse(null);
+        return findByCondition(type, item -> value.getClass().equals(getValueType(type)) ? item.getValue().equals(value) : item.getValue().toString().equals(value.toString())).stream().findFirst().orElse(null);
     }
 
     /**
@@ -133,9 +148,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     static <T extends EnumDictItem<?>> BizException unsupported(Class<T> type, Object arg) {
         if (log.isWarnEnabled()) {
-            String values = findAll(type).stream()
-                    .map(d -> d.getCode() + "/" + d.getValue().toString())
-                    .collect(Collectors.joining(","));
+            String values = findAll(type).stream().map(d -> d.getCode() + "/" + d.getValue().toString()).collect(Collectors.joining(","));
             log.warn("不受支持的值 {} in [{}]", arg, values);
         }
         return new BizException(BizStatus.UN_SUPPORTED_VALUE);
