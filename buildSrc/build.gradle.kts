@@ -22,21 +22,21 @@ configurations {
         extendsFrom(annotationProcessor)
     }
 
-    implementation {
-        extendsFrom(annotationProcessor)
-    }
+//    implementation {
+//        extendsFrom(annotationProcessor)
+//    }
 
     testCompileOnly {
         extendsFrom(compileOnly, testAnnotationProcessor)
     }
 
-    runtimeClasspath {
-        extendsFrom(annotationProcessor)
-    }
+//    runtimeClasspath {
+//        extendsFrom(annotationProcessor)
+//    }
 
-    testRuntimeOnly {
-        extendsFrom(runtimeOnly)
-    }
+//    testRuntimeOnly {
+//        extendsFrom(runtimeOnly)
+//    }
 
     all {
         resolutionStrategy {
@@ -116,34 +116,34 @@ tasks {
 
 gradlePlugin {
     plugins {
-        create("deployed") {
-            id = "com.voc.deployed"
-            implementationClass = "org.codecrafterslab.build.DeployedPlugin"
+        create("base") {
+            id = "com.voc.base"
+            implementationClass = "org.codecrafterslab.gradle.BasePlugin"
         }
-        create("optional") {
-            id = "com.voc.deployed"
-            implementationClass = "org.codecrafterslab.build.optional.OptionalDependenciesPlugin"
-        }
-        create("anno") {
-            id = "com.voc.anno"
-            implementationClass = "org.codecrafterslab.build.AnnotationProcessorPlugin"
+        create("grpc") {
+            id = "com.voc.grpc"
+            implementationClass = "org.codecrafterslab.gradle.GRPCPlugin"
         }
         create("bom") {
             id = "com.voc.bom"
             implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
         }
-        create("grpc") {
-            id = "com.voc.grpc"
-            implementationClass = "org.codecrafterslab.build.GRPCPlugin"
+        create("lib") {
+            id = "com.voc.lib"
+            implementationClass = "org.codecrafterslab.build.LibraryPlugin"
         }
-//        create("lib") {
-//            id = "com.voc.app.info"
-//            implementationClass = "com.voc.gradle.plugin.AppInfoPlugin"
-//        }
-//        create("app") {
-//            id = "com.voc.boot"
-//            implementationClass = "com.voc.gradle.plugin.BootPlugin"
-//        }
+        create("app") {
+            id = "com.voc.boot"
+            implementationClass = "org.codecrafterslab.build.AppPlugin"
+        }
+        create("publish") {
+            id = "com.voc.publish"
+            implementationClass = "org.codecrafterslab.build.PublishPlugin"
+        }
+        create("JinQiSoftNexus3") {
+            id = "net.jqsoft.nexus3"
+            implementationClass = "net.jqsoft.Nexus3Plugin"
+        }
     }
 
 }

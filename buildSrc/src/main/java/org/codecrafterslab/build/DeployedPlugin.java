@@ -11,6 +11,7 @@ import org.gradle.api.tasks.bundling.Jar;
 /**
  * 需要发布到 maven 仓库的项目使用此插件
  */
+@Deprecated
 public class DeployedPlugin implements Plugin<Project> {
 
     /**
@@ -24,7 +25,8 @@ public class DeployedPlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(MavenRepositoryPlugin.class);
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-        MavenPublication mavenPublication = publishing.getPublications().create(MAVEN_PUBLICATION_NAME, MavenPublication.class);
+        MavenPublication mavenPublication = publishing.getPublications().create(MAVEN_PUBLICATION_NAME,
+                MavenPublication.class);
         project.afterEvaluate((evaluated) -> {
                     project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
                         if (((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).isEnabled()) {
@@ -41,6 +43,7 @@ public class DeployedPlugin implements Plugin<Project> {
                         .matching((component) -> component.getName().equals("javaPlatform"))
                         .all(mavenPublication::from)
         );
+
     }
 
 }

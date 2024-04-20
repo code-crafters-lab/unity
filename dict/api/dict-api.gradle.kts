@@ -1,6 +1,5 @@
 plugins {
-    `java-library`
-    com.voc.anno
+    com.voc.lib
     com.voc.grpc
 }
 
@@ -12,7 +11,7 @@ dependencies {
     implementation("org.springframework:spring-core")
 
     runtimeOnly("org.slf4j:slf4j-api")
-    
+
     compileOnly("ch.qos.logback:logback-classic")
     compileOnly("com.google.protobuf:protobuf-java")
     compileOnly("io.grpc:grpc-protobuf")

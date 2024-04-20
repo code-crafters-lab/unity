@@ -24,7 +24,9 @@ import java.util.Map;
  * {@code mavenRepository} configuration.
  *
  * @author Andy Wilkinson
+ * <p>{@link org.codecrafterslab.gradle.maven.PublishLocalPlugin}</p>
  */
+@Deprecated
 public class MavenRepositoryPlugin implements Plugin<Project> {
 
     /**
@@ -36,7 +38,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
      * Name of the task that publishes to the project repository.
      */
     public static final String PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME = "publishMavenPublicationToProjectRepository";
-    public static final String PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAM2 = "publishPluginMavenPublicationToProjectRepository";
+    public static final String PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAM2 =
+            "publishPluginMavenPublicationToProjectRepository";
 
     @Override
     public void apply(Project project) {
@@ -44,7 +47,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 
         /* 发布到项目根目录下 */
-        File repositoryLocation = new File(project.getRootProject().getLayout().getBuildDirectory().get().getAsFile(), "maven-repository");
+        File repositoryLocation = new File(project.getRootProject().getLayout().getBuildDirectory().get().getAsFile()
+                , "maven-repository");
 
         Action<MavenArtifactRepository> mavenArtifactRepositoryAction = repository -> {
             repository.setName("project");
@@ -52,6 +56,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         };
         project.getRepositories().maven(mavenArtifactRepositoryAction);
         publishing.getRepositories().maven(mavenArtifactRepositoryAction);
+
         project.getTasks()
                 .matching((task) -> task.getName().equals(PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME))
                 .all((task) -> setUpProjectRepository(project, task, repositoryLocation));
@@ -60,17 +65,21 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
     private void setUpProjectRepository(Project project, Task publishTask, File repositoryLocation) {
         publishTask.doFirst(new CleanAction(repositoryLocation));
         Configuration projectRepository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
-        project.getArtifacts().add(projectRepository.getName(), repositoryLocation, (artifact) -> artifact.builtBy(publishTask));
+        project.getArtifacts().add(projectRepository.getName(), repositoryLocation,
+                (artifact) -> artifact.builtBy(publishTask));
         DependencySet target = projectRepository.getDependencies();
         project.getPlugins()
                 .withType(JavaPlugin.class)
-                .all((javaPlugin) -> addMavenRepositoryDependencies(project, JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, target));
+                .all((javaPlugin) -> addMavenRepositoryDependencies(project,
+                        JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, target));
         project.getPlugins()
                 .withType(JavaLibraryPlugin.class)
-                .all((javaLibraryPlugin) -> addMavenRepositoryDependencies(project, JavaPlugin.API_CONFIGURATION_NAME, target));
+                .all((javaLibraryPlugin) -> addMavenRepositoryDependencies(project, JavaPlugin.API_CONFIGURATION_NAME
+                        , target));
         project.getPlugins()
                 .withType(JavaPlatformPlugin.class)
-                .all((javaPlugin) -> addMavenRepositoryDependencies(project, JavaPlatformPlugin.API_CONFIGURATION_NAME, target));
+                .all((javaPlugin) -> addMavenRepositoryDependencies(project,
+                        JavaPlatformPlugin.API_CONFIGURATION_NAME, target));
     }
 
     private void addMavenRepositoryDependencies(Project project, String sourceConfigurationName, DependencySet target) {

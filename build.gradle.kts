@@ -1,6 +1,5 @@
 plugins {
-    java
-    `maven-publish`
+    com.voc.publish
 }
 
 description = "Unity Build"
@@ -8,7 +7,8 @@ group = "org.codecrafterslab"
 
 subprojects {
     group = "org.codecrafterslab.unity"
-    apply(plugin = "maven-publish")
+    apply(plugin = "com.voc.publish")
+    apply(plugin = "net.jqsoft.nexus3")
 
     repositories {
         mavenLocal()
@@ -22,24 +22,10 @@ subprojects {
         mavenCentral()
     }
 
-
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MINUTES)
     }
 }
 
-allprojects {
-//    apply(plugin = "")
-}
 
-configurations.all {
-    resolutionStrategy {
-//        eachDependency {
-//            if (requested.group == "org.projectlombok" && requested.name == "lombok") {
-//                println(requested)
-//                useVersion("1.18.26")
-//            }
-//        }
-    }
-}
 

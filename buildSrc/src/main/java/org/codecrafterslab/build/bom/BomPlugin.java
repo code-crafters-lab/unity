@@ -2,7 +2,7 @@ package org.codecrafterslab.build.bom;
 
 import groovy.namespace.QName;
 import groovy.util.Node;
-import org.codecrafterslab.build.DeployedPlugin;
+import org.codecrafterslab.build.PublishPlugin;
 import org.codecrafterslab.build.bom.lib.Group;
 import org.codecrafterslab.build.bom.lib.Module;
 import org.gradle.api.Plugin;
@@ -38,12 +38,13 @@ public class BomPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         PluginContainer plugins = project.getPlugins();
-        plugins.apply(DeployedPlugin.class);
+        plugins.apply(PublishPlugin.class);
         plugins.apply(JavaPlatformPlugin.class);
         JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
         javaPlatform.allowDependencies();
         createApiEnforcedConfiguration(project);
-        BomExtension bom = project.getExtensions().create(BOM_EXTENSION_NAME, BomExtension.class, project.getDependencies(), project);
+        BomExtension bom = project.getExtensions().create(BOM_EXTENSION_NAME, BomExtension.class,
+                project.getDependencies(), project);
 //        CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
 //        project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 //        project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
@@ -53,7 +54,8 @@ public class BomPlugin implements Plugin<Project> {
     }
 
     private void createApiEnforcedConfiguration(Project project) {
-        Configuration apiEnforced = project.getConfigurations().create(API_ENFORCED_CONFIGURATION_NAME, (configuration) -> {
+        Configuration apiEnforced = project.getConfigurations().create(API_ENFORCED_CONFIGURATION_NAME,
+                (configuration) -> {
             configuration.setCanBeConsumed(false);
             configuration.setCanBeResolved(false);
             configuration.setVisible(false);
@@ -197,7 +199,8 @@ public class BomPlugin implements Plugin<Project> {
             }
         }
 
-        private @NotNull Set<String> getModuleMapper(String groupId, String artifactId, Function<Module, String> mapper) {
+        private @NotNull Set<String> getModuleMapper(String groupId, String artifactId,
+                                                     Function<Module, String> mapper) {
             return this.bom.getLibraries().stream().flatMap((library) -> library.getGroups().stream()).filter((group) -> group.getId().equals(groupId)).flatMap((group) -> group.getModules().stream()).filter((module) -> module.getName().equals(artifactId)).map(mapper).filter(Objects::nonNull).collect(Collectors.toSet());
         }
 

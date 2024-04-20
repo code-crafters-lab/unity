@@ -1,4 +1,3 @@
 plugins {
-    `java-library`
-    com.voc.anno
+    com.voc.lib
 }

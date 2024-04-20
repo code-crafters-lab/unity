@@ -1,4 +1,4 @@
-package org.codecrafterslab.build
+package org.codecrafterslab.gradle
 
 import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.ProtobufPlugin
@@ -22,7 +22,7 @@ class GRPCPlugin : Plugin<Project> {
             project.logger.debug("protoc\t=>\t{}", protocArtifact)
             project.logger.debug("grpc\t=>\t{}", grpcArtifact)
         }
-        
+
         project.extensions.getByType(ProtobufExtension::class.java).apply {
             protoc {
                 artifact = protocArtifact
