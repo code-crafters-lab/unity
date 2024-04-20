@@ -1,12 +1,15 @@
 package org.codecrafterslab.unity.dict.api;
 
+import org.codecrafterslab.unity.dict.api.base.ICode;
+import org.codecrafterslab.unity.dict.api.base.ISort;
+
 /**
  * 数据字典项接口
  *
  * @param <V> 字典值泛型
  * @author Wu Yujie
  */
-public interface DictionaryItem<V> {
+public interface DictionaryItem<V> extends ICode, ISort {
     /**
      * 字典项实际值
      *

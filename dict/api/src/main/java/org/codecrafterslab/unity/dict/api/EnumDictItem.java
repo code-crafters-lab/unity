@@ -23,59 +23,6 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
     Logger log = LoggerFactory.getLogger(EnumDictItem.class);
 
     /**
-     * {@link Enum#ordinal()}
-     *
-     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
-     */
-    int ordinal();
-
-    /**
-     * the name of this enum constant
-     * {@link Enum#name()}
-     *
-     * @return 枚举名称
-     */
-    String name();
-
-    @Override
-    default Integer getSort() {
-        return ordinal();
-    }
-
-    /**
-     * 枚举选项的描述,对一个选项进行详细的描述有时候是必要的.默认值为 {@code null}
-     *
-     * @return 描述
-     */
-    @Override
-    default String getDescription() {
-        return null;
-    }
-
-    /**
-     * 枚举选项的编码,默认值为枚举名称的小写形式
-     *
-     * @return 描述
-     */
-    @Override
-    default String getCode() {
-        return name().toLowerCase();
-    }
-
-    /**
-     * 对比是否和 value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
-     * 与枚举名称是否相等（忽略大小写）
-     *
-     * @param value 值
-     * @return 是否相等
-     * @since 0.2.0
-     */
-    @Deprecated
-    default boolean eq(Object value) {
-        return this == value || name().equalsIgnoreCase(String.valueOf(value)) || getValue().equals(value);
-    }
-
-    /**
      * 从指定的枚举类中查找想要的枚举,并返回一个{@link List},如果未找到,则返回一个{@link Collections#emptyList()}
      *
      * @param type      实现了{@link EnumDictItem}的枚举类
@@ -125,7 +72,8 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @see #findByCondition(Class, Predicate)
      */
     static <T extends EnumDictItem<?>> T findByValue(Class<T> type, Object value) {
-        return findByCondition(type, item -> value.getClass().equals(getValueType(type)) ? item.getValue().equals(value) : item.getValue().toString().equals(value.toString())).stream().findFirst().orElse(null);
+        return findByCondition(type, item -> value.getClass().equals(getValueType(type)) ?
+                item.getValue().equals(value) : item.getValue().toString().equals(value.toString())).stream().findFirst().orElse(null);
     }
 
     /**
@@ -148,7 +96,9 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     static <T extends EnumDictItem<?>> BizException unsupported(Class<T> type, Object arg) {
         if (log.isWarnEnabled()) {
-            String values = findAll(type).stream().map(d -> d.getCode() + "/" + d.getValue().toString()).collect(Collectors.joining(","));
+            String values = findAll(type).stream()
+                    .map(item -> item.getCode() + "/" + item.getValue().toString())
+                    .collect(Collectors.joining(","));
             log.warn("不受支持的值 {} in [{}]", arg, values);
         }
         return new BizException(BizStatus.UN_SUPPORTED_VALUE);
@@ -172,6 +122,46 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
         result = findByValue(type, parameter);
         if (Objects.isNull(result)) throw unsupported(type, parameter);
         return result;
+    }
+
+    /**
+     * {@link Enum#ordinal()}
+     *
+     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
+     */
+    int ordinal();
+
+    /**
+     * the name of this enum constant
+     * {@link Enum#name()}
+     *
+     * @return 枚举名称
+     */
+    String name();
+
+    @Override
+    default Integer getSort() {
+        return ordinal();
+    }
+
+    /**
+     * 枚举选项的描述,对一个选项进行详细的描述有时候是必要的.默认值为 {@code null}
+     *
+     * @return 描述
+     */
+    @Override
+    default String getDescription() {
+        return null;
+    }
+
+    /**
+     * 枚举选项的编码,默认值为枚举名称的小写形式
+     *
+     * @return 描述
+     */
+    @Override
+    default String getCode() {
+        return name().toLowerCase();
     }
 
 }

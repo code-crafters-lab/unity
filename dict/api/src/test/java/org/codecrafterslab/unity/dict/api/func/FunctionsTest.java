@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.api.func;
 
+import org.codecrafterslab.unity.dict.api.enums.Action;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;

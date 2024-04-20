@@ -1,4 +1,4 @@
-package org.codecrafterslab.unity.dict.api.func;
+package org.codecrafterslab.unity.dict.api.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +17,5 @@ public enum Action implements FuncEnumDictItem {
     EXPORT("导出");
 
     private final String name;
-    
+
 }

@@ -1,4 +1,4 @@
-package org.codecrafterslab.unity.config;
+package org.codecrafterslab.unity.dict.boot;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
 import org.springframework.context.annotation.Configuration;

@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.api.func.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.func.FunctionPoint;
 import org.codecrafterslab.unity.dict.api.func.Functions;
 
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * @author WuYujie
  */
+@Slf4j
 public final class DefaultFunctions implements Functions {
     /**
      * 原始权限大整数
