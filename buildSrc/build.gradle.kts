@@ -72,11 +72,12 @@ dependencies {
 //    annotationProcessor("org.projectlombok:lombok:1.18.24")
 
     implementation(platform("org.springframework:spring-framework-bom:5.3.34"))
+    
     implementation("org.springframework:spring-core")
     implementation("org.apache.maven:maven-artifact:3.9.6")
 
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
-
+    implementation("de.skuzzle:semantic-version:2.1.1")
 
 //  implementation(libs.spring.boot)
 //  implementation(libs.dependency.management)

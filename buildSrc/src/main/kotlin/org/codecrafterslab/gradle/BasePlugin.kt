@@ -84,7 +84,11 @@ class BasePlugin : Plugin<Project> {
         project.tasks.withType(Javadoc::class.java) {
             options.encoding("UTF-8")
             if (options is StandardJavadocDocletOptions) {
-                (options as StandardJavadocDocletOptions).charSet("UTF-8")
+                val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
+                standardJavadocDocletOptions.charSet("UTF-8")
+                standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
+                standardJavadocDocletOptions.tags?.add("email")
+                standardJavadocDocletOptions.tags?.add("time")
             }
         }
     }
