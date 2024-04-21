@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     com.voc.lib
     `kotlin-dsl`
@@ -70,4 +73,14 @@ gradlePlugin {
         }
     }
 
+}
+tasks {
+    withType(JavaCompile::class.java) {
+        options.release.set(17)
+    }
+    withType(KotlinCompile::class.java) {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
 }
