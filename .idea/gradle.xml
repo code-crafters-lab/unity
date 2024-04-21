@@ -28,6 +28,9 @@
             <option value="$PROJECT_DIR$/exception/api" />
             <option value="$PROJECT_DIR$/exception/core" />
             <option value="$PROJECT_DIR$/gradle-plugin" />
+            <option value="$PROJECT_DIR$/response" />
+            <option value="$PROJECT_DIR$/response/api" />
+            <option value="$PROJECT_DIR$/response/core" />
           </set>
         </option>
       </GradleProjectSettings>
