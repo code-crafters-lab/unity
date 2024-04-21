@@ -19,22 +19,25 @@ class PublishPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply(MavenPublishPlugin::class.java)
         project.plugins.apply(PublishLocalPlugin::class.java)
-        val publishing = project.extensions.getByType(PublishingExtension::class.java)
-        val mavenPublication = publishing.publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)
-
+        // java gradle plugin 与当前插件存在重复发布功能，否则发布时可能会出错
         project.afterEvaluate {
-            project.plugins.withType(JavaPlugin::class.java) {
-                if ((project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar).isEnabled) {
-                    project.components.matching { component -> component.name == "java" }
+            if (!project.pluginManager.hasPlugin("java-gradle-plugin")) {
+                val publishing = project.extensions.getByType(PublishingExtension::class.java)
+                val mavenPublication =
+                    publishing.publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)
+
+                project.plugins.withType(JavaPlugin::class.java) {
+                    if ((project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar).isEnabled) {
+                        project.components.matching { component -> component.name == "java" }
+                            .all { mavenPublication.from(this) }
+                    }
+                }
+
+                project.plugins.withType(JavaPlatformPlugin::class.java) {
+                    project.components.matching { component -> component.name == "javaPlatform" }
                         .all { mavenPublication.from(this) }
                 }
             }
         }
-
-        project.plugins.withType(JavaPlatformPlugin::class.java) {
-            project.components.matching { component -> component.name == "javaPlatform" }
-                .all { mavenPublication.from(this) }
-        }
-
     }
 }
