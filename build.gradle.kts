@@ -1,9 +1,9 @@
 plugins {
-    com.voc.publish
+    id("com.voc.publish")
 }
 
-description = "Unity Build"
 group = "org.codecrafterslab"
+description = "Unity Build"
 
 subprojects {
     group = "org.codecrafterslab.unity"
@@ -21,7 +21,7 @@ subprojects {
         }
         mavenCentral()
     }
-
+    
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MINUTES)
     }

@@ -1,6 +1,6 @@
 plugins {
-    com.voc.lib
-    com.voc.grpc
+    id("com.voc.lib")
+    id("com.voc.grpc")
 }
 
 dependencies {

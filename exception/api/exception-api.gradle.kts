@@ -1,3 +1,3 @@
 plugins {
-    com.voc.lib
+    id("com.voc.lib")
 }

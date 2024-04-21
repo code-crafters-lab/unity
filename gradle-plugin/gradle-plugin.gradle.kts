@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    com.voc.lib
+    id("com.voc.lib")
     `kotlin-dsl`
     `java-gradle-plugin`
 }
