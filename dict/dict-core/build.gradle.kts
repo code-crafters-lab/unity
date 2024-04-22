@@ -3,11 +3,11 @@ plugins {
 }
 
 dependencies {
-    implementation(platform(project(":dependencies")))
+    implementation(platform("org.codecrafterslab.unity:dependencies"))
 
-    implementation(project(":exception:exception-api"))
-    implementation(project(":exception:exception-core"))
-    implementation(project(":dict:dict-api"))
+    implementation("org.codecrafterslab.unity:exception-api")
+    implementation("org.codecrafterslab.unity:exception-core")
+    implementation("org.codecrafterslab.unity:dict-api")
 
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.mybatis.spring.boot:mybatis-spring-boot-starter")

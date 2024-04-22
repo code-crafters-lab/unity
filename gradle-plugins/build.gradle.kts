@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.voc.lib")
+    id("com.voc.publish")
     `kotlin-dsl`
     `java-gradle-plugin`
 }
@@ -74,6 +75,7 @@ gradlePlugin {
     }
 
 }
+
 tasks {
     withType(JavaCompile::class.java) {
         options.release.set(17)

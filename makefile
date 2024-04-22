@@ -1,0 +1,2 @@
+projects:
+	@gradlew projects -q

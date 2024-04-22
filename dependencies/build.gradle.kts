@@ -2,6 +2,8 @@ plugins {
     id("com.voc.bom")
 }
 
+group = "org.codecrafterslab.unity"
+
 bom {
     effectiveBomArtifact()
     library("Spring Boot", "2.5.15") {
