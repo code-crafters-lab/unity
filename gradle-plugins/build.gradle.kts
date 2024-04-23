@@ -56,6 +56,10 @@ gradlePlugin {
             id = "com.voc.publish"
             implementationClass = "org.codecrafterslab.build.PublishPlugin"
         }
+        create("repository") {
+            id = "com.voc.repo"
+            implementationClass = "org.codecrafterslab.build.convention.RepositoriesPlugin"
+        }
         create("JinQiSoftNexus3") {
             id = "net.jqsoft.nexus3"
             implementationClass = "net.jqsoft.Nexus3Plugin"

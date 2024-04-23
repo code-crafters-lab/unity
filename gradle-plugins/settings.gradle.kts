@@ -45,7 +45,6 @@ pluginManagement {
             innerPluginList.forEach {
                 if (requested.id.id.startsWith(it)) {
                     useVersion(extra.properties["inner.version"].toString())
-//                    useVersion("0.4.0-beta.6")
                     if (logger.isDebugEnabled) {
                         logger.warn("plugin {} use version {}", target.id, target.version)
                     }
@@ -54,5 +53,7 @@ pluginManagement {
         }
     }
 }
+
+include(":convention")
 
 

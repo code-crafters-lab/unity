@@ -24,6 +24,7 @@
               <build path="$PROJECT_DIR$/gradle-plugins" name="gradle-plugins">
                 <projects>
                   <project path="$PROJECT_DIR$/gradle-plugins" />
+                  <project path="$PROJECT_DIR$/gradle-plugins/convention" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/response" name="response">
@@ -46,6 +47,7 @@
             <option value="$PROJECT_DIR$/exception/exception-api" />
             <option value="$PROJECT_DIR$/exception/exception-core" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
+            <option value="$PROJECT_DIR$/gradle-plugins/convention" />
             <option value="$PROJECT_DIR$/response" />
           </set>
         </option>
