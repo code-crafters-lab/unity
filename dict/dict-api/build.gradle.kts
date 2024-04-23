@@ -6,8 +6,8 @@ plugins {
 dependencies {
     implementation(platform("org.codecrafterslab.unity:dependencies"))
 
-//    implementation("org.codecrafterslab.unity:exception-api")
-    implementation("org.codecrafterslab.unity:exception-core")
+    api("org.codecrafterslab.unity:exception-core")
+    
     implementation("org.springframework:spring-core")
 
     runtimeOnly("org.slf4j:slf4j-api")

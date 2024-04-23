@@ -27,6 +27,8 @@ class PublishLocalPlugin : Plugin<Project> {
          * Name of the task that publishes to the project repository.
          */
         const val PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME = "publishMavenPublicationToProjectRepository"
+
+        const val publish_path = ""
     }
 
     override fun apply(project: Project) {
@@ -37,7 +39,15 @@ class PublishLocalPlugin : Plugin<Project> {
 
             val mavenArtifactRepositoryAction = MavenArtifactRepositoryAction("project", repositoryLocation)
             // todo 如何将将仓库添加到首位
-            project.repositories.maven(mavenArtifactRepositoryAction)
+//            project.repositories.maven(mavenArtifactRepositoryAction)
+
+            project.gradle.settingsEvaluated {
+                dependencyResolutionManagement {
+                    repositories {
+                        maven(mavenArtifactRepositoryAction)
+                    }
+                }
+            }
             publishing.repositories.maven(mavenArtifactRepositoryAction)
 
             project.tasks.matching { it.name == PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME }.all {

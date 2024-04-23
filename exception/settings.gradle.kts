@@ -13,9 +13,10 @@ dependencyResolutionManagement {
             url = uri("https://maven.aliyun.com/repository/public")
         }
         mavenCentral()
+        repositoriesMode = RepositoriesMode.PREFER_SETTINGS
     }
-    rulesMode = RulesMode.PREFER_PROJECT
 }
 
-include("exception-api", "exception-core")
+include("exception-api")
+include("exception-core")
 

@@ -7,9 +7,28 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT">
             <builds>
+              <build path="$PROJECT_DIR$/dict" name="dict">
+                <projects>
+                  <project path="$PROJECT_DIR$/dict" />
+                  <project path="$PROJECT_DIR$/dict/dict-api" />
+                  <project path="$PROJECT_DIR$/dict/dict-core" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/exception" name="exception">
+                <projects>
+                  <project path="$PROJECT_DIR$/exception" />
+                  <project path="$PROJECT_DIR$/exception/exception-api" />
+                  <project path="$PROJECT_DIR$/exception/exception-core" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/gradle-plugins" name="gradle-plugins">
                 <projects>
                   <project path="$PROJECT_DIR$/gradle-plugins" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/response" name="response">
+                <projects>
+                  <project path="$PROJECT_DIR$/response" />
                 </projects>
               </build>
             </builds>
@@ -20,9 +39,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/dependencies" />
+            <option value="$PROJECT_DIR$/dict" />
+            <option value="$PROJECT_DIR$/dict/dict-api" />
+            <option value="$PROJECT_DIR$/dict/dict-core" />
             <option value="$PROJECT_DIR$/exception" />
             <option value="$PROJECT_DIR$/exception/exception-api" />
+            <option value="$PROJECT_DIR$/exception/exception-core" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
+            <option value="$PROJECT_DIR$/response" />
           </set>
         </option>
       </GradleProjectSettings>

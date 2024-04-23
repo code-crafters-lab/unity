@@ -13,8 +13,9 @@ dependencyResolutionManagement {
             url = uri("https://maven.aliyun.com/repository/public")
         }
         mavenCentral()
+//        repositoriesMode = RepositoriesMode.PREFER_SETTINGS
     }
-    rulesMode = RulesMode.PREFER_PROJECT
 }
 
-include("dict-api", "dict-core")
+include("dict-api")
+include("dict-core")

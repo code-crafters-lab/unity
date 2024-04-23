@@ -16,31 +16,17 @@ dependencyResolutionManagement {
         }
         mavenCentral()
     }
-    rulesMode = RulesMode.PREFER_PROJECT
+    repositoriesMode = RepositoriesMode.PREFER_PROJECT
 }
 
+plugins {
+    
+}
 
 include("dependencies")
-include("exception:exception-api")
 
-//includeBuild(".") {
-//    dependencySubstitution {
-//        substitute(module("org.codecrafterslab.unity:dependencies")).using(project(":dependencies"))
-//    }
-//}
-//
-//includeBuild("exception") {
-//    dependencySubstitution {
-//        substitute(module("org.codecrafterslab.unity:exception-api")).using(project("::exception-api"))
-//        substitute(module("org.codecrafterslab.unity:exception-core")).using(project("::exception-core"))
-//    }
-//}
-//
-//includeBuild("dict") {
-//    dependencySubstitution {
-//        substitute(module("org.codecrafterslab.unity:dict-api")).using(project("::dict-api"))
-//        substitute(module("org.codecrafterslab.unity:dict-core")).using(project("::dict-core"))
-//    }
-//}
-
+includeBuild(".")
+includeBuild("exception")
+includeBuild("dict")
+includeBuild("response")
 

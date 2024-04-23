@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api("org.codecrafterslab.unity:exception-api")
+    api(project(":exception-api"))
 }

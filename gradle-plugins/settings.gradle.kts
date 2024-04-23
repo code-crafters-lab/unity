@@ -1,3 +1,19 @@
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public")
+            isAllowInsecureProtocol = true
+        }
+        maven {
+            url = uri("https://maven.aliyun.com/repository/public")
+        }
+        mavenCentral()
+    }
+    // https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/resolve/RepositoriesMode.html
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
+}
+
 pluginManagement {
 
     repositories {
@@ -38,3 +54,5 @@ pluginManagement {
         }
     }
 }
+
+

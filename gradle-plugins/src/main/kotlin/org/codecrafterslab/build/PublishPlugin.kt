@@ -3,6 +3,8 @@ package org.codecrafterslab.build
 import org.codecrafterslab.gradle.maven.PublishLocalPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Usage
+import org.gradle.api.internal.tasks.JvmConstants
 import org.gradle.api.plugins.JavaPlatformPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.publish.PublishingExtension
@@ -13,7 +15,7 @@ import org.gradle.jvm.tasks.Jar
 class PublishPlugin : Plugin<Project> {
 
     companion object {
-        const val MAVEN_PUBLICATION_NAME: kotlin.String = "maven"
+        const val MAVEN_PUBLICATION_NAME: String = "maven"
     }
 
     override fun apply(project: Project) {
@@ -22,22 +24,36 @@ class PublishPlugin : Plugin<Project> {
         // java gradle plugin 与当前插件存在重复发布功能，否则发布时可能会出错
         project.afterEvaluate {
             if (!project.pluginManager.hasPlugin("java-gradle-plugin")) {
-                val publishing = project.extensions.getByType(PublishingExtension::class.java)
-                val mavenPublication =
-                    publishing.publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)
-
-                project.plugins.withType(JavaPlugin::class.java) {
-                    if ((project.tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar).isEnabled) {
-                        project.components.matching { component -> component.name == "java" }
-                            .all { mavenPublication.from(this) }
+                with(project.extensions.getByType(PublishingExtension::class.java)) {
+                    with(publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)) {
+                        softwareComponent(project, this)
+                        configureVersionMapping(this)
                     }
                 }
+            }
+        }
+    }
 
-                project.plugins.withType(JavaPlatformPlugin::class.java) {
-                    project.components.matching { component -> component.name == "javaPlatform" }
-                        .all { mavenPublication.from(this) }
+    private fun softwareComponent(project: Project, publication: MavenPublication) {
+        with(project) {
+            plugins.withType(JavaPlugin::class.java).all {
+                if ((tasks.getByName(JavaPlugin.JAR_TASK_NAME) as Jar).isEnabled) {
+                    components.matching { JvmConstants.JAVA_MAIN_COMPONENT_NAME == it.name }
+                        .all { publication.from(this) }
                 }
             }
+            plugins.withType(JavaPlatformPlugin::class.java).all {
+                components.matching { "javaPlatform" == it.name }
+                    .all { publication.from(this) }
+            }
+        }
+
+    }
+
+    private fun configureVersionMapping(publication: MavenPublication) {
+        publication.versionMapping {
+            usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
+            usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
         }
     }
 }

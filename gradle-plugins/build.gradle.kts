@@ -19,18 +19,6 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenLocal()
-    maven {
-        url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public")
-        isAllowInsecureProtocol = true
-    }
-    maven {
-        url = uri("https://maven.aliyun.com/repository/public")
-    }
-    mavenCentral()
-}
-
 dependencies {
 
     implementation(platform("org.springframework:spring-framework-bom:5.3.34"))
