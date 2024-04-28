@@ -1,4 +1,4 @@
-package org.codecrafterslab.gradle.ide
+package org.codecrafterslab.gradle.plugins.ide
 
 import org.codecrafterslab.gradle.utils.PropertyUtils
 import org.gradle.api.Plugin

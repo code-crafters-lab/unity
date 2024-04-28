@@ -56,10 +56,13 @@ public class BomPlugin implements Plugin<Project> {
     private void createApiEnforcedConfiguration(Project project) {
         Configuration apiEnforced = project.getConfigurations().create(API_ENFORCED_CONFIGURATION_NAME,
                 (configuration) -> {
-            configuration.setCanBeConsumed(false);
-            configuration.setCanBeResolved(false);
-            configuration.setVisible(false);
-        });
+                    configuration.setCanBeConsumed(false);
+                    configuration.setCanBeResolved(false);
+                    configuration.setVisible(false);
+                    configuration.attributes(attributeContainer -> {
+//                        attributeContainer.attribute(Usage.USAGE_ATTRIBUTE, Usage.JAVA_RUNTIME);
+                    });
+                });
         project.getConfigurations().getByName(JavaPlatformPlugin.ENFORCED_API_ELEMENTS_CONFIGURATION_NAME).extendsFrom(apiEnforced);
         project.getConfigurations().getByName(JavaPlatformPlugin.ENFORCED_RUNTIME_ELEMENTS_CONFIGURATION_NAME).extendsFrom(apiEnforced);
     }

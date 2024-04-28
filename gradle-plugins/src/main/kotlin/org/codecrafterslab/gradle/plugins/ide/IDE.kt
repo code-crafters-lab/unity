@@ -1,4 +1,4 @@
-package org.codecrafterslab.gradle.ide
+package org.codecrafterslab.gradle.plugins.ide
 
 import java.util.*
 

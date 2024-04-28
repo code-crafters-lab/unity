@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.voc.lib")
     id("com.voc.publish")
+    id("net.jqsoft.nexus3")
     `kotlin-dsl`
     `java-gradle-plugin`
 }
@@ -20,14 +21,18 @@ sourceSets {
 }
 
 dependencies {
-
     implementation(platform("org.springframework:spring-framework-bom:5.3.34"))
+    implementation(platform("org.junit:junit-bom:5.10.2"))
 
     implementation("org.springframework:spring-core")
     implementation("org.apache.maven:maven-artifact:3.9.6")
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
     implementation("de.skuzzle:semantic-version:2.1.1")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
+    implementation("org.gradle:test-retry-gradle-plugin:1.5.6")
 
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 gradlePlugin {
@@ -38,7 +43,7 @@ gradlePlugin {
         }
         create("grpc") {
             id = "com.voc.grpc"
-            implementationClass = "org.codecrafterslab.gradle.GRPCPlugin"
+            implementationClass = "org.codecrafterslab.gradle.plugins.GRPCPlugin"
         }
         create("bom") {
             id = "com.voc.bom"
@@ -58,7 +63,7 @@ gradlePlugin {
         }
         create("repository") {
             id = "com.voc.repo"
-            implementationClass = "org.codecrafterslab.build.convention.RepositoriesPlugin"
+            implementationClass = "org.codecrafterslab.build.settings.conventions.RepositoriesConventions"
         }
         create("JinQiSoftNexus3") {
             id = "net.jqsoft.nexus3"

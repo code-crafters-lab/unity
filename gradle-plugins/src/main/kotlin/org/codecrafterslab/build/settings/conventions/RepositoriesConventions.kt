@@ -1,4 +1,4 @@
-package org.codecrafterslab.build.convention
+package org.codecrafterslab.build.settings.conventions
 
 import org.codecrafterslab.gradle.utils.FileOperationUtils
 import org.gradle.api.Plugin
@@ -8,7 +8,7 @@ import org.gradle.api.initialization.Settings
 import org.gradle.api.internal.file.FileOperations
 import java.io.File
 
-class RepositoriesPlugin : Plugin<Settings> {
+class RepositoriesConventions : Plugin<Settings> {
     private lateinit var fileOperations: FileOperations
 
     override fun apply(settings: Settings) {
@@ -18,8 +18,10 @@ class RepositoriesPlugin : Plugin<Settings> {
                 repositories {
                     common(rootDir.parentFile)
                     maven { url = uri("https://maven.aliyun.com/repository/public") }
+                    gradlePluginPortal()
                 }
             }
+
             dependencyResolutionManagement {
                 repositories {
                     common(rootDir.parentFile)

@@ -1,38 +1,39 @@
-package org.codecrafterslab.build
+package org.codecrafterslab.gradle.plugins.conventions
 
-import org.codecrafterslab.gradle.plugins.conventions.MavenPublishingConventions
+import org.codecrafterslab.gradle.plugins.maven.PublishLocalPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Usage
 import org.gradle.api.internal.tasks.JvmConstants
 import org.gradle.api.plugins.JavaPlatformPlugin
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.jvm.tasks.Jar
 
-
-@Deprecated("Use org.codecrafterslab.gradle.plugins.conventions.MavenPublishingConventions instead.")
-class PublishPlugin : Plugin<Project> {
-
+class MavenPublishingConventions : Plugin<Project> {
     companion object {
         const val MAVEN_PUBLICATION_NAME: String = "maven"
     }
 
     override fun apply(project: Project) {
-        project.plugins.apply(MavenPublishingConventions::class.java)
-//        project.plugins.apply(MavenPublishPlugin::class.java)
-//        project.plugins.apply(PublishLocalPlugin::class.java)
-//        // java gradle plugin 与当前插件存在重复发布功能，否则发布时可能会出错
-//        project.afterEvaluate {
-//            if (!project.pluginManager.hasPlugin("java-gradle-plugin")) {
-//                with(project.extensions.getByType(PublishingExtension::class.java)) {
-//                    with(publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)) {
-//                        softwareComponent(project, this)
-//                        configureVersionMapping(this)
+        project.plugins.apply(MavenPublishPlugin::class.java)
+        project.plugins.apply(PublishLocalPlugin::class.java)
+        // java gradle plugin 与当前插件存在重复发布功能，否则发布时可能会出错
+        project.afterEvaluate {
+            if (!project.pluginManager.hasPlugin("java-gradle-plugin")) {
+                with(project.extensions.getByType(PublishingExtension::class.java)) {
+                    with(publications.create(MAVEN_PUBLICATION_NAME, MavenPublication::class.java)) {
+                        softwareComponent(project, this)
+                        configureVersionMapping(this)
 //                    }
-//                }
-//            }
-//        }
+                    }
+                }
+            }
+        }
+
+
     }
 
     private fun softwareComponent(project: Project, publication: MavenPublication) {

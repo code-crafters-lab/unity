@@ -1,6 +1,6 @@
 package org.codecrafterslab.build
 
-import org.codecrafterslab.gradle.BasePlugin
+import org.codecrafterslab.gradle.plugins.ConventionsPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
@@ -12,6 +12,6 @@ import org.gradle.api.plugins.JavaLibraryPlugin
 class LibraryPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply(JavaLibraryPlugin::class.java)
-        project.plugins.apply(BasePlugin::class.java)
+        project.plugins.apply(ConventionsPlugin::class.java)
     }
 }

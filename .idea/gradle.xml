@@ -11,7 +11,6 @@
                 <projects>
                   <project path="$PROJECT_DIR$/dict" />
                   <project path="$PROJECT_DIR$/dict/dict-api" />
-                  <project path="$PROJECT_DIR$/dict/dict-core" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/exception" name="exception">
@@ -24,12 +23,6 @@
               <build path="$PROJECT_DIR$/gradle-plugins" name="gradle-plugins">
                 <projects>
                   <project path="$PROJECT_DIR$/gradle-plugins" />
-                  <project path="$PROJECT_DIR$/gradle-plugins/convention" />
-                </projects>
-              </build>
-              <build path="$PROJECT_DIR$/response" name="response">
-                <projects>
-                  <project path="$PROJECT_DIR$/response" />
                 </projects>
               </build>
             </builds>
@@ -42,13 +35,10 @@
             <option value="$PROJECT_DIR$/dependencies" />
             <option value="$PROJECT_DIR$/dict" />
             <option value="$PROJECT_DIR$/dict/dict-api" />
-            <option value="$PROJECT_DIR$/dict/dict-core" />
             <option value="$PROJECT_DIR$/exception" />
             <option value="$PROJECT_DIR$/exception/exception-api" />
             <option value="$PROJECT_DIR$/exception/exception-core" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
-            <option value="$PROJECT_DIR$/gradle-plugins/convention" />
-            <option value="$PROJECT_DIR$/response" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -1,4 +1,4 @@
-package org.codecrafterslab.gradle.maven
+package org.codecrafterslab.gradle.plugins.maven
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.Action
@@ -28,7 +28,6 @@ class PublishLocalPlugin : Plugin<Project> {
          */
         const val PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME = "publishMavenPublicationToProjectRepository"
 
-        const val publish_path = ""
     }
 
     override fun apply(project: Project) {

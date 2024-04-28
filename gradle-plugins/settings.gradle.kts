@@ -8,7 +8,7 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://maven.aliyun.com/repository/public")
         }
-        mavenCentral()
+        gradlePluginPortal()
     }
     // https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/resolve/RepositoriesMode.html
     repositoriesMode = RepositoriesMode.PREFER_SETTINGS
@@ -53,7 +53,4 @@ pluginManagement {
         }
     }
 }
-
-include(":convention")
-
 

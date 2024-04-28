@@ -1,11 +1,11 @@
-package org.codecrafterslab.gradle
+package org.codecrafterslab.gradle.plugins.conventions
 
 import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.ProtobufPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-class GRPCPlugin : Plugin<Project> {
+class GrpcConventions : Plugin<Project> {
 
     override fun apply(project: Project) {
         if (!project.plugins.hasPlugin(ProtobufPlugin::class.java)) {

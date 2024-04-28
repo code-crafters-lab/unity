@@ -1,4 +1,4 @@
-package org.codecrafterslab.gradle
+package org.codecrafterslab.gradle.plugins.dependency
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -9,7 +9,7 @@ import org.gradle.api.plugins.JavaPluginExtension
  * 可选依赖插件
  * @since 0.4.0
  */
-class OptionalDependencyPlugin : Plugin<Project> {
+class OptionalPlugin : Plugin<Project> {
     companion object {
         /**
          * Name of the `optional` configuration.

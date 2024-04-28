@@ -1,6 +1,6 @@
 package org.codecrafterslab.gradle
 
-import org.codecrafterslab.gradle.ide.IDEPlugin
+import org.codecrafterslab.gradle.plugins.ConventionsPlugin
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,15 +12,10 @@ import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.jvm.tasks.Jar
 
+@Deprecated("Use org.codecrafterslab.gradle.plugins.ConventionsPlugin instead.")
 class BasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        configureClean(project)
-        configureJavaCompile(project)
-        configureJar(project)
-        configureJavadoc(project)
-        configureAnnotationProcessor(project)
-        project.plugins.apply(OptionalDependencyPlugin::class.java)
-        project.plugins.apply(IDEPlugin::class.java)
+        project.plugins.apply(ConventionsPlugin::class.java)
     }
 
     /**
