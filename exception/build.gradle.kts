@@ -10,3 +10,9 @@ subprojects {
     apply(plugin = "com.voc.publish")
     apply(plugin = "net.jqsoft.nexus3")
 }
+
+listOf("build", "clean", "publish").forEach { task ->
+    tasks.named(task) {
+        dependsOn(":exception-api:${task}", ":exception-core:${task}")
+    }
+}

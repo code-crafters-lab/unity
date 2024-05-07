@@ -8,7 +8,6 @@ import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -31,23 +30,16 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        /* 1. 先根据编码进行查找 */
         Class<? extends EnumDictItem> target = (Class<? extends EnumDictItem>) targetType.getType();
-        EnumDictItem result = EnumDictItem.findByCode(target, (String) source);
-        if (!Objects.isNull(result)) return result;
-
-        /* 2. 字符串类型 => 实际泛型的类型转换 */
-        TypeDescriptor tagreTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
-        Object converted = this.conversionService.convert(source, sourceType, tagreTypeDescriptor);
-        if (log.isDebugEnabled()) {
-            log.debug("{} : {} => {} : {}", sourceType, source, tagreTypeDescriptor, converted);
-        }
-        /* 3. 根据实际值进行查找 */
-        result = EnumDictItem.findByValue(target, converted);
-
-        /* 4. 未转换成功则抛出业务异常 */
-        if (Objects.isNull(result)) throw EnumDictItem.unsupported(target, source);
-        return result;
+        return EnumDictItem.find(target, source, val -> {
+            /* 2. 字符串类型 => 实际泛型的类型转换 */
+            TypeDescriptor tagreTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
+            Object converted = this.conversionService.convert(val, sourceType, tagreTypeDescriptor);
+            if (log.isDebugEnabled()) {
+                log.debug("{} : {} => {} : {}", sourceType, val, tagreTypeDescriptor, converted);
+            }
+            return converted;
+        });
     }
 
     @Override

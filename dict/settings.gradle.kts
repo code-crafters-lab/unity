@@ -7,4 +7,4 @@ plugins {
 }
 
 include("dict-api")
-//include("dict-core")
+include("dict-core")

@@ -19,7 +19,7 @@ public interface FuncEnumDictItem extends EnumDictItem<BigInteger>, FunctionPoin
     default BigInteger getValue() {
         return get();
     }
-    
+
     @Override
     default String getLabel() {
         return getName();
@@ -46,8 +46,11 @@ public interface FuncEnumDictItem extends EnumDictItem<BigInteger>, FunctionPoin
     static <T extends FuncEnumDictItem> List<T> getFunctions(Class<T> type, Functions functions) {
         BigInteger func = functions.get();
         if (func != null) {
-            return EnumDictItem.findByCondition(type, item -> item.get().or(func).equals(func));
+            return EnumDictItem.findByCondition(type, item -> item.get().or(func).equals(func),
+                    FuncEnumDictItem.class::isAssignableFrom);
         }
         return Collections.emptyList();
     }
+
+
 }

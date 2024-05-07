@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author wangjie
+ * @since 1.0.0
  */
 public interface DictService {
 

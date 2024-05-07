@@ -20,11 +20,20 @@ public class DictItemConverterConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        /* 枚举字典转换 */
         if (registry instanceof ConversionService) {
-            ConversionService conversionService = (ConversionService) registry;
-            registry.addConverter(new EnumDictItemConverter(conversionService));
+            enumDictItemConverterConversionService(registry, (ConversionService) registry);
         }
-        /* 持久化字典转换 */
     }
+
+    /**
+     * 枚举字典转换
+     *
+     * @param registry          FormatterRegistry
+     * @param conversionService ConversionService
+     */
+    private void enumDictItemConverterConversionService(FormatterRegistry registry,
+                                                        ConversionService conversionService) {
+        registry.addConverter(new EnumDictItemConverter(conversionService));
+    }
+
 }

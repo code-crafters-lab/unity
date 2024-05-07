@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -31,9 +32,16 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      */
     static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<T> predicate) {
-        if (type.isEnum()) return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
+        return findByCondition(type, predicate, EnumDictItem.class::isAssignableFrom);
+    }
+
+    static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<T> predicate,
+                                                               Predicate<Class<T>> typePredicate) {
+        if (type.isEnum() && typePredicate.test(type))
+            return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
         return Collections.emptyList();
     }
+
 
     /**
      * 查找所有枚举值
@@ -73,7 +81,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     static <T extends EnumDictItem<?>> T findByValue(Class<T> type, Object value) {
         return findByCondition(type, item -> value.getClass().equals(getValueType(type)) ?
-                item.getValue().equals(value) : item.getValue().toString().equals(value.toString())).stream().findFirst().orElse(null);
+                item.getValue().equals(value) : item.getValue().toString().equals(value.toString().trim())).stream().findFirst().orElse(null);
     }
 
     /**
@@ -86,8 +94,22 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @see #findByCondition(Class, Predicate)
      */
     static <T extends EnumDictItem<?>> T findByCode(Class<T> type, String code) {
-        return findByCondition(type, item -> item.name().equalsIgnoreCase(code)).stream().findFirst().orElse(null);
+        return findByCondition(type, item -> item.name().equalsIgnoreCase(code.trim())).stream().findFirst().orElse(null);
     }
+
+    /**
+     * 根据枚举的{@link EnumDictItem#getLabel()} 来查找.
+     *
+     * @param type  Class<T>
+     * @param label String
+     * @param <T>   枚举类型
+     * @return 查找到的结果
+     * @see #findByCondition(Class, Predicate)
+     */
+    static <T extends EnumDictItem<?>> T findByLabel(Class<T> type, String label) {
+        return findByCondition(type, item -> item.getLabel().equalsIgnoreCase(label.trim())).stream().findFirst().orElse(null);
+    }
+
 
     /**
      * @param type Class<T>
@@ -96,8 +118,10 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     static <T extends EnumDictItem<?>> BizException unsupported(Class<T> type, Object arg) {
         if (log.isWarnEnabled()) {
+
             String values = findAll(type).stream()
-                    .map(item -> item.getCode() + "/" + item.getValue().toString())
+                    .map(item -> String.join("/", Arrays.asList(item.getCode(), item.getValue().toString().trim(),
+                            item.getLabel())))
                     .collect(Collectors.joining(","));
             log.warn("不受支持的值 {} in [{}]", arg, values);
         }
@@ -114,12 +138,37 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @see #findByCondition(Class, Predicate)
      */
     static <T extends EnumDictItem<?>> T find(Class<T> type, Object parameter) {
+        return find(type, parameter, val -> val);
+    }
+
+    /**
+     * 根据枚举的{@link EnumDictItem#name()}来查找.
+     *
+     * @param type      Class<T>
+     * @param parameter 字典项实际值或编码
+     * @param convert   类型转换
+     * @param <T>       枚举类型
+     * @return 查找到的结果
+     * @see #findByCondition(Class, Predicate)
+     */
+    static <T extends EnumDictItem<?>> T find(Class<T> type, Object parameter, Function<Object, Object> convert) {
         T result;
+        /* 1. 如果值时字符串先根据编码进行查找 */
         if (parameter instanceof String) {
             result = findByCode(type, (String) parameter);
             if (!Objects.isNull(result)) return result;
         }
-        result = findByValue(type, parameter);
+        /* 2. 未找到到再根据实际值进行查找 */
+        Object converted = convert.apply(parameter);
+        result = findByValue(type, converted);
+        if (!Objects.isNull(result)) {
+            return result;
+        }
+        /* 3. 实际值也未查到的情况且是字符，则根据显示值进行查找 */
+        if (parameter instanceof String) {
+            result = findByLabel(type, (String) parameter);
+        }
+        /* 4. 否则抛出异常 */
         if (Objects.isNull(result)) throw unsupported(type, parameter);
         return result;
     }
