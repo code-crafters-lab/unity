@@ -1,21 +1,4 @@
-dependencyResolutionManagement {
-    repositories {
-        mavenLocal()
-        maven {
-            url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public")
-            isAllowInsecureProtocol = true
-        }
-        maven {
-            url = uri("https://maven.aliyun.com/repository/public")
-        }
-        gradlePluginPortal()
-    }
-    // https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/resolve/RepositoriesMode.html
-    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
-}
-
 pluginManagement {
-
     repositories {
         maven {
             url = uri(
@@ -44,7 +27,7 @@ pluginManagement {
         eachPlugin {
             innerPluginList.forEach {
                 if (requested.id.id.startsWith(it)) {
-                    useVersion(extra.properties["inner.version"].toString())
+                    useVersion(extra.properties["inner.plugins.version"].toString())
                     if (logger.isDebugEnabled) {
                         logger.warn("plugin {} use version {}", target.id, target.version)
                     }
@@ -53,4 +36,11 @@ pluginManagement {
         }
     }
 }
+
+plugins {
+    id("com.voc.repo")
+// 使用 settings 插件会报错
+//    id("com.voc.settings")
+}
+
 

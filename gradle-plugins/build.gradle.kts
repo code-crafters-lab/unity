@@ -13,11 +13,11 @@ group = "org.codecrafterslab"
 description = "Unity Gradle Plugin"
 
 sourceSets {
-    create("dependency-management") {
-        java {
-            srcDirs("src/dependency-management")
-        }
-    }
+//    create("dependency-management") {
+//        java {
+//            srcDirs("src/dependency-management")
+//        }
+//    }
 }
 
 dependencies {
@@ -37,14 +37,6 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("base") {
-            id = "com.voc.base"
-            implementationClass = "org.codecrafterslab.gradle.BasePlugin"
-        }
-        create("grpc") {
-            id = "com.voc.grpc"
-            implementationClass = "org.codecrafterslab.gradle.plugins.GRPCPlugin"
-        }
         create("bom") {
             id = "com.voc.bom"
             implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
@@ -54,7 +46,7 @@ gradlePlugin {
             implementationClass = "org.codecrafterslab.build.LibraryPlugin"
         }
         create("app") {
-            id = "com.voc.boot"
+            id = "com.voc.app"
             implementationClass = "org.codecrafterslab.build.AppPlugin"
         }
         create("publish") {
@@ -63,8 +55,13 @@ gradlePlugin {
         }
         create("repository") {
             id = "com.voc.repo"
-            implementationClass = "org.codecrafterslab.build.settings.conventions.RepositoriesConventions"
+            implementationClass = "org.codecrafterslab.build.settings.RepositoriesPlugin"
         }
+        create("settings") {
+            id = "com.voc.settings"
+            implementationClass = "org.codecrafterslab.build.settings.ConventionsPlugin"
+        }
+
         create("JinQiSoftNexus3") {
             id = "net.jqsoft.nexus3"
             implementationClass = "net.jqsoft.Nexus3Plugin"

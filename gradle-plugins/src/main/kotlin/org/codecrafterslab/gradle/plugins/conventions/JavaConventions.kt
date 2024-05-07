@@ -17,6 +17,7 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.testretry.TestRetryPlugin
 import org.gradle.testretry.TestRetryTaskExtension
 
+@Suppress("unused")
 class JavaConventions : Plugin<Project> {
 
     companion object {
@@ -39,7 +40,8 @@ class JavaConventions : Plugin<Project> {
 
     private fun configureClean(project: Project) {
         /* 清理任务增加删除目录 */
-        project.tasks.withType(Delete::class.java) {
+        project.tasks.named("clean", Delete::class.java) {
+            // todo includeBuild 时清理父项目，子项目未清理
             delete("out", "build")
         }
     }
@@ -63,7 +65,7 @@ class JavaConventions : Plugin<Project> {
     }
 
     private fun configureDependencyManagement(project: Project) {
-
+        // todo 依赖管理
     }
 
 

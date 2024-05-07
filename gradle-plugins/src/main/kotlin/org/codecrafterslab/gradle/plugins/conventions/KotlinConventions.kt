@@ -18,7 +18,8 @@ class KotlinConventions : Plugin<Project> {
         kotlinOptions.apiVersion = "1.9"
         kotlinOptions.languageVersion = "1.9"
         // kotlinOptions.jvmTarget = "1.8"
-//        kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.suppressWarnings = true
+        // kotlinOptions.allWarningsAsErrors = true
         val freeCompilerArgs = ArrayList(compile.kotlinOptions.freeCompilerArgs)
         if (!freeCompilerArgs.contains("-Xsuppress-version-warnings")) {
             freeCompilerArgs.add("-Xsuppress-version-warnings")
