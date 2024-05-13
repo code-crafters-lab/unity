@@ -1,5 +1,7 @@
 package org.codecrafterslab.gradle.plugins.conventions
 
+import groovy.namespace.QName
+import groovy.util.Node
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.XmlProvider
@@ -27,7 +29,9 @@ class MavenPublishingConventions : Plugin<Project> {
 
                 /* 2. 发布配置 */
                 publications.withType(MavenPublication::class.java).matching {
-                    it.name != "pluginMaven" && !it.name.contains("PluginMarkerMaven") // 排除 java-gradle-plugin 的发布配置
+                    // https://docs.gradle.org/current/userguide/java_gradle_plugin.html
+                    // 排除 java-gradle-plugin 的发布配置
+                    it.name != "pluginMaven" && !it.name.contains("PluginMarkerMaven")
                 }.all {
                     customizeMavenPublication(this, project)
                 }
@@ -103,11 +107,32 @@ class MavenPublishingConventions : Plugin<Project> {
             developers { customizeDevelopers(this) }
             scm { customizeScm(this, project) }
             withXml { customizeXml(this, project) }
+
         }
     }
 
     private fun customizeXml(xmlProvider: XmlProvider, project: Project) {
+        val root = xmlProvider.asNode()
 
+        // 移除 platform 插件自动生成的 dependencyManagement
+        val dependencyManagement = findDependencyManagement(root)
+        if (dependencyManagement != null) {
+            root.remove(dependencyManagement)
+        }
+    }
+
+    private fun findDependencyManagement(parent: Node): Node? {
+        for (child in parent.children()) {
+            if (child is Node) {
+                if ((child.name() is QName) && "dependencyManagement" == (child.name() as QName).localPart) {
+                    return child
+                }
+                if ("dependencyManagement" == child.name()) {
+                    return child
+                }
+            }
+        }
+        return null
     }
 
     private fun customizeScm(mavenPomScm: MavenPomScm, project: Project) {
