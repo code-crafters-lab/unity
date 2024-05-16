@@ -22,8 +22,8 @@ public class DictJsonConfiguration {
      */
     @Bean
     @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
-    DictJackson2ObjectMapperBuilder dictJackson2ObjectMapperBuilder() {
-        return new DictJackson2ObjectMapperBuilder();
+    DictJackson2ObjectMapperBuilder dictJackson2ObjectMapperBuilder(DictSerializeProperties dictSerializeProperties) {
+        return new DictJackson2ObjectMapperBuilder(dictSerializeProperties);
     }
 
 }
