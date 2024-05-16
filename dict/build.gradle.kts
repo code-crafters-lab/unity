@@ -13,6 +13,11 @@ subprojects {
 
 listOf("build", "clean", "publish").forEach { task ->
     tasks.named(task) {
-        dependsOn(":dict-api:${task}", ":dict-core:${task}")
+        dependsOn(
+            ":dict-api:${task}",
+            ":dict-core:${task}",
+            ":dict-autoconfigure:${task}",
+            ":dict-starter:${task}"
+        )
     }
 }

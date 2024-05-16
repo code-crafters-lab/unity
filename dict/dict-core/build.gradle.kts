@@ -5,11 +5,11 @@ plugins {
 dependencies {
     implementation(platform("org.codecrafterslab.unity:dependencies"))
 
-    implementation(project(":dict-api"))
+    api(project(":dict-api"))
 
     compileOnly("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.mybatis.spring.boot:mybatis-spring-boot-starter")
-    compileOnly("com.baomidou:mybatis-plus-boot-starter")
+    optional("org.mybatis.spring.boot:mybatis-spring-boot-starter")
+    optional("com.baomidou:mybatis-plus-boot-starter")
 
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

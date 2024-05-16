@@ -11,7 +11,9 @@
                 <projects>
                   <project path="$PROJECT_DIR$/dict" />
                   <project path="$PROJECT_DIR$/dict/dict-api" />
+                  <project path="$PROJECT_DIR$/dict/dict-autoconfigure" />
                   <project path="$PROJECT_DIR$/dict/dict-core" />
+                  <project path="$PROJECT_DIR$/dict/dict-starter" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/exception" name="exception">
@@ -41,7 +43,9 @@
             <option value="$PROJECT_DIR$/dependencies" />
             <option value="$PROJECT_DIR$/dict" />
             <option value="$PROJECT_DIR$/dict/dict-api" />
+            <option value="$PROJECT_DIR$/dict/dict-autoconfigure" />
             <option value="$PROJECT_DIR$/dict/dict-core" />
+            <option value="$PROJECT_DIR$/dict/dict-starter" />
             <option value="$PROJECT_DIR$/exception" />
             <option value="$PROJECT_DIR$/exception/exception-api" />
             <option value="$PROJECT_DIR$/exception/exception-core" />

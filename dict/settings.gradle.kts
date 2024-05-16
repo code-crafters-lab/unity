@@ -8,3 +8,5 @@ plugins {
 
 include("dict-api")
 include("dict-core")
+include("dict-autoconfigure")
+include("dict-starter")

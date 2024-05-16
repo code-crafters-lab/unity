@@ -23,6 +23,14 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
 
     Logger log = LoggerFactory.getLogger(EnumDictItem.class);
 
+    static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<Class<T>> typePredicate,
+                                                               Predicate<T> predicate) {
+        if (type.isEnum() && typePredicate.test(type)) {
+            return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
     /**
      * 从指定的枚举类中查找想要的枚举,并返回一个{@link List},如果未找到,则返回一个{@link Collections#emptyList()}
      *
@@ -32,16 +40,8 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      */
     static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<T> predicate) {
-        return findByCondition(type, predicate, EnumDictItem.class::isAssignableFrom);
+        return findByCondition(type, EnumDictItem.class::isAssignableFrom, predicate);
     }
-
-    static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<T> predicate,
-                                                               Predicate<Class<T>> typePredicate) {
-        if (type.isEnum() && typePredicate.test(type))
-            return Arrays.stream(type.getEnumConstants()).filter(predicate).collect(Collectors.toList());
-        return Collections.emptyList();
-    }
-
 
     /**
      * 查找所有枚举值
@@ -110,7 +110,6 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
         return findByCondition(type, item -> item.getLabel().equalsIgnoreCase(label.trim())).stream().findFirst().orElse(null);
     }
 
-
     /**
      * @param type Class<T>
      * @param <T>  枚举类型
@@ -132,7 +131,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * 根据枚举的{@link EnumDictItem#name()}来查找.
      *
      * @param type      Class<T>
-     * @param parameter 字典项实际值或编码
+     * @param parameter 字典项编码、实际值或显示值
      * @param <T>       枚举类型
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
@@ -145,7 +144,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * 根据枚举的{@link EnumDictItem#name()}来查找.
      *
      * @param type      Class<T>
-     * @param parameter 字典项实际值或编码
+     * @param parameter 字典项编码、实际值或显示值
      * @param convert   类型转换
      * @param <T>       枚举类型
      * @return 查找到的结果
