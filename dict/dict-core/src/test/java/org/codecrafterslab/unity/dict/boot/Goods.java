@@ -16,6 +16,8 @@ public class Goods {
 
     private String name;
 
+    private Sex sex;
+
     private ProductService service;
 
     @DictSerialize({DictSerialize.Scope.CODE, DictSerialize.Scope.VALUE, DictSerialize.Scope.LABEL})

@@ -9,17 +9,15 @@ import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.deser.DictionaryItemDeserializer;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.codecrafterslab.unity.dict.boot.provider.EnumDictItemProvider;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Wu Yujie
@@ -27,13 +25,14 @@ import java.util.Set;
  */
 public class DictJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
     private final DictSerializeProperties serializeProperties;
-    private final DictProperties dictProperties;
 
     private final ConversionService conversionService;
+    private final EnumDictItemProvider.Builder provider;
 
     public DictJackson2ObjectMapperBuilder(DictProperties dictProperties,
+                                           EnumDictItemProvider.Builder provider,
                                            ConversionService conversionService) {
-        this.dictProperties = dictProperties;
+        this.provider = provider;
         this.serializeProperties = dictProperties.getSerialize();
         this.conversionService = conversionService;
     }
@@ -43,26 +42,14 @@ public class DictJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBuil
         builder.annotationIntrospector(new JacksonAnnotationIntrospector());
         builder.annotationIntrospector(annotationIntrospector -> AnnotationIntrospectorPair.pair
                 (annotationIntrospector, new DictAnnotationIntrospector()));
-
+        // 序列化注册
         builder.serializerByType(DictionaryItem.class, new DictionaryItemSerializer(serializeProperties));
 
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
-        provider.addIncludeFilter(new AssignableTypeFilter(EnumDictItem.class));
+        // 反序列化注册
         Map<Class<?>, JsonDeserializer<?>> deserializers = new LinkedHashMap<>();
-        String enumDictPackage = dictProperties.getEnumDictItemPackage();
-        Set<BeanDefinition> components = provider.findCandidateComponents(enumDictPackage);
-
-        for (BeanDefinition component : components) {
-            try {
-                Class<?> cls = Class.forName(component.getBeanClassName());
-                if (cls.isEnum()) {
-                    @SuppressWarnings({"unchecked"})
-                    Class<EnumDictItem<?>> baseEnumClass = (Class<EnumDictItem<?>>) cls;
-                    deserializers.put(cls, new DictionaryItemDeserializer<>(baseEnumClass, conversionService));
-                }
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e.getMessage());
-            }
+        Collection<Class<? extends EnumDictItem<?>>> classes = provider.get();
+        for (Class<? extends EnumDictItem<?>> aClass : classes) {
+            deserializers.put(aClass, new DictionaryItemDeserializer<>(aClass, conversionService));
         }
         builder.deserializersByType(deserializers);
     }

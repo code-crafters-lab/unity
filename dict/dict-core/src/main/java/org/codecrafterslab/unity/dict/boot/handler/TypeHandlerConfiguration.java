@@ -6,6 +6,7 @@ import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.EnumDictItemTypeHandler;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.FuncEnumDictItemTypeHandler;
 import org.codecrafterslab.unity.dict.boot.handler.provider.FuncEnumDictItemProvider;
+import org.codecrafterslab.unity.dict.boot.provider.EnumDictItemProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,11 @@ import java.util.stream.Collectors;
 @Configuration
 @Import({MyBatisPlusTypeHandlerConfiguration.class})
 public class TypeHandlerConfiguration {
+
+    @Bean
+    EnumDictItemProvider.Builder enumProviderBuilder(ObjectProvider<EnumDictItemProvider> providers) {
+        return new EnumDictItemProvider.Builder(providers);
+    }
 
     @Bean
     FuncEnumDictItemProvider.Builder funcEnumProviderBuilder(ObjectProvider<FuncEnumDictItemProvider> providers) {

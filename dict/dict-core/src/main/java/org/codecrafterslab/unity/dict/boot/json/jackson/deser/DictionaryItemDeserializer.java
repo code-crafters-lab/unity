@@ -29,23 +29,27 @@ public class DictionaryItemDeserializer<T extends EnumDictItem<?>> extends JsonD
     public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException,
             JsonProcessingException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        T result = EnumDictItem.find(clazz, node.asText(), val -> {
-            /* 字符串类型 => 实际泛型的类型转换 */
-            TypeDescriptor sourceType = TypeDescriptor.forObject(val);
-            TypeDescriptor targetType = TypeDescriptor.valueOf(EnumDictItem.getValueType(clazz));
-            Object converted = null;
-            try {
-                converted = this.conversionService.convert(val, sourceType, targetType);
-                if (log.isDebugEnabled()) {
-                    log.debug("{} : {} => {} : {}", sourceType, val, targetType, converted);
+        T result = null;
+        try {
+            result = EnumDictItem.find(clazz, node.asText(), val -> {
+                /* 字符串类型 => 实际泛型的类型转换 */
+                TypeDescriptor sourceType = TypeDescriptor.forObject(val);
+                TypeDescriptor targetType = TypeDescriptor.valueOf(EnumDictItem.getValueType(clazz));
+                Object converted = null;
+                try {
+                    converted = this.conversionService.convert(val, sourceType, targetType);
+                    if (log.isDebugEnabled()) {
+                        log.debug("{} : {} => {} : {}", sourceType, val, targetType, converted);
+                    }
+                } catch (Exception e) {
+                    converted = val;
                 }
-            } catch (Exception e) {
-                converted = val;
+                return converted;
+            });
+            if (log.isDebugEnabled()) {
+                log.debug("{} => {}", node, result);
             }
-            return converted;
-        });
-        if (log.isDebugEnabled()) {
-            log.debug("{} => {}", node, result);
+        } catch (Exception ignored) {
         }
         return result;
     }

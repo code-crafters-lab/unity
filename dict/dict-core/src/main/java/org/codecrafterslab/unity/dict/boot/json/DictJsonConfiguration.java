@@ -7,6 +7,7 @@ import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.DictJackson2ObjectMapperBuilder;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.provider.EnumDictItemProvider;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,7 +28,6 @@ import java.util.*;
 @EnableConfigurationProperties({DictSerializeProperties.class, DictProperties.class})
 public class DictJsonConfiguration {
 
-
     /**
      * 数据字典序列化自定义处理
      *
@@ -36,8 +36,9 @@ public class DictJsonConfiguration {
     @Bean
     @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
     DictJackson2ObjectMapperBuilder dictJackson2ObjectMapperBuilder(DictProperties dictProperties,
+                                                                    EnumDictItemProvider.Builder builder,
                                                                     ConversionService conversionService) {
-        return new DictJackson2ObjectMapperBuilder(dictProperties, conversionService);
+        return new DictJackson2ObjectMapperBuilder(dictProperties, builder, conversionService);
     }
 
 
@@ -47,6 +48,11 @@ public class DictJsonConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
+        EnumDictItemProvider.Builder enumDictItemProviderBuilder(ObjectProvider<EnumDictItemProvider> providers) {
+            return new EnumDictItemProvider.Builder(providers);
+        }
+
+        @Bean
         EnumDictItemProvider enumDictItemProvider(DictProperties dictProperties) {
             Set<Class<? extends EnumDictItem<?>>> classes = enumDictItems(dictProperties.getEnumDictItemPackage());
             // 类型枚举字典自动扫描
@@ -74,8 +80,10 @@ public class DictJsonConfiguration {
                     throw new RuntimeException(e.getMessage());
                 }
             }
+            HashSet<Class<? extends EnumDictItem<?>>> result = new HashSet<>(list);
             list.clear();
-            return new HashSet<>(list);
+            list = null;
+            return result;
         }
     }
 }
