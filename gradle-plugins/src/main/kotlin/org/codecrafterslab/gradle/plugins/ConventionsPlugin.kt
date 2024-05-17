@@ -9,6 +9,8 @@ import org.gradle.api.Project
 class ConventionsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project.plugins) {
+            apply(DependencyConventions::class.java)
+
             apply(JavaConventions::class.java)
             apply(KotlinConventions::class.java)
             apply(MavenPublishingConventions::class.java)
