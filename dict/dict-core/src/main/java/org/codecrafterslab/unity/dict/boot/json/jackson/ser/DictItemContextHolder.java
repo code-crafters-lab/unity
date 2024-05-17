@@ -36,9 +36,9 @@ public class DictItemContextHolder extends DictSerializeProperties {
             if (StringUtils.hasText(dict.id())) {
                 this.setId(dict.id());
             }
-            if (StringUtils.hasText(dict.val())) {
-                this.setValue(dict.val());
-            }
+//            if (StringUtils.hasText(dict.val())) {
+//                this.setValue(dict.val());
+//            }
             if (StringUtils.hasText(dict.label())) {
                 this.setLabel(dict.label());
             }

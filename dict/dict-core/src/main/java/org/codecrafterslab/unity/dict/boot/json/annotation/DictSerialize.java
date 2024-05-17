@@ -1,6 +1,7 @@
 package org.codecrafterslab.unity.dict.boot.json.annotation;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -24,6 +25,8 @@ public @interface DictSerialize {
     @AliasFor("value")
     Scope[] scopes() default {};
 
+    SerializeScope[] deserializeScopes() default {};
+
     /**
      * 唯一标识字段名称
      *
@@ -39,21 +42,26 @@ public @interface DictSerialize {
     String code() default "";
 
     /**
-     * 实际值字段名称
-     *
-     * @return String
-     * @since 1.1.0
-     */
-    @Deprecated
-    String val() default "";
-
-    /**
      * 显示值字段名称
      *
      * @return String
      */
     String label() default "";
 
+    /**
+     * 排序字段名称
+     *
+     * @return String
+     */
+    String sort() default "";
+
+    /**
+     * 禁用状态字段名称
+     *
+     * @return String
+     */
+    String disabled() default "";
+    
     /**
      * 描述字段名称
      *
@@ -64,6 +72,7 @@ public @interface DictSerialize {
     /**
      * 序列号字段范围
      */
+    @Deprecated
     enum Scope {
         ALL,
         ID,

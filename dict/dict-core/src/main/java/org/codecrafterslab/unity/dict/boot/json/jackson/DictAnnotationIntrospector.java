@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.cfg.PackageVersion;
 import com.fasterxml.jackson.databind.introspect.Annotated;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.boot.json.annotation.DictDeserialize;
 import org.codecrafterslab.unity.dict.boot.json.annotation.DictSerialize;
@@ -45,7 +44,7 @@ public class DictAnnotationIntrospector extends AnnotationIntrospector {
 
     @Override
     public Object findDeserializer(Annotated annotated) {
-        AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
+//        AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
         // todo 怎么获取到 BeanProperty
         DictDeserialize dictDeserializer = _findAnnotation(annotated, DictDeserialize.class);
         if (dictDeserializer != null) {

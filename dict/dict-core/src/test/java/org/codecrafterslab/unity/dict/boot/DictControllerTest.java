@@ -34,6 +34,9 @@ class DictControllerTest {
     @MockBean
     private UserService userService;
 
+    @MockBean
+    private GoodService goodService;
+
     @Test
     @DisplayName("枚举 code 转换")
     void enumDictItem1() throws Exception {
@@ -42,7 +45,10 @@ class DictControllerTest {
                 User.builder().id("1").name("demo1").sex(sex).valueSex(sex).labelSex(sex).codeSex(sex).allSex(sex).build();
         given(this.userService.getSex(sex)).willReturn(user);
 
-        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getCode())).andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
+        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getCode()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
 
     }
 
@@ -53,7 +59,10 @@ class DictControllerTest {
         User user =
                 User.builder().id("2").name("demo2").sex(sex).valueSex(sex).labelSex(sex).codeSex(sex).allSex(sex).build();
         given(this.userService.getSex(sex)).willReturn(user);
-        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getValue())).andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
+        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getValue()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
 
     }
 
@@ -62,10 +71,14 @@ class DictControllerTest {
     void enumDictItem3() throws Exception {
         Sex sex = Sex.MALE;
         User user =
-                User.builder().id("3").name("demo3").sex(sex).valueSex(sex).labelSex(sex).codeSex(sex).allSex(sex).build();
+                User.builder().id("3").name("demo3").sex(sex).valueSex(sex)
+                        .labelSex(sex).codeSex(sex).allSex(sex).build();
         given(this.userService.getSex(sex)).willReturn(user);
 
-        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getValue().toString())).andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
+        mvc.perform(get("/dict/converter/enum?sex={sex}", Sex.MALE.getValue().toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.['sex']").value(Sex.MALE.name()));
 
     }
 
@@ -74,7 +87,8 @@ class DictControllerTest {
     void enumDictItem4() throws Exception {
         given(this.userService.getSex(null)).willThrow(new BizException(BizStatus.UN_SUPPORTED_VALUE));
 
-        mvc.perform(get("/dict/converter/enum?sex={sex}", 4)).andExpect(status().is(BizStatus.UN_SUPPORTED_VALUE.getHttpStatus()));
+        mvc.perform(get("/dict/converter/enum?sex={sex}", 4))
+                .andExpect(status().is(BizStatus.UN_SUPPORTED_VALUE.getHttpStatus()));
 
     }
 
