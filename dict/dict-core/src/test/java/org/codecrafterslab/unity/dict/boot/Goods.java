@@ -3,14 +3,19 @@ package org.codecrafterslab.unity.dict.boot;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.codecrafterslab.unity.dict.boot.json.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@DictSerialize(SerializeScope.VALUE)
 public class Goods {
+
+    @DictSerialize({SerializeScope.CODE_VALUE_LABEL, SerializeScope.CODE})
+    private List<ProductService> services;
 
     private Integer id;
 
@@ -18,8 +23,8 @@ public class Goods {
 
     private Sex sex;
 
+    @DictSerialize(SerializeScope.LABEL)
     private ProductService service;
 
-    @DictSerialize({DictSerialize.Scope.CODE, DictSerialize.Scope.VALUE, DictSerialize.Scope.LABEL})
-    private List<ProductService> services;
+    private ProductService[] services2;
 }

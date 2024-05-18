@@ -3,19 +3,17 @@ package org.codecrafterslab.unity.dict.boot.handler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
+import org.codecrafterslab.unity.dict.boot.DictProperties;
+import org.codecrafterslab.unity.dict.boot.ValuePersistenceMode;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.EnumDictItemTypeHandler;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.FuncEnumDictItemTypeHandler;
-import org.codecrafterslab.unity.dict.boot.handler.provider.FuncEnumDictItemProvider;
-import org.codecrafterslab.unity.dict.boot.provider.EnumDictItemProvider;
-import org.springframework.beans.factory.ObjectProvider;
+import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -26,40 +24,36 @@ import java.util.stream.Collectors;
 @Import({MyBatisPlusTypeHandlerConfiguration.class})
 public class TypeHandlerConfiguration {
 
+    /**
+     * 扩展修改 mybatis 配置
+     *
+     * @param provider       数据字典提供者
+     * @param dictProperties 字典配置
+     * @return Consumer<TypeHandlerRegistry>
+     */
     @Bean
-    EnumDictItemProvider.Builder enumProviderBuilder(ObjectProvider<EnumDictItemProvider> providers) {
-        return new EnumDictItemProvider.Builder(providers);
-    }
-
-    @Bean
-    FuncEnumDictItemProvider.Builder funcEnumProviderBuilder(ObjectProvider<FuncEnumDictItemProvider> providers) {
-        return new FuncEnumDictItemProvider.Builder(providers);
-    }
-
-    @Bean
-    Consumer<TypeHandlerRegistry> typeHandlerRegistryConsumer(FuncEnumDictItemProvider.Builder builder) {
+    Consumer<TypeHandlerRegistry> typeHandlerRegistryConsumer(EnumDictProvider provider,
+                                                              DictProperties dictProperties) {
         return registry -> {
             /* 枚举字典 TypeHandler */
             registry.register(EnumDictItemTypeHandler.class);
 
             /* 功能点枚举字典 TypeHandler */
-            register(registry, builder);
+            register(registry, provider, dictProperties.getValuePersistenceMode());
         };
     }
 
-    private void register(TypeHandlerRegistry registry, FuncEnumDictItemProvider.Builder builder) {
-        registry.register(List.class, FuncEnumDictItemTypeHandler.class);
-
-        Collection<Class<? extends FuncEnumDictItem>> classes = builder.get();
-        List<FuncEnumDictItemTypeHandler<? extends FuncEnumDictItem>> typeHandlers =
-                classes.stream().map((Function<Class<? extends FuncEnumDictItem>, FuncEnumDictItemTypeHandler<?
-                                extends FuncEnumDictItem>>) FuncEnumDictItemTypeHandler::new)
+    private void register(TypeHandlerRegistry registry, EnumDictProvider provider,
+                          ValuePersistenceMode persistenceMode) {
+        List<Class<? extends FuncEnumDictItem>> classes = provider.getFuncEnumDictItem();
+        List<FuncEnumDictItemTypeHandler> typeHandlers =
+                classes.stream().map(clazz -> new FuncEnumDictItemTypeHandler(clazz, persistenceMode))
                         .collect(Collectors.toList());
-        typeHandlers.forEach(funcEnumDictItemTypeHandler -> {
+        typeHandlers.forEach(
+                funcEnumDictItemTypeHandler -> {
                     registry.register(List.class, JdbcType.VARCHAR, funcEnumDictItemTypeHandler);
                     registry.register(List.class, JdbcType.JAVA_OBJECT, funcEnumDictItemTypeHandler);
                 }
-
         );
     }
 

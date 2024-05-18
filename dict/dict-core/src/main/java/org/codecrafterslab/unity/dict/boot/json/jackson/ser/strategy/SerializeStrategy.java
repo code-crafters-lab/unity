@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 
-public interface SerializeStrategy {
+public interface SerializeStrategy<T extends DictionaryItem<?>> {
 
-    boolean support(DictionaryItem dictionaryItem);
+    boolean support(T dictItem);
 
-    void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider);
+    void serialize(T dictItem, JsonGenerator gen, SerializerProvider serializerProvider);
 }

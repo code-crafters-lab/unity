@@ -1,6 +1,9 @@
-package org.codecrafterslab.unity.dict.boot.json.annotation;
+package org.codecrafterslab.unity.dict.boot.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 字典项局部反序列注解
@@ -9,7 +12,6 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface DictDeserialize {
 
     /**

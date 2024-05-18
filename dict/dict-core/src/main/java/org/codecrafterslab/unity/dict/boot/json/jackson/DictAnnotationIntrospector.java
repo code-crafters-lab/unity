@@ -2,13 +2,17 @@ package org.codecrafterslab.unity.dict.boot.json.jackson;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.cfg.PackageVersion;
 import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.codecrafterslab.unity.dict.boot.json.annotation.DictDeserialize;
-import org.codecrafterslab.unity.dict.boot.json.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.api.EnumDictItem;
 
 import java.lang.annotation.Annotation;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class DictAnnotationIntrospector extends AnnotationIntrospector {
@@ -31,28 +35,63 @@ public class DictAnnotationIntrospector extends AnnotationIntrospector {
 
     @Override
     public Object findSerializer(Annotated annotated) {
-        DictSerialize dictSerialize = _findAnnotation(annotated, DictSerialize.class);
-        if (dictSerialize != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("find serializer for {}", annotated);
-            }
-            // todo 优化返回序列
-            // return new DictionaryItemSerializer(null, null);
-        }
+//        log.warn("{}", annotated);
+//        Class<?> rawClass = annotated.getType().getRawClass();
+//        if (EnumDictItem.class.isAssignableFrom(rawClass)) {
+//            Class<?> rawType = annotated.getRawType();
+//            log.warn("{} => {}", rawClass, rawType);
+//            DictSerialize dictSerialize = _findAnnotation(annotated, DictSerialize.class);
+//            if (dictSerialize != null) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("find serializer for {}", annotated);
+//                }
+//                // todo 优化返回序列
+//                // return new DictionaryItemSerializer(null, null);
+//            }
+//        }
         return super.findSerializer(annotated);
     }
 
     @Override
     public Object findDeserializer(Annotated annotated) {
-//        AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
-        // todo 怎么获取到 BeanProperty
-        DictDeserialize dictDeserializer = _findAnnotation(annotated, DictDeserialize.class);
-        if (dictDeserializer != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("find deserializer for {}", annotated);
+        if (annotated instanceof AnnotatedClass && EnumDictItem.class.isAssignableFrom(((AnnotatedClass) annotated).getAnnotated())) {
+            AnnotatedClass annotatedClass = (AnnotatedClass) annotated;
+            return findDeserializer(annotatedClass);
+        }
+
+        if (annotated instanceof AnnotatedMethod) {
+            String name = annotated.getName();
+            Pattern compile = Pattern.compile("service", Pattern.CASE_INSENSITIVE);
+            if (compile.matcher(name).find()) {
+                AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
+                // 类
+                Class<?> declaringClass = annotatedMethod.getDeclaringClass();
+                JavaType parameterType = annotatedMethod.getParameterType(0);
+
+                JavaType contentType = parameterType.getContentType();
+                /* contentType 说明是容器类型，具体可能是 ArrayType,CollectionLikeType,MapLikeType,ReferenceType */
+                if (contentType != null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("容器类型 => {} ,实际类型 => {} ", parameterType.getRawClass(), contentType.getRawClass());
+                    }
+                }
+
             }
-//            return new DictionaryItemDeserializer();
+        }
+
+        if (annotated instanceof AnnotatedField) {
+            log.error("{} => {}", annotated.getName(), ((AnnotatedField) annotated).getMember());
         }
         return super.findDeserializer(annotated);
+    }
+
+    private Object findDeserializer(AnnotatedClass annotatedClass) {
+        Class<?> aClass = annotatedClass.getAnnotated();
+//        log.warn("找到了枚举实现类 => {}", aClass);
+        //                String name = annotated.getName();
+//                Class<?> aClass1 = annotated.getRawType();
+//                JavaType type = annotated.getType();
+//                log.error("{} => {} => {}", name, aClass1, type);
+        return null;
     }
 }

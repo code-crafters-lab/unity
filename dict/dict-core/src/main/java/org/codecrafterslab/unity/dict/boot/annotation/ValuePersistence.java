@@ -1,4 +1,4 @@
-package org.codecrafterslab.unity.dict.boot.json;
+package org.codecrafterslab.unity.dict.boot.annotation;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import org.springframework.core.annotation.AliasFor;

@@ -1,6 +1,7 @@
 package org.codecrafterslab.unity.dict.boot;
 
 import lombok.Data;
+import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -10,13 +11,19 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 public class DictProperties {
 
     /**
-     * 枚举包所在包路径
+     * 字典值{@link DictionaryItem#getValue()} 持久化到数据库的方式
+     */
+    private ValuePersistenceMode valuePersistenceMode = ValuePersistenceMode.COMMA_SPLIT;
+
+    /**
+     * 枚举字典自动扫描路径
      */
     private String enumDictItemPackage = "org.codecrafterslab.unity.dict.boot";
 
     /**
-     *
+     * 序列化配置
      */
     @NestedConfigurationProperty
     private DictSerializeProperties serialize = new DictSerializeProperties();
+    
 }

@@ -3,7 +3,6 @@ package org.codecrafterslab.unity.dict.boot.json.jackson.ser;
 import lombok.Data;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.persist.DataDictItem;
-import org.codecrafterslab.unity.dict.boot.json.annotation.DictSerialize;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Collections;
@@ -21,40 +20,63 @@ public class DictSerializeProperties {
     /**
      * 全局默认序列化类型
      */
-    List<DictSerialize.Scope> scopes = Collections.singletonList(DictSerialize.Scope.CODE);
+    List<SerializeScope> scopes = Collections.singletonList(SerializeScope.CODE);
 
     /**
-     * {@link DataDictItem#getId()} 字典标识序列化名称
+     * 序列化为对象的 key 值
      */
-    String id = "id";
+    SerializeKeys keys = new SerializeKeys();
 
-    /**
-     * {@link DictionaryItem#getCode()} 字典编码实际值序列化名称
-     */
-    String code = "code";
+    @Data
+    public static class SerializeKeys implements SerializeKey {
+        /**
+         * {@link DataDictItem#getId()} 字典标识序列化名称
+         */
+        String idKey;
 
-    /**
-     * {@link DictionaryItem#getValue()} 字典项实际值序列化名称
-     */
-    String value = "value";
+        /**
+         * {@link DictionaryItem#getCode()} 字典编码实际值序列化名称
+         */
+        String codeKey;
 
-    /**
-     * {@link DictionaryItem#getLabel()} 字典项显示值序列化名称
-     */
-    String label = "label";
+        /**
+         * {@link DictionaryItem#getValue()} 字典项实际值序列化名称
+         */
+        String valueKey;
 
-    /**
-     * {@link DictionaryItem#getSort()} 字典项描述序列化名称
-     */
-    String sort = "sort";
+        /**
+         * {@link DictionaryItem#getLabel()} 字典项显示值序列化名称
+         */
+        String labelKey;
 
-    /**
-     * {@link DictionaryItem#isDisabled()} 字典项描述序列化名称
-     */
-    String disabled = "disabled";
+        /**
+         * {@link DictionaryItem#getSort()} 字典项描述序列化名称
+         */
+        String sortKey;
 
-    /**
-     * {@link DictionaryItem#getDescription()}} 字典项描述序列化名称
-     */
-    String description = "description";
+        /**
+         * {@link DictionaryItem#isDisabled()} 字典项描述序列化名称
+         */
+        String disabledKey;
+
+        /**
+         * {@link DictionaryItem#getDescription()}} 字典项描述序列化名称
+         */
+        String descriptionKey;
+
+        public SerializeKeys() {
+            this("id", "code", "value", "label", "sort", "disabled", "description");
+        }
+
+        public SerializeKeys(String idKey, String codeKey, String valueKey, String labelKey, String sortKey,
+                             String disabledKey, String descriptionKey) {
+            this.idKey = idKey;
+            this.codeKey = codeKey;
+            this.valueKey = valueKey;
+            this.labelKey = labelKey;
+            this.sortKey = sortKey;
+            this.disabledKey = disabledKey;
+            this.descriptionKey = descriptionKey;
+        }
+    }
 }

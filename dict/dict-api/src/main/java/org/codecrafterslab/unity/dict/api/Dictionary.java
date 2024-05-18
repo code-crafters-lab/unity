@@ -28,6 +28,7 @@ public interface Dictionary<V> extends ICodeName {
      */
     <Item extends DictionaryItem<V>> Collection<Item> getItems();
 
+    
     interface Query extends ICodeName {
         /**
          * 字典编码

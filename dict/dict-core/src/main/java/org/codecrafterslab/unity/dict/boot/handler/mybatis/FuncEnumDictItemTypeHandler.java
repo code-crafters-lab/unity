@@ -4,7 +4,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
 import org.codecrafterslab.unity.dict.api.func.Functions;
-import org.codecrafterslab.unity.dict.boot.json.ValuePersistence;
+import org.codecrafterslab.unity.dict.boot.ValuePersistenceMode;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,14 +20,18 @@ import java.util.stream.Collectors;
  */
 public class FuncEnumDictItemTypeHandler<T extends FuncEnumDictItem> extends ListTypeHandler<T> {
     private final Class<T> type;
-    private final ValuePersistence.Mode mode = ValuePersistence.Mode.COMMA_SPLIT;
+    private final ValuePersistenceMode mode;
 
     public FuncEnumDictItemTypeHandler(Class<T> type) {
+        this(type, ValuePersistenceMode.BIG_INTEGER_ACCUMULATION);
+    }
+
+    public FuncEnumDictItemTypeHandler(Class<T> type, ValuePersistenceMode mode) {
         if (type == null) {
             throw new IllegalArgumentException("Type argument cannot be null");
-        } else {
-            this.type = type;
         }
+        this.type = type;
+        this.mode = mode;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class FuncEnumDictItemTypeHandler<T extends FuncEnumDictItem> extends Lis
         switch (mode) {
             case COMMA_SPLIT:
                 return parameter.stream().map(val -> val.getValue().toString()).collect(Collectors.joining(","));
-            case ACCUMULATION:
+            case BIG_INTEGER_ACCUMULATION:
             case AUTO:
             default:
                 Functions functions = Functions.builder().functions(parameter).build();
@@ -53,7 +57,7 @@ public class FuncEnumDictItemTypeHandler<T extends FuncEnumDictItem> extends Lis
                             .map(val -> EnumDictItem.findByValue(type, val))
                             .collect(Collectors.toList());
                     break;
-                case ACCUMULATION:
+                case BIG_INTEGER_ACCUMULATION:
                 case AUTO:
                 default:
                     result = FuncEnumDictItem.find(type, value, val -> Functions.builder().of((String) val).build());

@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
-import org.codecrafterslab.unity.dict.api.persist.DataDictItem;
-import org.codecrafterslab.unity.dict.boot.json.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -22,15 +21,13 @@ import java.io.IOException;
 @Slf4j
 public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> implements ContextualSerializer {
 
-    private final DictItemContextHolder context;
-    private final DictSerializeProperties serializeProperties;
+    private final SerializeHolder context;
 
     public DictionaryItemSerializer(DictSerializeProperties serializeProperties) {
-        this(serializeProperties, new DictItemContextHolder(serializeProperties));
+        this.context = new SerializeHolder(serializeProperties);
     }
 
-    public DictionaryItemSerializer(DictSerializeProperties serializeProperties, DictItemContextHolder context) {
-        this.serializeProperties = serializeProperties;
+    public DictionaryItemSerializer(SerializeHolder context) {
         this.context = context;
     }
 
@@ -57,89 +54,21 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
                     annotation2 = AnnotationUtils.synthesizeAnnotation(annotation2, DictSerialize.class);
                 }
             }
-            if (annotation1 != null || annotation2 != null) {
-                DictItemContextHolder contextHolder = new DictItemContextHolder(serializeProperties, annotation1,
-                        annotation2);
-                return new DictionaryItemSerializer(serializeProperties, contextHolder);
+            SerializeHolder combine = context.combine(annotation1, annotation2);
+            if (combine != context) {
+                return new DictionaryItemSerializer(combine);
             }
-
         }
         return this;
     }
 
     @Override
     public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
-        if (context.isWriteMultipleFields()) {
-            serializeMultiple(dictItem, gen, context);
-        } else {
-            serializeSingle(dictItem, gen, context);
+        Object value = context.getObject(dictItem);
+        if (log.isDebugEnabled()) {
+            log.debug("{}", value);
         }
-    }
-
-
-    /**
-     * 序列化单个字段
-     *
-     * @param dictItem 数据字典
-     * @param gen      JsonGenerator
-     * @param context  自定义序列化上下文
-     * @throws IOException IO异常
-     */
-    private void serializeSingle(DictionaryItem<?> dictItem, JsonGenerator gen, DictItemContextHolder context) throws IOException {
-        if (context.isWriteMultipleFields()) return;
-        if (context.canWriteId()) {
-            if (DataDictItem.class.isAssignableFrom(dictItem.getClass())) {
-                gen.writeObject(((DataDictItem<?, ?>) dictItem).getId());
-            } else {
-                gen.writeObject(null);
-            }
-            return;
-        }
-        if (context.canWriteLabel()) {
-            gen.writeString(dictItem.getLabel());
-            return;
-        }
-        if (context.canWriteValue()) {
-            gen.writeObject(dictItem.getValue());
-            return;
-        }
-        if (context.canWriteCode()) {
-            gen.writeString(dictItem.getCode().toUpperCase());
-            return;
-        }
-        if (context.canWriteDescription()) {
-            gen.writeString(dictItem.getDescription());
-        }
-
-    }
-
-    /**
-     * 序列化多个字段
-     *
-     * @param dictItem 数据字典
-     * @param gen      JsonGenerator
-     * @param context  自定义序列化上下文
-     * @throws IOException IO异常
-     */
-    private void serializeMultiple(DictionaryItem<?> dictItem, JsonGenerator gen, DictItemContextHolder context) throws IOException {
-        if (!context.isWriteMultipleFields()) return;
-        gen.writeStartObject();
-        if (DataDictItem.class.isAssignableFrom(dictItem.getClass()) && context.canWriteId()) {
-            gen.writeObjectField(context.getId(), ((DataDictItem<?, ?>) dictItem).getId());
-        }
-        if (context.canWriteCode()) {
-            gen.writeObjectField(context.getCode(), dictItem.getCode().toUpperCase());
-        }
-        if (context.canWriteValue()) {
-            gen.writeObjectField(context.getValue(), dictItem.getValue());
-        }
-        if (context.canWriteLabel()) {
-            gen.writeObjectField(context.getLabel(), dictItem.getLabel());
-        }
-        if (context.canWriteDescription()) {
-            gen.writeObjectField(context.getDescription(), dictItem.getDescription());
-        }
-        gen.writeEndObject();
+        gen.writeObject(value);
     }
 
 }

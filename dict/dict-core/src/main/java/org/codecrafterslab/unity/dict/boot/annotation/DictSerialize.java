@@ -1,10 +1,11 @@
-package org.codecrafterslab.unity.dict.boot.json.annotation;
+package org.codecrafterslab.unity.dict.boot.annotation;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
-import org.springframework.core.annotation.AliasFor;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 字典项局部序列化注解
@@ -13,19 +14,16 @@ import java.lang.annotation.*;
  * @email coffee377@dingtalk.com
  * @time 2022/08/09 13:54
  */
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.PACKAGE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@JacksonAnnotationsInside
-@Documented
 public @interface DictSerialize {
 
-    @AliasFor("scopes")
-    Scope[] value() default {};
+    SerializeScope[] value() default {};
 
-    @AliasFor("value")
-    Scope[] scopes() default {};
-
-    SerializeScope[] deserializeScopes() default {};
+    /**
+     * @return String
+     */
+    String scopes() default "";
 
     /**
      * 唯一标识字段名称
@@ -61,27 +59,12 @@ public @interface DictSerialize {
      * @return String
      */
     String disabled() default "";
-    
+
     /**
      * 描述字段名称
      *
      * @return String
      */
     String description() default "";
-
-    /**
-     * 序列号字段范围
-     */
-    @Deprecated
-    enum Scope {
-        ALL,
-        ID,
-        CODE,
-        VALUE,
-        LABEL,
-        SORT,
-        DISABLED,
-        DESCRIPTION
-    }
 
 }

@@ -1,0 +1,10 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      port: 35730
+logging:
+  level:
+    root: warn
+    org.codecrafterslab.unity.dict: debug

@@ -7,9 +7,8 @@ import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.deser.DictionaryItemDeserializer;
-import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
-import org.codecrafterslab.unity.dict.boot.provider.EnumDictItemProvider;
+import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionService;
@@ -24,32 +23,33 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class DictJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
-    private final DictSerializeProperties serializeProperties;
-
+    private final DictProperties dictProperties;
+    private final EnumDictProvider enumDictProvider;
     private final ConversionService conversionService;
-    private final EnumDictItemProvider.Builder provider;
 
     public DictJackson2ObjectMapperBuilder(DictProperties dictProperties,
-                                           EnumDictItemProvider.Builder provider,
+                                           EnumDictProvider enumDictProvider,
                                            ConversionService conversionService) {
-        this.provider = provider;
-        this.serializeProperties = dictProperties.getSerialize();
+        this.dictProperties = dictProperties;
+        this.enumDictProvider = enumDictProvider;
         this.conversionService = conversionService;
     }
 
     @Override
     public void customize(Jackson2ObjectMapperBuilder builder) {
         builder.annotationIntrospector(new JacksonAnnotationIntrospector());
-        builder.annotationIntrospector(annotationIntrospector -> AnnotationIntrospectorPair.pair
-                (annotationIntrospector, new DictAnnotationIntrospector()));
+        builder.annotationIntrospector(primary -> AnnotationIntrospectorPair.pair(primary,
+                new DictAnnotationIntrospector()));
         // 序列化注册
-        builder.serializerByType(DictionaryItem.class, new DictionaryItemSerializer(serializeProperties));
+        builder.serializerByType(DictionaryItem.class, new DictionaryItemSerializer(dictProperties.getSerialize()));
 
         // 反序列化注册
         Map<Class<?>, JsonDeserializer<?>> deserializers = new LinkedHashMap<>();
-        Collection<Class<? extends EnumDictItem<?>>> classes = provider.get();
+        Collection<Class<? extends EnumDictItem<?>>> classes = enumDictProvider.getEnumDictItem();
         for (Class<? extends EnumDictItem<?>> aClass : classes) {
-            deserializers.put(aClass, new DictionaryItemDeserializer<>(aClass, conversionService));
+            if (aClass.isEnum()) {
+                deserializers.put(aClass, new DictionaryItemDeserializer<>(aClass, conversionService));
+            }
         }
         builder.deserializersByType(deserializers);
     }

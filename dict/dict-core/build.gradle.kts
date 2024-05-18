@@ -7,7 +7,8 @@ dependencies {
 
     api(project(":dict-api"))
 
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    optional("org.springframework.boot:spring-boot-starter-web")
+    optional("org.springframework.boot:spring-boot-devtools")
     optional("org.mybatis.spring.boot:mybatis-spring-boot-starter")
     optional("com.baomidou:mybatis-plus-boot-starter")
 
@@ -23,31 +24,4 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
-configurations.all {
-    resolutionStrategy {
-        eachDependency {
-            if (requested.group == "org.springframework.boot") {
-                useVersion("2.5.15")
-            }
-        }
-    }
-}
-
-configurations.annotationProcessor {
-    withDependencies {
-        dependencies.forEach {
-            if (it.version == null && it is ExternalDependency) {
-                if ("${it.group}:${it.name}" == "org.projectlombok:lombok") {
-                    it.version { require("1.18.26") }
-                }
-                if ("${it.group}:${it.name}" == "org.springframework.boot:spring-boot-configuration-processor") {
-                    it.version { require("2.5.15") }
-                }
-                println("=> ${it.group}:${it.name}:${it.version}")
-            }
-        }
-    }
-}
-
 

@@ -11,6 +11,14 @@ import org.codecrafterslab.unity.dict.api.base.ISort;
  */
 public interface DictionaryItem<V> extends ICode, ISort {
     /**
+     * 字典项编码
+     *
+     * @return String
+     * @since 0.1.4
+     */
+    String getCode();
+    
+    /**
      * 字典项实际值
      *
      * @return Value
@@ -39,23 +47,13 @@ public interface DictionaryItem<V> extends ICode, ISort {
     String getDescription();
 
     /**
-     * 字典项编码
-     *
-     * @return String
-     * @since 0.1.4
-     */
-    default String getCode() {
-        return null;
-    }
-
-    /**
      * 字典项项是否禁用
      *
      * @return Boolean
      * @since 0.1.4
      */
     default Boolean isDisabled() {
-        return null;
+        return false;
     }
 
 }

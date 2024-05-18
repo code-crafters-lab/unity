@@ -15,13 +15,53 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * 枚举数据字典
+ * 枚举数据字典项
  *
  * @author Wu Yujie
  */
 public interface EnumDictItem<V> extends DictionaryItem<V> {
 
     Logger log = LoggerFactory.getLogger(EnumDictItem.class);
+
+    /**
+     * 枚举选项的编码,默认值为枚举名称
+     *
+     * @return 描述
+     */
+    @Override
+    default String getCode() {
+        return name();
+    }
+
+    /**
+     * {@link Enum#ordinal()}
+     *
+     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
+     */
+    int ordinal();
+
+    /**
+     * the name of this enum constant
+     * {@link Enum#name()}
+     *
+     * @return 枚举名称
+     */
+    String name();
+
+    @Override
+    default Integer getSort() {
+        return ordinal();
+    }
+
+    /**
+     * 枚举选项的描述,对一个选项进行详细的描述有时候是必要的.默认值为 {@code null}
+     *
+     * @return 描述
+     */
+    @Override
+    default String getDescription() {
+        return null;
+    }
 
     static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<Class<T>> typePredicate,
                                                                Predicate<T> predicate) {
@@ -171,45 +211,4 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
         if (Objects.isNull(result)) throw unsupported(type, parameter);
         return result;
     }
-
-    /**
-     * {@link Enum#ordinal()}
-     *
-     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
-     */
-    int ordinal();
-
-    /**
-     * the name of this enum constant
-     * {@link Enum#name()}
-     *
-     * @return 枚举名称
-     */
-    String name();
-
-    @Override
-    default Integer getSort() {
-        return ordinal();
-    }
-
-    /**
-     * 枚举选项的描述,对一个选项进行详细的描述有时候是必要的.默认值为 {@code null}
-     *
-     * @return 描述
-     */
-    @Override
-    default String getDescription() {
-        return null;
-    }
-
-    /**
-     * 枚举选项的编码,默认值为枚举名称的小写形式
-     *
-     * @return 描述
-     */
-    @Override
-    default String getCode() {
-        return name().toLowerCase();
-    }
-
 }
