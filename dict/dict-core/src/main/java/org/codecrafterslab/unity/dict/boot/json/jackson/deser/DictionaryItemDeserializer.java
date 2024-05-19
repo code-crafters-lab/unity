@@ -22,7 +22,7 @@ public class DictionaryItemDeserializer<T extends EnumDictItem<?>> extends JsonD
 
     public JsonDeserializer<?> createContextual(DeserializationContext deserializationContext,
                                                 BeanProperty beanProperty) throws JsonMappingException {
-        return null;
+        return this;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class DictionaryItemDeserializer<T extends EnumDictItem<?>> extends JsonD
                 return converted;
             });
             if (log.isDebugEnabled()) {
-                log.debug("{} => {}", node, result);
+                log.debug("[IN]\t{} => {}", node, result);
             }
         } catch (Exception ignored) {
         }

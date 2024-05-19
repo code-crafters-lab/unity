@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
@@ -33,29 +32,17 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
 
     public JsonSerializer<?> createContextual(SerializerProvider provider, BeanProperty beanProperty) throws JsonMappingException {
         if (!ObjectUtils.isEmpty(beanProperty)) {
-            Class<?> rawClass = beanProperty.getType().getRawClass();
             DictSerialize annotation1 = null, annotation2 = null;
-            if (DictionaryItem.class.isAssignableFrom(rawClass)) {
-                /* 获取实现类上的注解 */
-                if (rawClass.isAnnotationPresent(DictSerialize.class)) {
-                    annotation1 = AnnotationUtils.getAnnotation(rawClass, DictSerialize.class);
-                }
-            } else {
-                rawClass = beanProperty.getType().getContentType().getRawClass();
-            }
-            /* 获取属性上的注解 */
+
+            /* 类上注解 */
+            annotation1 = beanProperty.getContextAnnotation(DictSerialize.class);
+
+            /* 获取属性上注解 */
             if (beanProperty.getMember().hasAnnotation(DictSerialize.class)) {
                 annotation2 = beanProperty.getAnnotation(DictSerialize.class);
-                if (annotation2 == null) {
-                    annotation2 = beanProperty.getContextAnnotation(DictSerialize.class);
-                }
-
-                if (annotation2 != null) {
-                    annotation2 = AnnotationUtils.synthesizeAnnotation(annotation2, DictSerialize.class);
-                }
             }
-            SerializeHolder other = SerializeHolder.of(annotation1, annotation2);
-            SerializeHolder combinedHolder = context.combine(other);
+
+            SerializeHolder combinedHolder = context.combine(SerializeHolder.of(annotation1, annotation2));
             if (combinedHolder != context) {
                 return new DictionaryItemSerializer(combinedHolder);
             }
@@ -67,7 +54,7 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
     public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
         Object value = context.getObject(dictItem);
         if (log.isDebugEnabled()) {
-            log.debug("{} => {}", dictItem, value);
+            log.debug("[OUT]\t{} => {}", dictItem, value);
         }
         gen.writeObject(value);
     }

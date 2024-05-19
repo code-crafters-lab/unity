@@ -6,6 +6,9 @@ import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializePropert
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @ConfigurationProperties(prefix = "dict")
 public class DictProperties {
@@ -31,4 +34,11 @@ public class DictProperties {
     @NestedConfigurationProperty
     private DictSerializeProperties serialize = new DictSerializeProperties();
 
+    /**
+     * 新功能特性配置
+     */
+    private Map<Features, Boolean> features = new HashMap<Features, Boolean>() {{
+        put(Features.ANNOTATION_INTROSPECTOR, false);
+    }};
+    
 }

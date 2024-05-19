@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.boot.DictProperties;
+import org.codecrafterslab.unity.dict.boot.Features;
 import org.codecrafterslab.unity.dict.boot.json.jackson.deser.DictionaryItemDeserializer;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
 import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
@@ -37,9 +38,13 @@ public class DictJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBuil
 
     @Override
     public void customize(Jackson2ObjectMapperBuilder builder) {
-        builder.annotationIntrospector(new JacksonAnnotationIntrospector());
-        builder.annotationIntrospector(primary -> AnnotationIntrospectorPair.pair(primary,
-                new DictAnnotationIntrospector()));
+        Boolean annoIntrospector = dictProperties.getFeatures().getOrDefault(Features.ANNOTATION_INTROSPECTOR, false);
+        if (annoIntrospector) {
+            builder.annotationIntrospector(new JacksonAnnotationIntrospector());
+            builder.annotationIntrospector(primary -> AnnotationIntrospectorPair.pair(primary,
+                    new DictAnnotationIntrospector()));
+        }
+
         // 序列化注册
         builder.serializerByType(DictionaryItem.class, new DictionaryItemSerializer(dictProperties.getSerialize()));
 

@@ -3,6 +3,7 @@ package org.codecrafterslab.unity.dict.boot.json.jackson.ser;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -49,6 +50,7 @@ public class SerializeHolder implements SerializeCondition<SerializeHolder> {
     public static SerializeHolder of(DictSerialize... conditions) {
         return Arrays.stream(conditions)
                 .filter(Objects::nonNull)
+                .map(anno -> AnnotationUtils.synthesizeAnnotation(anno, DictSerialize.class))
                 .map(anno -> {
                     SerializeScope[] scopes = anno.scopes();
                     SerializeKey keys = new DictSerializeProperties.SerializeKeys(anno);

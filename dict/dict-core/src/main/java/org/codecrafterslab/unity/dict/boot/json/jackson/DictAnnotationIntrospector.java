@@ -9,7 +9,11 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
+import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeHolder;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.regex.Pattern;
@@ -24,31 +28,39 @@ public class DictAnnotationIntrospector extends AnnotationIntrospector {
 
     @Override
     protected <A extends Annotation> A _findAnnotation(Annotated ann, Class<A> annoClass) {
-//        log.warn("{} {}", annoClass, ann.getAnnotated().isAnnotationPresent(annoClass));
-//        if (ann.getAnnotated() != null && ann.getAnnotated().isAnnotationPresent(annoClass)) {
-//            final A a = AnnotatedElementUtils.findMergedAnnotation(ann.getAnnotated(), annoClass);
-//            return a;
-//        }
-        return super._findAnnotation(ann, annoClass);
+        A result = super._findAnnotation(ann, annoClass);
+        if (ann.hasAnnotation(annoClass) && DictSerialize.class.isAssignableFrom(annoClass)) {
+            result = AnnotationUtils.synthesizeAnnotation(result, annoClass);
+        }
+        return result;
     }
 
 
     @Override
     public Object findSerializer(Annotated annotated) {
-//        log.warn("{}", annotated);
-//        Class<?> rawClass = annotated.getType().getRawClass();
-//        if (EnumDictItem.class.isAssignableFrom(rawClass)) {
-//            Class<?> rawType = annotated.getRawType();
-//            log.warn("{} => {}", rawClass, rawType);
-//            DictSerialize dictSerialize = _findAnnotation(annotated, DictSerialize.class);
-//            if (dictSerialize != null) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("find serializer for {}", annotated);
-//                }
-//                // todo 优化返回序列
-//                // return new DictionaryItemSerializer(null, null);
-//            }
-//        }
+        if (annotated instanceof AnnotatedClass) {
+            Class<?> aClass = ((AnnotatedClass) annotated).getAnnotated();
+            if (DictionaryItem.class.isAssignableFrom(aClass)) {
+                DictSerialize annotation = annotated.getAnnotation(DictSerialize.class);
+                log.debug("{}", annotated);
+            }
+        }
+        if (annotated instanceof AnnotatedMethod) {
+            String name = annotated.getName();
+            Pattern compile = Pattern.compile("service", Pattern.CASE_INSENSITIVE);
+            JavaType type1 = annotated.getType();
+            if (compile.matcher(name).find()) {
+                AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
+                // 类上注解
+                DictSerialize d1 = AnnotationUtils.findAnnotation(annotatedMethod.getDeclaringClass(),
+                        DictSerialize.class);
+                DictSerialize d2 = _findAnnotation(annotated, DictSerialize.class);
+
+                SerializeHolder serializeHolder = SerializeHolder.of(d1, d2);
+                log.debug("{}", serializeHolder);
+            }
+
+        }
         return super.findSerializer(annotated);
     }
 
@@ -87,11 +99,7 @@ public class DictAnnotationIntrospector extends AnnotationIntrospector {
 
     private Object findDeserializer(AnnotatedClass annotatedClass) {
         Class<?> aClass = annotatedClass.getAnnotated();
-//        log.warn("找到了枚举实现类 => {}", aClass);
-        //                String name = annotated.getName();
-//                Class<?> aClass1 = annotated.getRawType();
-//                JavaType type = annotated.getType();
-//                log.error("{} => {} => {}", name, aClass1, type);
+        log.debug("找到了枚举实现类 => {}", aClass);
         return null;
     }
 }
