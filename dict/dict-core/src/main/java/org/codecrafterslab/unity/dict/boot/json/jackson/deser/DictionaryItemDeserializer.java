@@ -35,7 +35,7 @@ public class DictionaryItemDeserializer<T extends EnumDictItem<?>> extends JsonD
                 /* 字符串类型 => 实际泛型的类型转换 */
                 TypeDescriptor sourceType = TypeDescriptor.forObject(val);
                 TypeDescriptor targetType = TypeDescriptor.valueOf(EnumDictItem.getValueType(clazz));
-                Object converted = null;
+                Object converted;
                 try {
                     converted = this.conversionService.convert(val, sourceType, targetType);
                     if (log.isDebugEnabled()) {

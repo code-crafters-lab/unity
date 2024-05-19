@@ -6,7 +6,6 @@ import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
 import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -48,17 +47,13 @@ public class SerializeHolder implements SerializeCondition<SerializeHolder> {
     }
 
     public static SerializeHolder of(DictSerialize... conditions) {
-        List<SerializeHolder> collect = Arrays.stream(conditions)
+        return Arrays.stream(conditions)
                 .filter(Objects::nonNull)
                 .map(anno -> {
                     SerializeScope[] scopes = anno.scopes();
                     SerializeKey keys = new DictSerializeProperties.SerializeKeys(anno);
                     return new SerializeHolder(scopes, keys);
-                }).collect(Collectors.toList());
-
-        SerializeHolder reduce = collect.stream().reduce(new SerializeHolder(), SerializeHolder::combine);
-
-        return reduce;
+                }).reduce(new SerializeHolder(), SerializeHolder::combine);
     }
 
     public static SerializeHolder of(List<DictSerialize> dictSerializes) {

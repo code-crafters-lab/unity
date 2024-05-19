@@ -67,7 +67,7 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
     public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
         Object value = context.getObject(dictItem);
         if (log.isDebugEnabled()) {
-            log.debug("{}", value);
+            log.debug("{} => {}", dictItem, value);
         }
         gen.writeObject(value);
     }
