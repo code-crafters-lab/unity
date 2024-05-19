@@ -18,12 +18,17 @@ public class DictProperties {
     /**
      * 枚举字典自动扫描路径
      */
-    private String enumDictItemPackage = "org.codecrafterslab.unity.dict.boot";
+    private String enumDictItemPackage;
+
+    /**
+     * enumDictItemPackage 为空时是否自动扫描应用根目录下
+     */
+    private boolean globalScan = true;
 
     /**
      * 序列化配置
      */
     @NestedConfigurationProperty
     private DictSerializeProperties serialize = new DictSerializeProperties();
-    
+
 }

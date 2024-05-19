@@ -54,9 +54,10 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
                     annotation2 = AnnotationUtils.synthesizeAnnotation(annotation2, DictSerialize.class);
                 }
             }
-            SerializeHolder combine = context.combine(annotation1, annotation2);
-            if (combine != context) {
-                return new DictionaryItemSerializer(combine);
+            SerializeHolder other = SerializeHolder.of(annotation1, annotation2);
+            SerializeHolder combinedHolder = context.combine(other);
+            if (combinedHolder != context) {
+                return new DictionaryItemSerializer(combinedHolder);
             }
         }
         return this;

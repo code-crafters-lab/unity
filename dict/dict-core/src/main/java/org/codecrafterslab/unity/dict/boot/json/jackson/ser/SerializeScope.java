@@ -63,7 +63,8 @@ public enum SerializeScope implements FuncEnumDictItem {
      * @return List<SerializeScope>
      */
     static List<SerializeScope> findInnerSerializeScope(Collection<SerializeScope> all) {
-        return all.stream().flatMap((Function<SerializeScope, Stream<SerializeScope>>)
+        return all
+                .stream().flatMap((Function<SerializeScope, Stream<SerializeScope>>)
                 scope -> {
                     Functions functions;
                     if (!scope.isInner()) {

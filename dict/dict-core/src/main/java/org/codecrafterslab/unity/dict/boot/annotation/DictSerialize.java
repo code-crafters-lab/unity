@@ -1,6 +1,7 @@
 package org.codecrafterslab.unity.dict.boot.annotation;
 
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,12 +19,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DictSerialize {
 
+    @AliasFor("scopes")
     SerializeScope[] value() default {};
 
     /**
-     * @return String
+     * 序列号字段范围
+     *
+     * @return SerializeScope[]
      */
-    String scopes() default "";
+    @AliasFor("value")
+    SerializeScope[] scopes() default {};
 
     /**
      * 唯一标识字段名称

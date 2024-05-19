@@ -1,6 +1,6 @@
 package org.codecrafterslab.unity.dict.boot.json.jackson.ser;
 
-public interface SerializeKey {
+public interface SerializeKey extends SerializeCondition<SerializeKey> {
     String getIdKey();
 
     String getCodeKey();

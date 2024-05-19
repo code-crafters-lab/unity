@@ -7,73 +7,86 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
-public class SerializeHolder implements SerializeCondition {
+public class SerializeHolder implements SerializeCondition<SerializeHolder> {
+    /**
+     * 序列化字段
+     */
+    private List<SerializeScope> scopes;
     /**
      * 序列号键名配置
      */
-    private final SerializeKey keys;
-    /**
-     * 序列号字段
-     */
-    private final List<SerializeScope> scopes;
-    private SerializeCondition condition;
+    private SerializeKey keys;
 
-    public SerializeHolder(DictSerializeProperties properties, DictSerialize... dictSerialize) {
-        this.keys = properties.keys;
-        this.scopes = SerializeScope.findInnerSerializeScope(properties.getScopes());
-        this.wrap(dictSerialize);
+    private SerializeHolder() {
+    }
+
+    private SerializeHolder(List<SerializeScope> scopes, SerializeKey keys) {
+        this.scopes = SerializeScope.findInnerSerializeScope(scopes);
+        this.keys = keys;
+    }
+
+    private SerializeHolder(SerializeScope[] scopes, SerializeKey keys) {
+        this(Arrays.asList(scopes), keys);
+    }
+
+    public SerializeHolder(DictSerializeProperties properties) {
+        this(properties.getScopes(), properties.getKeys());
     }
 
     public SerializeHolder(SerializeHolder base, DictSerialize... dictSerialize) {
-        this.scopes = base.scopes;
-        this.keys = base.keys;
-        this.wrap(dictSerialize);
+        SerializeHolder other = SerializeHolder.of(dictSerialize);
+        if (base != null) {
+            other = base.combine(other);
+        }
+        if (other != base) {
+            this.scopes = other.scopes;
+            this.keys = other.keys;
+        }
+    }
+
+    public static SerializeHolder of(DictSerialize... conditions) {
+        List<SerializeHolder> collect = Arrays.stream(conditions)
+                .filter(Objects::nonNull)
+                .map(anno -> {
+                    SerializeScope[] scopes = anno.scopes();
+                    SerializeKey keys = new DictSerializeProperties.SerializeKeys(anno);
+                    return new SerializeHolder(scopes, keys);
+                }).collect(Collectors.toList());
+
+        SerializeHolder reduce = collect.stream().reduce(new SerializeHolder(), SerializeHolder::combine);
+
+        return reduce;
+    }
+
+    public static SerializeHolder of(List<DictSerialize> dictSerializes) {
+        DictSerialize[] array = dictSerializes.toArray(new DictSerialize[]{});
+        return of(array);
     }
 
     @Override
-    public List<SerializeScope> getScopes() {
-        return scopes;
+    public SerializeHolder combine(SerializeHolder other) {
+        if (other != null) {
+            List<SerializeScope> scopes = this.combineScopes(this.scopes, other.scopes);
+            SerializeKey keys = this.combineKeys(this.keys, other.keys);
+            return new SerializeHolder(scopes, keys);
+        }
+        return this;
     }
 
-    @Override
-    public String getIdKey() {
-        return keys.getIdKey();
+    private List<SerializeScope> combineScopes(List<SerializeScope> scopes, List<SerializeScope> other) {
+        return Stream.of(other, scopes).filter(Objects::nonNull).findFirst().orElse(Collections.emptyList());
     }
 
-    @Override
-    public String getCodeKey() {
-        return keys.getCodeKey();
-    }
-
-    @Override
-    public String getValueKey() {
-        return keys.getValueKey();
-    }
-
-    @Override
-    public String getLabelKey() {
-        return keys.getLabelKey();
-    }
-
-    @Override
-    public String getSortKey() {
-        return keys.getSortKey();
-    }
-
-    @Override
-    public String getDisabledKey() {
-        return keys.getDisabledKey();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return keys.getDescriptionKey();
+    private SerializeKey combineKeys(SerializeKey keys, SerializeKey other) {
+        if (keys != null) return keys.combine(other);
+        return other;
     }
 
     protected boolean isWriteObject() {
-        return getScopes().size() > 1;
+        return scopes.size() > 1;
     }
 
     public Object getObject(DictionaryItem<?> dictionaryItem) {
@@ -82,62 +95,18 @@ public class SerializeHolder implements SerializeCondition {
     }
 
     private Object getSingleValue(DictionaryItem<?> dictItem) {
-        Assert.isTrue(getScopes().size() == 1, "不能序列为单值");
-        return getScopes().get(0).getValue(dictItem);
+        Assert.isTrue(scopes.size() == 1, "不能序列化单值");
+        return scopes.get(0).getValue(dictItem);
     }
 
     private Map<String, Object> getMap(DictionaryItem<?> dictItem) {
-        HashMap<String, Object> data = new HashMap<>(getScopes().size());
+        HashMap<String, Object> data = new HashMap<>(scopes.size());
         scopes.forEach(scope -> {
-            String key = scope.getKey(this);
+            String key = scope.getKey(keys);
             Object value = scope.getValue(dictItem);
             data.put(key, value);
         });
         return data;
-    }
-
-
-    public SerializeHolder combine(DictSerialize... dictSerialize) {
-        List<SerializeCondition> serializeConditions = dictSerializeConditions(dictSerialize);
-        //        contextHolders.stream().reduce()
-//        Arrays.stream(dictSerialize).filter(Objects::nonNull).forEach(dict -> {
-//            List<SerializeScope> scopes = Arrays.asList(dict.value());
-//            if (!ObjectUtils.isEmpty(scopes)) {
-//                this.setScopes(scopes);
-//            }
-//            if (StringUtils.hasText(dict.id())) {
-//                this.setId(dict.id());
-//            }
-//            if (StringUtils.hasText(dict.label())) {
-//                this.setLabel(dict.label());
-//            }
-//            if (StringUtils.hasText(dict.description())) {
-//                this.setDescription(dict.description());
-//            }
-//        });
-//        if (serializeConditions.size() > 1) {
-//            return this.combine(dictSerialize);
-////            return new SerializeHolder(this, dictSerialize);
-//        }
-        return this;
-    }
-
-    private List<SerializeCondition> dictSerializeConditions(DictSerialize[] dictSerialize) {
-        List<DictSerialize> collect =
-                Arrays.stream(dictSerialize).filter(s -> !Objects.isNull(s)).collect(Collectors.toList());
-        return Collections.emptyList();
-    }
-
-
-    private void wrap(DictSerialize... dictSerialize) {
-//        SerializeCondition[] wrappedConditions = new SerializeCondition[conditions.length];
-//
-//        for (int i = 0; i < conditions.length; ++i) {
-//            wrappedConditions[i] = new SerializeHolder(conditions[i]);
-//        }
-//
-//        return wrappedConditions;
-//        return null;
     }
 
 }

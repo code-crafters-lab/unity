@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class ProviderConfiguration {
     @Bean
     @ConditionalOnClass(EnumDictProviderBuilderCustomizer.class)
     DefaultEnumDictProviderBuilderCustomizer defaultEnumDictProviderBuilderCustomizer(DictProperties dictProperties) {
-        return new DefaultEnumDictProviderBuilderCustomizer(dictProperties.getEnumDictItemPackage());
+        return new DefaultEnumDictProviderBuilderCustomizer(dictProperties);
     }
 
     @Bean
@@ -53,19 +54,43 @@ public class ProviderConfiguration {
     final static class DefaultEnumDictProviderBuilderCustomizer implements EnumDictProviderBuilderCustomizer {
 
         private final String enumPackage;
+        private final boolean globalScan;
 
-        public DefaultEnumDictProviderBuilderCustomizer(String enumPackage) {
-            this.enumPackage = enumPackage;
-            if (!StringUtils.hasText(enumPackage)) {
-                // todo 如果 enumPackage 为空获取应用程序所在包，自动进行扫描
-                enumPackage = "";
-            }
+        public DefaultEnumDictProviderBuilderCustomizer(DictProperties dictProperties) {
+            this.enumPackage = dictProperties.getEnumDictItemPackage();
+            this.globalScan = dictProperties.isGlobalScan();
         }
 
         @Override
         public void customize(EnumDictProviderBuilder builder) {
-            Collection<Class<? extends EnumDictItem<?>>> classes = packageScan(enumPackage);
+            String packageName = enumPackage;
+            if (globalScan && !StringUtils.hasText(enumPackage)) {
+                Class<?> mainApplicationClass = deduceMainApplicationClass();
+                if (null != mainApplicationClass) {
+                    packageName = ClassUtils.getPackageName(mainApplicationClass);
+                }
+            }
+            Collection<Class<? extends EnumDictItem<?>>> classes = packageScan(packageName);
             builder.add(classes);
+        }
+
+        /**
+         * 获取启动程序入楼类
+         *
+         * @return Class<?>
+         */
+        private Class<?> deduceMainApplicationClass() {
+            try {
+                StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+                for (StackTraceElement stackTraceElement : stackTrace) {
+                    if ("main".equals(stackTraceElement.getMethodName())) {
+                        return Class.forName(stackTraceElement.getClassName());
+                    }
+                }
+            } catch (ClassNotFoundException ignored) {
+
+            }
+            return null;
         }
 
         private Collection<Class<? extends EnumDictItem<?>>> packageScan(String enumDictPackage) {
@@ -80,7 +105,7 @@ public class ProviderConfiguration {
             List<Class<? extends EnumDictItem<?>>> list = new LinkedList<>();
             for (BeanDefinition component : components) {
                 try {
-                    Class<?> cls = Class.forName(component.getBeanClassName());
+                    Class<?> cls = ClassUtils.forName(Objects.requireNonNull(component.getBeanClassName()), null);
                     @SuppressWarnings("unchecked")
                     Class<EnumDictItem<?>> baseEnumClass = (Class<EnumDictItem<?>>) cls;
                     list.add(baseEnumClass);

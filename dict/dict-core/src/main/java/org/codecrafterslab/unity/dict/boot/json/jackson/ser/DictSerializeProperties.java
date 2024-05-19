@@ -3,10 +3,13 @@ package org.codecrafterslab.unity.dict.boot.json.jackson.ser;
 import lombok.Data;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.persist.DataDictItem;
+import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author Wu Yujie
@@ -27,8 +30,9 @@ public class DictSerializeProperties {
      */
     SerializeKeys keys = new SerializeKeys();
 
+
     @Data
-    public static class SerializeKeys implements SerializeKey {
+    static class SerializeKeys implements SerializeKey {
         /**
          * {@link DataDictItem#getId()} 字典标识序列化名称
          */
@@ -68,6 +72,11 @@ public class DictSerializeProperties {
             this("id", "code", "value", "label", "sort", "disabled", "description");
         }
 
+        public SerializeKeys(DictSerialize dictSerialize) {
+            this(dictSerialize.id(), dictSerialize.code(), "", dictSerialize.label(), dictSerialize.sort(),
+                    dictSerialize.disabled(), dictSerialize.description());
+        }
+
         public SerializeKeys(String idKey, String codeKey, String valueKey, String labelKey, String sortKey,
                              String disabledKey, String descriptionKey) {
             this.idKey = idKey;
@@ -77,6 +86,68 @@ public class DictSerializeProperties {
             this.sortKey = sortKey;
             this.disabledKey = disabledKey;
             this.descriptionKey = descriptionKey;
+        }
+
+
+        @Override
+        public SerializeKey combine(SerializeKey other) {
+            if (other == null) return this;
+            return new CompositeSerializeKey(this, other);
+        }
+
+    }
+
+    static class CompositeSerializeKey implements SerializeKey {
+        private final SerializeKey _this;
+        private final SerializeKey _other;
+
+        public CompositeSerializeKey(SerializeKey _this, SerializeKey _other) {
+            this._this = _this;
+            this._other = _other;
+        }
+
+        @Override
+        public String getIdKey() {
+            return combineKey(_this.getIdKey(), _other.getIdKey());
+        }
+
+        @Override
+        public String getCodeKey() {
+            return combineKey(_this.getCodeKey(), _other.getCodeKey());
+        }
+
+        @Override
+        public String getValueKey() {
+            return combineKey(_this.getValueKey(), _other.getValueKey());
+        }
+
+        @Override
+        public String getLabelKey() {
+            return combineKey(_this.getLabelKey(), _other.getLabelKey());
+        }
+
+        @Override
+        public String getSortKey() {
+            return combineKey(_this.getSortKey(), _other.getSortKey());
+        }
+
+        @Override
+        public String getDisabledKey() {
+            return combineKey(_this.getDisabledKey(), _other.getDisabledKey());
+        }
+
+        @Override
+        public String getDescriptionKey() {
+            return combineKey(_this.getDescriptionKey(), _other.getDescriptionKey());
+        }
+
+        private String combineKey(String key, String otherKey) {
+            return Stream.of(otherKey, key).filter(StringUtils::hasText).findFirst().orElse(null);
+        }
+
+        @Override
+        public SerializeKey combine(SerializeKey other) {
+            return null;
         }
     }
 }
