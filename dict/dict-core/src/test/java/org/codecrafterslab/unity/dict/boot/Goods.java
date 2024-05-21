@@ -21,6 +21,7 @@ public class Goods {
 
     private String name;
 
+    @DictSerialize(scopes = {SerializeScope.LABEL, SerializeScope.CODE}, label = "name")
     private Sex sex;
 
     @DictSerialize(SerializeScope.LABEL)

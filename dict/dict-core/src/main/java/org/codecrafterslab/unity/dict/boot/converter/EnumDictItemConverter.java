@@ -32,7 +32,7 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
         Class<? extends EnumDictItem> target = (Class<? extends EnumDictItem>) targetType.getType();
         return EnumDictItem.find(target, source, val -> {
-            /* 2. 字符串类型 => 实际泛型的类型转换 */
+            /* 字符串类型 => 实际泛型的类型转换 */
             TypeDescriptor tagreTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
             Object converted = this.conversionService.convert(val, sourceType, tagreTypeDescriptor);
             if (log.isDebugEnabled()) {

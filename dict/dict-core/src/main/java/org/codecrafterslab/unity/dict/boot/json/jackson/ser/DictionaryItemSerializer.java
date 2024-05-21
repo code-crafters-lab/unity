@@ -42,21 +42,28 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
                 annotation2 = beanProperty.getAnnotation(DictSerialize.class);
             }
 
-            SerializeHolder combinedHolder = context.combine(SerializeHolder.of(annotation1, annotation2));
+            SerializeHolder combinedHolder = context.combine(SerializeHolder.of(null, annotation1, annotation2));
+            // todo 全局配置为获取到
             if (combinedHolder != context) {
                 return new DictionaryItemSerializer(combinedHolder);
+            } else {
+                return this;
             }
         }
-        return this;
+        return provider.findNullValueSerializer(beanProperty);
     }
 
     @Override
     public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
+//        JsonNode jsonNode = context.getJsonNode(dictItem);
+//        gen.writeTree(jsonNode);
         Object value = context.getObject(dictItem);
         if (log.isDebugEnabled()) {
             log.debug("[OUT]\t{} => {}", dictItem, value);
         }
         gen.writeObject(value);
+
+//        gen.
     }
 
 }
