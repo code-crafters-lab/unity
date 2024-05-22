@@ -51,11 +51,12 @@ class JavaConventions : Plugin<Project> {
             with(project.configurations) {
                 val annotationProcessor = getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME)
                 val testAnnotationProcessor = getByName(JavaPlugin.TEST_ANNOTATION_PROCESSOR_CONFIGURATION_NAME)
+                val compileOnly = getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
 
                 testAnnotationProcessor.extendsFrom(annotationProcessor)
-
-                getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(annotationProcessor)
-                getByName(JavaPlugin.TEST_COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(testAnnotationProcessor)
+                compileOnly.extendsFrom(annotationProcessor)
+                getByName(JavaPlugin.TEST_COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(compileOnly)
+//                getByName(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME).extendsFrom(testAnnotationProcessor)
             }
         }
     }

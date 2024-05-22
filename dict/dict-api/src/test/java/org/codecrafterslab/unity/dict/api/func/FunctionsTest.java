@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.api.func;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.enums.Action;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author WuYujie
  */
+@Slf4j
 class FunctionsTest {
 
     @Test

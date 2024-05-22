@@ -9,13 +9,12 @@ dependencies {
 
     implementation("org.springframework:spring-core")
 
-    runtimeOnly("org.slf4j:slf4j-api")
-
-    compileOnly("ch.qos.logback:logback-classic")
-    compileOnly("com.google.protobuf:protobuf-java")
-    compileOnly("io.grpc:grpc-protobuf")
-    compileOnly("io.grpc:grpc-stub")
-    compileOnly("javax.annotation:javax.annotation-api")
+    optional("org.slf4j:slf4j-api")
+    optional("ch.qos.logback:logback-classic")
+//    compileOnly("com.google.protobuf:protobuf-java")
+//    compileOnly("io.grpc:grpc-protobuf")
+//    compileOnly("io.grpc:grpc-stub")
+//    compileOnly("javax.annotation:javax.annotation-api")
 
     annotationProcessor("org.projectlombok:lombok")
 
@@ -24,28 +23,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-configurations.all {
-    resolutionStrategy {
-        eachDependency {
-            if (requested.group == "org.springframework.boot") {
-                useVersion("2.5.15")
-            }
-        }
-    }
-}
-
-configurations.annotationProcessor {
-    withDependencies {
-        dependencies.forEach {
-            if (it.version == null && it is ExternalDependency) {
-                if ("${it.group}:${it.name}" == "org.projectlombok:lombok") {
-                    it.version { require("1.18.26") }
-                }
-            }
-        }
-    }
 }
 
 

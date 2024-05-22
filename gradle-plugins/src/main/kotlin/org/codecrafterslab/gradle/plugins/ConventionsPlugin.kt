@@ -15,8 +15,7 @@ class ConventionsPlugin : Plugin<Project> {
             apply(KotlinConventions::class.java)
             apply(MavenPublishingConventions::class.java)
             apply(AsciidoctorConventions::class.java)
-            apply(GrpcConventions::class.java)
-            
+//            apply(GrpcConventions::class.java)
             apply(OptionalPlugin::class.java)
             apply(IDEPlugin::class.java)
         }
