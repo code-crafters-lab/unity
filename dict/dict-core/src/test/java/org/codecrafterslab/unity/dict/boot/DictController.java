@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,12 +20,6 @@ public class DictController {
 
     @Resource
     private GoodService goodService;
-
-    @GetMapping(value = "/converter/bigint", name = "原始方式 1")
-    public BigInteger rawParameter1(BigInteger bigint) {
-        log.debug("{}", bigint);
-        return bigint;
-    }
 
 //    @GetMapping(value = "/converter/raw/value/integer", name = "原始方式 1")
 //    public User rawParameter1(Integer sex) {
@@ -46,6 +40,14 @@ public class DictController {
 //    public User enumParameter4(Sex sex) {
 //        return userService.getSex(sex);
 //    }
+
+    @GetMapping(value = "/converter/enum/func", name = "原始方式 1")
+    public List<ProductService> rawParameter1(@RequestParam("services") ProductService[] services,
+                                              @RequestParam("services") List<ProductService> services1) {
+        List<ProductService> list = Arrays.asList(services);
+        log.debug("{}", list);
+        return list;
+    }
 
     @GetMapping(value = "/func/test", name = "功能点枚举反序列化测试")
     public List<Goods> getGoods() {

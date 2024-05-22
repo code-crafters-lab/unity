@@ -34,6 +34,7 @@ public class DictItemConverterConfiguration implements WebMvcConfigurer {
     private void enumDictItemConverterConversionService(FormatterRegistry registry,
                                                         ConversionService conversionService) {
         registry.addConverter(new EnumDictItemConverter(conversionService));
+        registry.addConverter(new FuncEnumDictItemConverter(conversionService));
     }
 
 }

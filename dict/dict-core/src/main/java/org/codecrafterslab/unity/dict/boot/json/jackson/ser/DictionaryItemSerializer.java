@@ -39,11 +39,9 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
             SerializeHolder combinedHolder = context.combine(other);
             if (combinedHolder != context) {
                 return new DictionaryItemSerializer(combinedHolder);
-            } else {
-                return this;
             }
         }
-        return provider.findNullValueSerializer(beanProperty);
+        return this;
     }
 
     private static DictSerialize[] getDictSerializes(BeanProperty beanProperty) {
