@@ -16,7 +16,7 @@ public class DictProperties {
     /**
      * 字典值{@link DictionaryItem#getValue()} 持久化到数据库的方式
      */
-    private ValuePersistenceMode valuePersistenceMode = ValuePersistenceMode.COMMA_SPLIT;
+    private PersistenceMode valuePersistenceMode = PersistenceMode.COMMA_SPLIT;
 
     /**
      * 枚举字典自动扫描路径

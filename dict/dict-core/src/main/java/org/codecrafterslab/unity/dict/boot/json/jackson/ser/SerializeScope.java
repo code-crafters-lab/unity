@@ -50,6 +50,10 @@ public enum SerializeScope implements FuncEnumDictItem {
                 .distinct().collect(Collectors.toList());
     }
 
+    public static List<Scope> findScopes(SerializeScope[] all) {
+        return findScopes(Arrays.asList(all));
+    }
+
     @Override
     public BigInteger getValue() {
         return BigInteger.valueOf(value);

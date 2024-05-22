@@ -12,9 +12,9 @@ dict:
   serialize:
     scopes: label
     keys:
-      code: a1
-      value: a2
-      label: a3
-      sort: a4
-      disabled: a5
-      description: a6
+      code: code2
+#      value: a2
+#      label: a3
+#      sort: a4
+#      disabled: a5
+#      description: a6

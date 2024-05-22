@@ -4,7 +4,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
 import org.codecrafterslab.unity.dict.boot.DictProperties;
-import org.codecrafterslab.unity.dict.boot.ValuePersistenceMode;
+import org.codecrafterslab.unity.dict.boot.PersistenceMode;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.EnumDictItemTypeHandler;
 import org.codecrafterslab.unity.dict.boot.handler.mybatis.FuncEnumDictItemTypeHandler;
 import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
@@ -44,7 +44,7 @@ public class TypeHandlerConfiguration {
     }
 
     private void register(TypeHandlerRegistry registry, EnumDictProvider provider,
-                          ValuePersistenceMode persistenceMode) {
+                          PersistenceMode persistenceMode) {
         List<Class<? extends FuncEnumDictItem>> classes = provider.getFuncEnumDictItem();
         List<FuncEnumDictItemTypeHandler> typeHandlers =
                 classes.stream().map(clazz -> new FuncEnumDictItemTypeHandler(clazz, persistenceMode))
