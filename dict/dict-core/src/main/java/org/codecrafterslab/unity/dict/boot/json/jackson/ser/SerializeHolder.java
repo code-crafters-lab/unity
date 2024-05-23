@@ -13,7 +13,6 @@ import org.codecrafterslab.unity.dict.boot.combine.CombineStrategy;
 import org.codecrafterslab.unity.dict.boot.combine.Key;
 import org.codecrafterslab.unity.dict.boot.combine.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,8 +92,9 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
                 .map(anno -> SerializeScope.findScopes(anno.scopes()).stream()
                         .map(scope -> Key.of(scope, anno, null))
                         .collect(Collectors.toList()))
+                .filter(keys -> !keys.isEmpty())
                 .map(SerializeHolder::new)
-                .reduce(new SerializeHolder(), SerializeHolder::combine);
+                .reduce(SerializeHolder::combine).orElse(null);
     }
 
 
@@ -107,14 +107,22 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
     }
 
     private Object getSingleValue(DictionaryItem<?> dictItem) {
-        Assert.isTrue(keys.size() == 1, "不能序列化单值");
-        return keys.get(0).getDictionaryItemFiledValue(dictItem);
+        if (keys.size() == 1) {
+            return keys.get(0).getDictionaryItemFiledValue(dictItem);
+        }
+        return dictItem;
     }
 
     private Map<String, Object> getMap(DictionaryItem<?> dictItem) {
-        HashMap<String, Object> data = new HashMap<>(keys.size());
-        keys.forEach(key -> data.put(key.getValue(), key.getScope().getDictionaryItemFiledValue(dictItem)));
-        return data;
+        HashMap<String, Object> result = keys.stream().parallel()
+                .collect(HashMap::new, (map, key) -> {
+                    Object value = key.getScope().getDictionaryItemFiledValue(dictItem);
+                    if (Objects.isNull(value)) {
+                        // todo 加一个开关，控制是否输出 null
+                    }
+                    map.put(key.getValueWithDefault(), value);
+                }, HashMap::putAll);
+        return result;
     }
 
     @Override
@@ -135,7 +143,7 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         return getSingleValue(dictionaryItem);
     }
 
-    public JsonNode getJsonNode(DictionaryItem<?> dictItem) {
+    protected JsonNode getJsonNode(DictionaryItem<?> dictItem) {
         JsonNodeFactory jsonNodeFactory = new JsonNodeFactory(false);
         if (isWriteObject()) {
             ObjectNode objectNode = jsonNodeFactory.objectNode();

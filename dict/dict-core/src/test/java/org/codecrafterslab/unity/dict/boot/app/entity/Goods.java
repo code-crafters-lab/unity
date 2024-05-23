@@ -1,4 +1,4 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.app.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

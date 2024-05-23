@@ -64,8 +64,8 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
 
     @Override
     public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
-//        JsonNode jsonNode = context.getJsonNode(dictItem);
-//        gen.writeTree(jsonNode);
+        // JsonNode jsonNode = context.getJsonNode(dictItem);
+        // gen.writeTree(jsonNode);
         // todo 如何动态控住输出，考虑 JsonNode
         Object value = context.getObject(dictItem);
         if (log.isDebugEnabled()) {

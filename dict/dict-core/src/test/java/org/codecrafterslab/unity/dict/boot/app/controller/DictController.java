@@ -1,6 +1,12 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.app.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codecrafterslab.unity.dict.boot.app.entity.Goods;
+import org.codecrafterslab.unity.dict.boot.app.entity.ProductService;
+import org.codecrafterslab.unity.dict.boot.app.entity.Sex;
+import org.codecrafterslab.unity.dict.boot.app.entity.User;
+import org.codecrafterslab.unity.dict.boot.app.service.GoodService;
+import org.codecrafterslab.unity.dict.boot.app.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -15,31 +21,31 @@ import java.util.List;
 @RequestMapping(value = "/dict", name = "字典")
 public class DictController {
 
-//    @Resource
-//    private UserService userService;
+    @Resource
+    private UserService userService;
 
     @Resource
     private GoodService goodService;
 
-//    @GetMapping(value = "/converter/raw/value/integer", name = "原始方式 1")
-//    public User rawParameter1(Integer sex) {
-//        return userService.getSexByIntegerValue(sex);
-//    }
-//
-//    @GetMapping(value = "/converter/raw/value/string", name = "原始方式 2")
-//    public User rawParameter2(String sex) {
-//        return userService.getSexByStringValue(sex);
-//    }
-//
-//    @GetMapping(value = "/converter/raw/code", name = "原始方式 3")
-//    public User rawParameter3(String sex) {
-//        return userService.getSexByCode(sex);
-//    }
-//
-//    @GetMapping(value = "/converter/enum", name = "枚举字典使用")
-//    public User enumParameter4(Sex sex) {
-//        return userService.getSex(sex);
-//    }
+    @GetMapping(value = "/converter/raw/value/integer", name = "原始方式 1")
+    public User rawParameter1(Integer sex) {
+        return userService.getSexByIntegerValue(sex);
+    }
+
+    @GetMapping(value = "/converter/raw/value/string", name = "原始方式 2")
+    public User rawParameter2(String sex) {
+        return userService.getSexByStringValue(sex);
+    }
+
+    @GetMapping(value = "/converter/raw/code", name = "原始方式 3")
+    public User rawParameter3(String sex) {
+        return userService.getSexByCode(sex);
+    }
+
+    @GetMapping(value = "/converter/enum", name = "枚举字典使用")
+    public User enumParameter4(Sex sex) {
+        return userService.getSex(sex);
+    }
 
     @GetMapping(value = "/converter/enum/func", name = "原始方式 1")
     public List<ProductService> rawParameter1(@RequestParam("services") ProductService[] services,

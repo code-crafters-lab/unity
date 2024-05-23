@@ -1,14 +1,14 @@
 package org.codecrafterslab.unity.dict.api.func.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
 import org.codecrafterslab.unity.dict.api.func.FunctionPoint;
 import org.codecrafterslab.unity.dict.api.func.Functions;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author WuYujie
@@ -24,6 +24,14 @@ public final class DefaultFunctions implements Functions {
     public DefaultFunctions(BigInteger functions) {
         this.source = functions;
         this.functions = functions;
+    }
+
+    private static Stream<FunctionPoint> getFunctionPointStream(FunctionPoint point, FunctionPoint[] points) {
+        return Stream.concat(Stream.of(point), Arrays.stream(points));
+    }
+
+    private static Stream<BigInteger> getBigIntegerStream(Stream<FunctionPoint> point) {
+        return point.parallel().map(FunctionPoint::get);
     }
 
     @Override
@@ -42,59 +50,99 @@ public final class DefaultFunctions implements Functions {
     }
 
     @Override
-    public boolean has(FunctionPoint point) {
-        return functions != null && point.get().and(functions).equals(point.get());
+    public boolean has(FunctionPoint point, FunctionPoint... points) {
+        return getBigIntegerStream(getFunctionPointStream(point, points))
+                .allMatch(value -> value.and(functions).equals(value));
     }
 
     @Override
     public boolean hasAll(FunctionPoint point, FunctionPoint... others) {
-        return has(point) && Arrays.stream(others).allMatch(this::has);
+        return has(point, others);
     }
 
     @Override
-    public boolean hasAny(FunctionPoint point, FunctionPoint... others) {
-        return has(point) || Arrays.stream(others).anyMatch(this::has);
+    public boolean hasAny(FunctionPoint point, FunctionPoint... points) {
+        return getBigIntegerStream(getFunctionPointStream(point, points))
+                .anyMatch(value -> value.and(functions).equals(value));
     }
 
     @Override
-    public boolean hasNone(FunctionPoint point, FunctionPoint... others) {
-        return !has(point) && Arrays.stream(others).noneMatch(this::has);
+    public boolean hasNone(FunctionPoint point, FunctionPoint... points) {
+        return getBigIntegerStream(getFunctionPointStream(point, points))
+                .noneMatch(value -> value.and(functions).equals(value));
+    }
+
+    @Override
+    public Functions add(BigInteger bigInteger) {
+        this.functions = this.functions.or(bigInteger);
+        return this;
+    }
+
+    @Override
+    public Functions add(String value) {
+        return this.add(new BigInteger(value, 10));
+    }
+
+    @Override
+    public Functions add(long longValue) {
+        return this.add(BigInteger.valueOf(longValue));
+    }
+
+    @Override
+    public Functions add(int intValue) {
+        return this.add((long) intValue);
     }
 
     @Override
     public Functions add(Collection<FunctionPoint> points) {
-        this.functions = points.stream()
-                .filter(point -> !has(point))
-                .reduce(functions, (bigInteger, point) -> bigInteger.add(point.get()), BigInteger::add);
+        this.functions = getBigIntegerStream(points.stream()).reduce(functions, BigInteger::or);
         return this;
     }
 
     @Override
     public Functions add(FunctionPoint point, FunctionPoint... others) {
-        List<FunctionPoint> functionPoints = getFunctionPoints(point, others);
-        return this.add(functionPoints);
+        this.functions = getBigIntegerStream(getFunctionPointStream(point, others))
+                .reduce(functions, BigInteger::or);
+        return this;
+    }
+
+    @Override
+    public Functions remove(BigInteger bigInteger) {
+        this.functions = this.functions.andNot(bigInteger);
+        return this;
+    }
+
+    @Override
+    public Functions remove(String value) {
+        return remove(new BigInteger(value, 10));
+    }
+
+    @Override
+    public Functions remove(long longValue) {
+        return remove(BigInteger.valueOf(longValue));
+    }
+
+    @Override
+    public Functions remove(int intValue) {
+        return remove((long) intValue);
     }
 
     @Override
     public Functions remove(Collection<FunctionPoint> points) {
-        this.functions = points.stream()
-                .filter(this::has)
-                .reduce(functions, (bigInteger, point) -> bigInteger.subtract(point.get()), BigInteger::divide);
+        this.functions = getBigIntegerStream(points.stream()).reduce(functions, BigInteger::andNot);
         return this;
     }
 
-
     @Override
-    public Functions remove(FunctionPoint point, FunctionPoint... others) {
-        List<FunctionPoint> functionPoints = this.getFunctionPoints(point, others);
-        return this.remove(functionPoints);
+    public Functions remove(FunctionPoint point, FunctionPoint... points) {
+        this.functions = getBigIntegerStream(getFunctionPointStream(point, points))
+                .reduce(functions, BigInteger::andNot);
+        return this;
     }
 
-    private List<FunctionPoint> getFunctionPoints(FunctionPoint point, FunctionPoint[] others) {
-        List<FunctionPoint> functionPoints = new ArrayList<>();
-        functionPoints.add(point);
-        functionPoints.addAll(Arrays.asList(others));
-        return functionPoints;
+    @Override
+    public <T extends FuncEnumDictItem> Collection<T> resolveFuncEnum(Class<T> clazz) {
+        return FuncEnumDictItem.find(clazz, this);
     }
 
 }

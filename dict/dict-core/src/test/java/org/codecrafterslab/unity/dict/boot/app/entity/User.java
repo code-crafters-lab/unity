@@ -1,9 +1,11 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.app.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
+import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
 
 @Data
 @Builder
@@ -16,11 +18,15 @@ public class User {
 
     private Sex sex;
 
+    @DictSerialize(SerializeScope.VALUE)
     private Sex valueSex;
 
+    @DictSerialize(SerializeScope.LABEL)
     private Sex labelSex;
 
+    @DictSerialize(SerializeScope.CODE)
     private Sex codeSex;
 
+    @DictSerialize(SerializeScope.ALL)
     private Sex allSex;
 }

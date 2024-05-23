@@ -42,8 +42,7 @@ public class FuncEnumDictItemTypeHandler<T extends FuncEnumDictItem> extends Lis
             case OR_OPERATION:
             case AUTO:
             default:
-                Functions functions = Functions.builder().functions(parameter).build();
-                return functions.getFunctions();
+                return Functions.builder().functions(parameter).build().getFunctions();
         }
     }
 

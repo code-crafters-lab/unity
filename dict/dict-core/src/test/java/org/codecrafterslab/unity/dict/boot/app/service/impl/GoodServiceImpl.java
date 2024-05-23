@@ -1,13 +1,13 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.app.service.impl;
 
-import org.springframework.stereotype.Service;
+import org.codecrafterslab.unity.dict.boot.app.entity.Goods;
+import org.codecrafterslab.unity.dict.boot.app.service.GoodService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class GoodServiceImpl implements GoodService {
     private final Map<Integer, Goods> maps = new HashMap<>();
 

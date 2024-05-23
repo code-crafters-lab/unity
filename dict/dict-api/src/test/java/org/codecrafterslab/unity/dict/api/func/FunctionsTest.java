@@ -5,9 +5,9 @@ import org.codecrafterslab.unity.dict.api.enums.Action;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author WuYujie
@@ -29,8 +29,8 @@ class FunctionsTest {
 
         Functions functions =
                 Functions.builder()
-                        .of(Action.EXPORT.get()) // 初始化导出权限
-                        .functions(Action.ADD, Action.DELETE, Action.UPDATE, Action.QUERY) // 额外增删改查权限
+                        .of(Action.EXPORT) // 初始化导出权限
+                        .function(Action.ADD, Action.DELETE, Action.UPDATE, Action.QUERY) // 额外增删改查权限
                         .build();
         assertEquals("31", functions.getFunctions());
         assertEquals(all, functions.getSource());
@@ -41,8 +41,10 @@ class FunctionsTest {
         assertTrue(functions.has(Action.QUERY));
 
         /* 移除添加权限 */
-        functions.remove(Action.ADD);
-        assertTrue(functions.hasNone(Action.ADD));
+        functions = functions.remove(Action.ADD);
+
+        assertFalse(functions.has(Action.ADD));
+        assertEquals(all, functions.getSource());
         assertEquals(all, functions.getSource());
         assertEquals(all.subtract(Action.ADD.get()), functions.get());
 
@@ -50,8 +52,37 @@ class FunctionsTest {
         assertTrue(functions.hasAll(Action.QUERY, Action.UPDATE));
         assertTrue(functions.hasAny(Action.ADD, Action.DELETE));
 
+        Functions removed = functions.remove(Stream.of(Action.QUERY, Action.ADD)
+                .mapToInt(value -> value.get().intValue()).sum());
+        assertTrue(functions.hasNone(Action.QUERY, Action.ADD));
+        assertNotEquals(all.toString(), removed.getFunctions());
+
+        functions = functions.remove(10);
+        assertTrue(functions.has(Action.DELETE, Action.EXPORT));
+
         /* 重置权限 */
         functions.reset();
         assertEquals(all, functions.get());
+    }
+
+    @Test
+    public void bigint() {
+        BigInteger one = BigInteger.valueOf(15);
+        BigInteger two = BigInteger.valueOf(6);
+
+        // 移除权限 位运算 andNot &~
+        BigInteger r1 = one.andNot(two);
+        BigInteger r2 = two.andNot(one);
+
+        assertEquals(BigInteger.valueOf(9), r1);
+        assertEquals(BigInteger.ZERO, r2);
+
+        // 添加权限使用 位运算 or
+        assertEquals(BigInteger.valueOf(32).subtract(BigInteger.ONE), one.or(BigInteger.valueOf(16)));
+        assertEquals(BigInteger.valueOf(79), one.or(BigInteger.valueOf(64)));
+
+        // 删除权限使用  &~ ，先取反再按位与运算
+        assertEquals(BigInteger.valueOf(9), one.andNot(two));
+        assertEquals(BigInteger.ZERO, two.andNot(one));
     }
 }

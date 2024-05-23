@@ -14,19 +14,20 @@ import java.util.stream.Collectors;
 
 
 @ToString
+@Getter
 @EqualsAndHashCode
 public class Key implements Combinable<Key> {
 
     /**
      * 序列化字段范围（类型）
      */
-    @Getter
+
     private final Scope scope;
 
     /**
      * 序列化属性名称
      */
-    private transient String value;
+    private String value;
 
     private Key(Scope scope, String value) {
         this.scope = scope;
@@ -120,7 +121,7 @@ public class Key implements Combinable<Key> {
      *
      * @return String
      */
-    public @NonNull String getValue() {
+    public @NonNull String getValueWithDefault() {
         return StringUtils.hasText(value) ? value : scope.getCode().toLowerCase();
     }
 
@@ -129,15 +130,10 @@ public class Key implements Combinable<Key> {
         return this;
     }
 
-    @Deprecated
-    public String getValueWithDefault() {
-        return getValue();
-    }
-
     public <D extends DictionaryItem<?>> Object getDictionaryItemFiledValue(D dictItem) {
         return this.scope.getDictionaryItemFiledValue(dictItem);
     }
-    
+
     @Override
     public Key combine(Key other, CombineStrategy strategy) {
         if (other != null && this.scope.equals(other.scope) && StringUtils.hasText(other.value) && !other.value.equals(this.value)) {

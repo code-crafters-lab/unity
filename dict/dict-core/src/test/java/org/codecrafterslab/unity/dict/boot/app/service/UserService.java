@@ -1,4 +1,7 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.app.service;
+
+import org.codecrafterslab.unity.dict.boot.app.entity.Sex;
+import org.codecrafterslab.unity.dict.boot.app.entity.User;
 
 public interface UserService {
 
