@@ -20,7 +20,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Slf4j
-public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> implements ContextualSerializer {
+public class DictionaryItemSerializer<T extends DictionaryItem<?>> extends JsonSerializer<T> implements ContextualSerializer {
 
     private final SerializeHolder context;
 
@@ -38,7 +38,7 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
             SerializeHolder other = SerializeHolder.of(array);
             SerializeHolder combinedHolder = context.combine(other);
             if (combinedHolder != context) {
-                return new DictionaryItemSerializer(combinedHolder);
+                return new DictionaryItemSerializer<>(combinedHolder);
             }
         }
         return this;
@@ -63,7 +63,7 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
     }
 
     @Override
-    public void serialize(DictionaryItem dictItem, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(T dictItem, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         // JsonNode jsonNode = context.getJsonNode(dictItem);
         // gen.writeTree(jsonNode);
         // todo 如何动态控住输出，考虑 JsonNode
@@ -73,5 +73,4 @@ public class DictionaryItemSerializer extends JsonSerializer<DictionaryItem<?>> 
         }
         gen.writeObject(value);
     }
-
 }

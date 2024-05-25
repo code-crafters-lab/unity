@@ -9,6 +9,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EnumDictProviderBuilder {
@@ -99,6 +100,7 @@ public class EnumDictProviderBuilder {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Collection<Class<? extends EnumDictItem<?>>> packageScan(String enumDictPackage,
                                                                      TypeFilter... excludeFilters) {
         if (!StringUtils.hasText(enumDictPackage)) return Collections.emptyList();
@@ -110,17 +112,16 @@ public class EnumDictProviderBuilder {
         Arrays.stream(excludeFilters).forEach(provider::addExcludeFilter);
         Set<BeanDefinition> components = provider.findCandidateComponents(enumDictPackage);
 
-        List<Class<? extends EnumDictItem<?>>> list = new LinkedList<>();
-        for (BeanDefinition component : components) {
-            try {
-                Class<?> cls = ClassUtils.forName(Objects.requireNonNull(component.getBeanClassName()), null);
-                @SuppressWarnings("unchecked")
-                Class<EnumDictItem<?>> baseEnumClass = (Class<EnumDictItem<?>>) cls;
-                list.add(baseEnumClass);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }
+        List<Class<? extends EnumDictItem<?>>> list = components.stream()
+                .map(BeanDefinition::getBeanClassName)
+                .filter(Objects::nonNull)
+                .map(clazz -> {
+                    try {
+                        return (Class<EnumDictItem<?>>) ClassUtils.forName(clazz, null);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
         return Collections.unmodifiableCollection(list);
     }
 }

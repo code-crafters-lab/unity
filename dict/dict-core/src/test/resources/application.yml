@@ -4,6 +4,9 @@ spring:
       enabled: false
     livereload:
       port: 35730
+  application:
+    name: dict-test
+    version: 1.0.0
 logging:
   level:
     root: warn
