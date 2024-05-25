@@ -5,8 +5,8 @@ import lombok.Getter;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.api.FuncEnumDictItem;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,9 +28,14 @@ public class EnumDictProvider {
      */
     private final List<Class<? extends FuncEnumDictItem>> funcEnumDictItem;
 
-    public EnumDictProvider(Collection<Class<? extends EnumDictItem<?>>> collections) {
-        enumDictItem = new ArrayList<>(collections);
+    public EnumDictProvider(Collection<Class<? extends EnumDictItem<?>>> collections, Collection<Class<?
+            extends EnumDictItem<?>>> excludes) {
+        enumDictItem = collections.stream().filter(aClass -> !excludes.contains(aClass)).collect(Collectors.toList());
         funcEnumDictItem = filter(enumDictItem);
+    }
+
+    public EnumDictProvider(Collection<Class<? extends EnumDictItem<?>>> collections) {
+        this(collections, Collections.emptyList());
     }
 
     @SuppressWarnings("unchecked")
