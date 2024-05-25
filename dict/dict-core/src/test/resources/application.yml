@@ -1,4 +1,6 @@
 spring:
+  #  jackson:
+  #    default-property-inclusion: non_null
   devtools:
     restart:
       enabled: false
@@ -16,3 +18,5 @@ dict:
     scopes: label
     keys:
       label: name
+  features:
+    flatten-output-object: true

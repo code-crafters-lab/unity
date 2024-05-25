@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.boot;
 
 public enum Features {
-    ANNOTATION_INTROSPECTOR
+    ANNOTATION_INTROSPECTOR,
+    FLATTEN_OUTPUT_OBJECT
 }

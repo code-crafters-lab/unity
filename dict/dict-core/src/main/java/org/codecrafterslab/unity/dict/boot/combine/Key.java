@@ -13,8 +13,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@ToString
 @Getter
+@ToString
 @EqualsAndHashCode
 public class Key implements Combinable<Key> {
 

@@ -39,6 +39,7 @@ public class DictProperties {
      */
     private Map<Features, Boolean> features = new HashMap<Features, Boolean>() {{
         put(Features.ANNOTATION_INTROSPECTOR, false);
+        put(Features.FLATTEN_OUTPUT_OBJECT, false);
     }};
     
 }

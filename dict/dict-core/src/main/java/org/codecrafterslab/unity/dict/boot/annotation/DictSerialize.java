@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.boot.annotation;
 
+import org.codecrafterslab.unity.dict.boot.combine.ScopesOutputMode;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
 import org.springframework.core.annotation.AliasFor;
 
@@ -23,12 +24,19 @@ public @interface DictSerialize {
     SerializeScope[] value() default {};
 
     /**
-     * 序列号字段范围
+     * 属性序列化范围
      *
      * @return SerializeScope[]
      */
     @AliasFor("value")
     SerializeScope[] scopes() default {};
+
+    /**
+     * 属性序列化范围输出模式
+     *
+     * @return ScopesOutputMode
+     */
+    ScopesOutputMode outputMode() default ScopesOutputMode.OBJECT;
 
     /**
      * 唯一标识字段名称

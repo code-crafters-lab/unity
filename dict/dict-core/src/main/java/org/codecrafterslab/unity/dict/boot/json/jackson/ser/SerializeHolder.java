@@ -1,10 +1,12 @@
 package org.codecrafterslab.unity.dict.boot.json.jackson.ser;
 
+import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
+@ToString
 @EqualsAndHashCode
 public class SerializeHolder implements Combinable<SerializeHolder> {
     /**
@@ -61,12 +64,6 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         this(properties.getScopes(), properties.getKeys(), true);
     }
 
-
-    @Deprecated
-    public SerializeHolder(SerializeScope[] serializeScopes) {
-        this(Arrays.asList(serializeScopes), null, false);
-    }
-
     /**
      * 创建序列化上下数据持有对象
      *
@@ -81,28 +78,42 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
                 .map(anno -> SerializeScope.findScopes(anno.scopes()).stream()
                         .map(scope -> Key.of(scope, anno, scopeKeyValues))
                         .collect(Collectors.toList()))
-                .map(SerializeHolder::new)
-                .reduce(new SerializeHolder(), SerializeHolder::combine);
-    }
-
-    public static SerializeHolder of(DictSerialize... conditions) {
-        return Arrays.stream(conditions)
-                .filter(Objects::nonNull)
-                .map(anno -> AnnotationUtils.synthesizeAnnotation(anno, DictSerialize.class))
-                .map(anno -> SerializeScope.findScopes(anno.scopes()).stream()
-                        .map(scope -> Key.of(scope, anno, null))
-                        .collect(Collectors.toList()))
                 .filter(keys -> !keys.isEmpty())
                 .map(SerializeHolder::new)
                 .reduce(SerializeHolder::combine).orElse(null);
     }
 
-
-    public static SerializeHolder of(List<DictSerialize> dictSerializes) {
-        return of(null, dictSerializes.toArray(new DictSerialize[]{}));
+    public static SerializeHolder of(DictSerialize... conditions) {
+        return of(null, conditions);
     }
 
-    protected boolean isWriteObject() {
+    public static SerializeHolder of(BeanProperty beanProperty) {
+        return of(null, getDictSerializes(beanProperty));
+    }
+
+    public static SerializeHolder of(DictSerializeProperties properties, BeanProperty beanProperty) {
+        return new SerializeHolder(properties).combine(of(beanProperty));
+    }
+
+    private static DictSerialize[] getDictSerializes(BeanProperty beanProperty) {
+        List<DictSerialize> anno = new ArrayList<>();
+        /* 类上注解 */
+        DictSerialize clazzAnnotation = beanProperty.getContextAnnotation(DictSerialize.class);
+        if (clazzAnnotation != null) {
+            anno.add(clazzAnnotation);
+        }
+
+        /* 获取属性上注解 */
+        if (beanProperty.getMember().hasAnnotation(DictSerialize.class)) {
+            DictSerialize beanPropertyAnnotation = beanProperty.getAnnotation(DictSerialize.class);
+            if (beanPropertyAnnotation != null) {
+                anno.add(beanPropertyAnnotation);
+            }
+        }
+        return anno.toArray(new DictSerialize[]{});
+    }
+
+    public boolean isWriteObject() {
         return keys.size() > 1;
     }
 
@@ -114,15 +125,14 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
     }
 
     private Map<String, Object> getMap(DictionaryItem<?> dictItem) {
-        HashMap<String, Object> result = keys.stream().parallel()
+        return keys.stream().parallel()
                 .collect(HashMap::new, (map, key) -> {
                     Object value = key.getScope().getDictionaryItemFiledValue(dictItem);
-                    if (Objects.isNull(value)) {
-                        // todo 加一个开关，控制是否输出 null
-                    }
+//                    if (Objects.isNull(value)) {
+//                        // todo 加一个开关，控制是否输出 null
+//                    }
                     map.put(key.getValueWithDefault(), value);
                 }, HashMap::putAll);
-        return result;
     }
 
     @Override

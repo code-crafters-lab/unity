@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
+import org.codecrafterslab.unity.dict.boot.DictProperties;
+import org.codecrafterslab.unity.dict.boot.Features;
 import org.codecrafterslab.unity.dict.boot.json.jackson.deser.DictionaryItemDeserializer;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
@@ -38,7 +40,7 @@ public class DictModule extends SimpleModule {
         // 获取配置
         DictSerializeProperties serializeProperties = applicationContext.getBean(DictSerializeProperties.class);
 
-        // 枚举字典序列化
+        // 枚举字典序列化注册
         addSerializer(DictionaryItem.class, new DictionaryItemSerializer<>(serializeProperties));
     }
 
@@ -56,7 +58,11 @@ public class DictModule extends SimpleModule {
     }
 
     private void configSerializerModifier() {
-        setSerializerModifier(new DictBeanSerializerModifier());
+        DictProperties dictProperties = applicationContext.getBean(DictProperties.class);
+        Boolean flatten = dictProperties.getFeatures().getOrDefault(Features.FLATTEN_OUTPUT_OBJECT, false);
+        if (flatten) {
+            setSerializerModifier(new DictBeanSerializerModifier(dictProperties));
+        }
     }
 
 }

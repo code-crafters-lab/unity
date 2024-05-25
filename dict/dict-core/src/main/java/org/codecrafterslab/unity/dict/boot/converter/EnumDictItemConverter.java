@@ -34,8 +34,8 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
         /* 字符串类型 => 实际泛型的类型转换 */
         TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
         Object converted = this.conversionService.convert(source, sourceType, targetTypeDescriptor);
-        if (log.isDebugEnabled()) {
-            log.debug("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
+        if (log.isTraceEnabled()) {
+            log.trace("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
         }
         return EnumDictItem.find(target, converted);
     }

@@ -38,16 +38,16 @@ public class DictionaryItemDeserializer<T extends EnumDictItem<?>> extends JsonD
                 Object converted;
                 try {
                     converted = this.conversionService.convert(val, sourceType, targetType);
-                    if (log.isDebugEnabled()) {
-                        log.debug("{} : {} => {} : {}", sourceType, val, targetType, converted);
+                    if (log.isTraceEnabled()) {
+                        log.trace("{} : {} => {} : {}", sourceType, val, targetType, converted);
                     }
                 } catch (Exception e) {
                     converted = val;
                 }
                 return converted;
             });
-            if (log.isDebugEnabled()) {
-                log.debug("[IN]\t{} => {}", node, result);
+            if (log.isTraceEnabled()) {
+                log.trace("[IN]\t{} => {}", node, result);
             }
         } catch (Exception ignored) {
         }

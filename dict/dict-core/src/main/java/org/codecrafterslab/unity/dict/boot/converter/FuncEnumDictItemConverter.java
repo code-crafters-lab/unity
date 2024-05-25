@@ -43,8 +43,8 @@ public class FuncEnumDictItemConverter implements ConditionalGenericConverter {
         /* 1. String => BigInteger */
         TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(BigInteger.class);
         BigInteger converted = (BigInteger) this.conversionService.convert(source, sourceType, targetTypeDescriptor);
-        if (log.isDebugEnabled()) {
-            log.debug("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
+        if (log.isTraceEnabled()) {
+            log.trace("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
         }
 
         /* 2. BigInteger => Functions */
