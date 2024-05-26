@@ -8,10 +8,10 @@ import java.math.BigInteger;
 
 @Getter
 @AllArgsConstructor
-public enum ScopesOutputMode implements FuncEnumDictItem {
-    OBJECT(1, "对象输出"),
-    FLAT(2, "扁平化输出"),
-    FLAT_WITH_OBJECT(3, "扁平化输出且含对象"),
+public enum ScopesMode implements FuncEnumDictItem {
+    NO_OP(1, "不操作处理，使用原始对象输出"),
+    FLAT(2, "扁平化输出属性"),
+    FLAT_WITH_OBJECT(3, "扁平化输出属性且含原始输出"),
     ;
 
     private final Integer value;

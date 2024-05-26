@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
-import org.codecrafterslab.unity.dict.boot.combine.ScopesOutputMode;
+import org.codecrafterslab.unity.dict.boot.combine.ScopesMode;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
 
 @Data
@@ -28,6 +28,6 @@ public class User {
     @DictSerialize(SerializeScope.CODE)
     private Sex codeSex;
 
-    @DictSerialize(value = SerializeScope.ALL, outputMode = ScopesOutputMode.FLAT)
+    @DictSerialize(value = SerializeScope.ALL, output = ScopesMode.FLAT_WITH_OBJECT)
     private Sex allSex;
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
@@ -15,6 +16,7 @@ import org.codecrafterslab.unity.dict.boot.combine.CombineStrategy;
 import org.codecrafterslab.unity.dict.boot.combine.Key;
 import org.codecrafterslab.unity.dict.boot.combine.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,12 +29,20 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
     /**
      * 全局序列化字段配置
      */
+    @Nullable
     private final Map<Scope, String> scopeKeyValues;
 
     /**
      * 序列化范围
      */
     private final List<Key> keys;
+
+    /**
+     * 扁平化输出的 Key
+     */
+    @Setter
+    @Nullable
+    private Key flattenKey;
 
     public SerializeHolder() {
         this(Collections.emptyList());
@@ -42,7 +52,7 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         this(keys, null);
     }
 
-    public SerializeHolder(List<Key> keys, Map<Scope, String> scopeKeyValues) {
+    public SerializeHolder(List<Key> keys, @Nullable Map<Scope, String> scopeKeyValues) {
         this.keys = keys.stream().peek(key -> {
                     if (scopeKeyValues != null) {
                         key.setValue(scopeKeyValues.get(key.getScope()));
@@ -52,7 +62,7 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         this.scopeKeyValues = scopeKeyValues;
     }
 
-    private SerializeHolder(List<SerializeScope> serializeScopes, Map<Scope, String> scopeKeyValues,
+    private SerializeHolder(List<SerializeScope> serializeScopes, @Nullable Map<Scope, String> scopeKeyValues,
                             boolean withDefault) {
         this.keys = SerializeScope.findScopes(serializeScopes)
                 .stream().map(scope -> Key.of(scope, scopeKeyValues, withDefault))
@@ -113,24 +123,45 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         return anno.toArray(new DictSerialize[]{});
     }
 
+    /**
+     * @return boolean
+     * @deprecated Since 1.0, to be removed from 1.1, use {@link #isOutputMultiple()} instead.}
+     */
+    @Deprecated
     public boolean isWriteObject() {
         return keys.size() > 1;
     }
 
+    public boolean isOutputMultiple() {
+        return keys.size() > 1;
+    }
+
+    private boolean isFlattenOut() {
+        return flattenKey != null && keys.contains(flattenKey);
+    }
+
+    private boolean isOutputSingle() {
+        return isFlattenOut() || !isOutputMultiple();
+    }
+
     private Object getSingleValue(DictionaryItem<?> dictItem) {
-        if (keys.size() == 1) {
-            return keys.get(0).getDictionaryItemFiledValue(dictItem);
+        Key key = null;
+        if (isFlattenOut()) {
+            key = flattenKey;
+        } else if (keys.size() == 1) {
+            key = keys.get(0);
         }
+        if (key != null) return key.getDictionaryItemFiledValue(dictItem);
         return dictItem;
     }
 
-    private Map<String, Object> getMap(DictionaryItem<?> dictItem) {
+    private Map<String, Object> getObjectMap(DictionaryItem<?> dictItem) {
         return keys.stream().parallel()
                 .collect(HashMap::new, (map, key) -> {
                     Object value = key.getScope().getDictionaryItemFiledValue(dictItem);
-//                    if (Objects.isNull(value)) {
-//                        // todo 加一个开关，控制是否输出 null
-//                    }
+                    if (Objects.isNull(value)) {
+                        // todo 加一个开关，控制是否输出 null
+                    }
                     map.put(key.getValueWithDefault(), value);
                 }, HashMap::putAll);
     }
@@ -148,19 +179,22 @@ public class SerializeHolder implements Combinable<SerializeHolder> {
         return this;
     }
 
-    public Object getObject(DictionaryItem<?> dictionaryItem) {
-        if (isWriteObject()) return getMap(dictionaryItem);
-        return getSingleValue(dictionaryItem);
+    public Object getOutPut(DictionaryItem<?> dictionaryItem) {
+        if (isOutputSingle()) return getSingleValue(dictionaryItem);
+        // todo 如何动态控住输出，考虑 JsonNode
+        return getObjectMap(dictionaryItem);
     }
 
     protected JsonNode getJsonNode(DictionaryItem<?> dictItem) {
         JsonNodeFactory jsonNodeFactory = new JsonNodeFactory(false);
-        if (isWriteObject()) {
+        JsonNode jsonNode = jsonNodeFactory.missingNode();
+        if (isOutputMultiple()) {
             ObjectNode objectNode = jsonNodeFactory.objectNode();
             keys.forEach(key -> {
-//                String value1 = key.getValue();
-                Object value = key.getDictionaryItemFiledValue(dictItem);
-//                objectNode.put(key.getValue(), value);
+                String k = key.getValue();
+                Object v = key.getDictionaryItemFiledValue(dictItem);
+//                JsonNode
+                objectNode.put(k, "");
             });
             return objectNode;
         } else {

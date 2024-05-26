@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
+import org.codecrafterslab.unity.dict.boot.combine.Key;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
+
+import static org.codecrafterslab.unity.dict.boot.json.jackson.DictBeanSerializerModifier.FLATTEN_OUTPUT_KEY;
 
 /**
  * @author Wu Yujie
@@ -34,6 +38,13 @@ public class DictionaryItemSerializer<T extends DictionaryItem<?>> extends JsonS
             SerializeHolder other = SerializeHolder.of(beanProperty);
             SerializeHolder combinedHolder = context.combine(other);
             if (combinedHolder != context) {
+                if (beanProperty instanceof BeanPropertyWriter) {
+                    BeanPropertyWriter writer = (BeanPropertyWriter) beanProperty;
+                    Key flattenKey = (Key) writer.getInternalSetting(FLATTEN_OUTPUT_KEY);
+                    if (!ObjectUtils.isEmpty(flattenKey)) {
+                        combinedHolder.setFlattenKey(flattenKey);
+                    }
+                }
                 return new DictionaryItemSerializer<>(combinedHolder);
             }
         }
@@ -43,13 +54,10 @@ public class DictionaryItemSerializer<T extends DictionaryItem<?>> extends JsonS
 
     @Override
     public void serialize(T dictItem, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        // JsonNode jsonNode = context.getJsonNode(dictItem);
-        // gen.writeTree(jsonNode);
-        // todo 如何动态控住输出，考虑 JsonNode
-        Object value = context.getObject(dictItem);
-        if (log.isDebugEnabled()) {
-            log.trace("[OUT]\t{} => {}", dictItem, value);
+        Object out = context.getOutPut(dictItem);
+        if (log.isTraceEnabled()) {
+            log.trace("[OUT]\t{} => {}", dictItem, out);
         }
-        gen.writeObject(value);
+        gen.writeObject(out);
     }
 }
