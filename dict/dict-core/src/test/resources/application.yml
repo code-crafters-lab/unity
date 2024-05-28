@@ -19,3 +19,5 @@ dict:
       label: name
   features:
     flatten-output-object: false
+    function-point-deserialization: true
+  enum-dict-item-package: org.codecrafterslab.unity.dict

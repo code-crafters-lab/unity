@@ -14,7 +14,6 @@ dependencies {
 //    compileOnly("com.google.protobuf:protobuf-java")
 //    compileOnly("io.grpc:grpc-protobuf")
 //    compileOnly("io.grpc:grpc-stub")
-//    compileOnly("javax.annotation:javax.annotation-api")
 
     annotationProcessor("org.projectlombok:lombok")
 

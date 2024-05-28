@@ -17,9 +17,10 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public void save(Goods goods) {
+    public Goods save(Goods goods) {
         goods.setId(maps.size() + 1);
         this.maps.put(goods.getId(), goods);
+        return goods;
     }
 
     @Override

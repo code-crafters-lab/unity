@@ -61,9 +61,10 @@ public class DictController {
     }
 
     @PostMapping(value = "/func/test", name = "功能点枚举反序列化测试")
-    public void saveGoods(@RequestBody Goods goods) {
-        log.info("{}", goods);
-        goodService.save(goods);
+    public Goods saveGoods(@RequestBody Goods goods) {
+        Goods saved = goodService.save(goods);
+        log.info("{}", saved);
+        return saved;
     }
 
     @GetMapping(value = "/func/test/{id}", name = "功能点枚举反序列化测试")

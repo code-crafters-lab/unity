@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
-import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.Features;
-import org.codecrafterslab.unity.dict.boot.json.jackson.deser.DictionaryItemDeserializer;
+import org.codecrafterslab.unity.dict.boot.json.jackson.deser.EnumDictItemDeserializer;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
 import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
@@ -23,10 +22,12 @@ import org.springframework.core.convert.ConversionService;
 public class DictModule extends SimpleModule {
 
     private final ApplicationContext applicationContext;
+    private final ConversionService conversionService;
 
     public DictModule(ApplicationContext applicationContext) {
         super("DictModule", new Version(1, 0, 0, "beta.16", "org.codecrafterslab.unity", "dict-core"));
         this.applicationContext = applicationContext;
+        this.conversionService = applicationContext.getBean(ConversionService.class);
         this.init();
     }
 
@@ -47,14 +48,14 @@ public class DictModule extends SimpleModule {
     @SuppressWarnings("unchecked")
     private void configDeserializers() {
         EnumDictProvider enumDictProvider = applicationContext.getBean(EnumDictProvider.class);
-        ConversionService conversionService = applicationContext.getBean(ConversionService.class);
 
         // 枚举字典反序列化注册
         enumDictProvider.getEnumDictItem().stream()
                 .filter(Class::isEnum)
-                .map(aClass -> (Class<EnumDictItem<?>>) aClass)
+                .map(aClass -> (Class<Object>) aClass)
                 .forEach(aClass ->
-                        addDeserializer(aClass, new DictionaryItemDeserializer<>(aClass, conversionService)));
+                        addDeserializer(aClass, new EnumDictItemDeserializer(aClass, conversionService)));
+
     }
 
     private void configSerializerModifier() {
@@ -63,6 +64,7 @@ public class DictModule extends SimpleModule {
         if (flatten) {
             setSerializerModifier(new DictBeanSerializerModifier(dictProperties));
         }
+        setDeserializerModifier(new DictBeanDeserializerModifier(dictProperties, conversionService));
     }
 
 }

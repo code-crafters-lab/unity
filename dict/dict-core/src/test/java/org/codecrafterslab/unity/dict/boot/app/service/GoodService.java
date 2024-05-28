@@ -8,7 +8,7 @@ public interface GoodService {
 
     List<Goods> list();
 
-    void save(Goods goods);
+    Goods save(Goods goods);
 
     Goods findById(Integer id);
 

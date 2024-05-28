@@ -21,29 +21,28 @@ public class EnumDictProvider {
     /**
      * 枚举字典
      */
-    private final List<Class<? extends EnumDictItem<?>>> enumDictItem;
+    private final List<Class<? super EnumDictItem<?>>> enumDictItem;
 
     /**
      * 功能点枚举字段
      */
-    private final List<Class<? extends FuncEnumDictItem>> funcEnumDictItem;
+    private final List<Class<? super FuncEnumDictItem>> funcEnumDictItem;
 
-    public EnumDictProvider(Collection<Class<? extends EnumDictItem<?>>> collections, Collection<Class<?
+    public EnumDictProvider(Collection<Class<? super EnumDictItem<?>>> collections, Collection<Class<?
             extends EnumDictItem<?>>> excludes) {
         enumDictItem = collections.stream().filter(aClass -> !excludes.contains(aClass)).collect(Collectors.toList());
         funcEnumDictItem = filter(enumDictItem);
     }
 
-    public EnumDictProvider(Collection<Class<? extends EnumDictItem<?>>> collections) {
+    public EnumDictProvider(Collection<Class<? super EnumDictItem<?>>> collections) {
         this(collections, Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
-    List<Class<? extends FuncEnumDictItem>> filter(List<Class<? extends EnumDictItem<?>>> list) {
+    List<Class<? super FuncEnumDictItem>> filter(List<Class<? super EnumDictItem<?>>> list) {
         return list.stream()
                 .filter(dict -> FuncEnumDictItem.class.isAssignableFrom(dict) && dict.isEnum())
-                .map((Function<Class<? extends EnumDictItem<?>>, Class<? extends FuncEnumDictItem>>) aClass ->
-                        (Class<? extends FuncEnumDictItem>) aClass)
+                .map((Function<Class<? super EnumDictItem<?>>, Class<? super FuncEnumDictItem>>) aClass ->
+                        (Class<? super FuncEnumDictItem>) aClass)
                 .collect(Collectors.toList());
     }
 }

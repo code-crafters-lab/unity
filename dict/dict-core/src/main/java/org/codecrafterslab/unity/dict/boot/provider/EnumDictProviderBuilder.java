@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EnumDictProviderBuilder {
-    private final Set<Class<? extends EnumDictItem<?>>> classes;
+    private final Set<Class<? super EnumDictItem<?>>> classes;
     private final List<TypeFilter> excludeFilters;
     private boolean globalScan = false;
     private String scanPackage;
@@ -47,12 +47,12 @@ public class EnumDictProviderBuilder {
         return this.exclude(new AssignableTypeFilter(clazz), typeFilters);
     }
 
-    public EnumDictProviderBuilder add(Class<? extends EnumDictItem<?>> clazz) {
+    public EnumDictProviderBuilder add(Class<EnumDictItem<?>> clazz) {
         classes.add(clazz);
         return this;
     }
 
-    public EnumDictProviderBuilder add(Collection<Class<? extends EnumDictItem<?>>> list) {
+    public EnumDictProviderBuilder add(Collection<Class<EnumDictItem<?>>> list) {
         classes.addAll(list);
         return this;
     }
@@ -76,7 +76,7 @@ public class EnumDictProviderBuilder {
                 packageName = ClassUtils.getPackageName(mainApplicationClass);
             }
         }
-        Collection<Class<? extends EnumDictItem<?>>> classes1 = packageScan(packageName,
+        Collection<Class<? super EnumDictItem<?>>> classes1 = packageScan(packageName,
                 excludeFilters.toArray(new TypeFilter[]{}));
         this.classes.addAll(classes1);
     }
@@ -101,7 +101,7 @@ public class EnumDictProviderBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private Collection<Class<? extends EnumDictItem<?>>> packageScan(String enumDictPackage,
+    private Collection<Class<? super EnumDictItem<?>>> packageScan(String enumDictPackage,
                                                                      TypeFilter... excludeFilters) {
         if (!StringUtils.hasText(enumDictPackage)) return Collections.emptyList();
 
@@ -112,7 +112,7 @@ public class EnumDictProviderBuilder {
         Arrays.stream(excludeFilters).forEach(provider::addExcludeFilter);
         Set<BeanDefinition> components = provider.findCandidateComponents(enumDictPackage);
 
-        List<Class<? extends EnumDictItem<?>>> list = components.stream()
+        List<Class<? super EnumDictItem<?>>> list = components.stream()
                 .map(BeanDefinition::getBeanClassName)
                 .filter(Objects::nonNull)
                 .map(clazz -> {

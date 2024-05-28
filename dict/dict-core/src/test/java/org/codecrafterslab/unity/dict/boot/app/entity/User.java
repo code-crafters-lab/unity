@@ -17,6 +17,7 @@ public class User {
 
     private String name;
 
+    @DictSerialize(SerializeScope.CODE)
     private Sex sex;
 
     @DictSerialize(SerializeScope.VALUE)

@@ -8,6 +8,7 @@ import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,19 +31,28 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if (Objects.isNull(source)) return null;
         Class<? extends EnumDictItem> target = (Class<? extends EnumDictItem>) targetType.getType();
-        /* 字符串类型 => 实际泛型的类型转换 */
-        TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
-        Object converted = this.conversionService.convert(source, sourceType, targetTypeDescriptor);
-        if (log.isTraceEnabled()) {
-            log.trace("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
-        }
-        return EnumDictItem.find(target, converted);
+        return EnumDictItem.find(target, source, val -> {
+            /* 字符串类型 => 实际泛型的类型转换 */
+            TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(EnumDictItem.getValueType(target));
+            Object converted = null;
+            /* 字符串转实际值时可能存在异常，需要处理掉，不然后面根据显示值无法进行查找 */
+            try {
+                converted = this.conversionService.convert(val, sourceType, targetTypeDescriptor);
+                if (log.isTraceEnabled()) {
+                    log.trace("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
+                }
+            } catch (Exception ignored) {
+            }
+            return converted;
+        });
     }
 
     @Override
     public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
         return EnumDictItem.class.isAssignableFrom(targetType.getType());
     }
+
 
 }

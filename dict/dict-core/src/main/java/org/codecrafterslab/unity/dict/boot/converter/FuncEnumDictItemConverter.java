@@ -37,6 +37,7 @@ public class FuncEnumDictItemConverter implements ConditionalGenericConverter {
     @SuppressWarnings({"unchecked"})
     public Object convert(@Nullable Object source, TypeDescriptor sourceType,
                           TypeDescriptor targetType) {
+        if (Objects.isNull(source)) return null;
         Class<? extends FuncEnumDictItem> target =
                 (Class<? extends FuncEnumDictItem>) Objects.requireNonNull(targetType.getElementTypeDescriptor()).getType();
 
@@ -59,8 +60,8 @@ public class FuncEnumDictItemConverter implements ConditionalGenericConverter {
 
         /* 4. 集合类型返回 */
         TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
-        Collection<Object> result = CollectionFactory.createCollection(targetType.getType(), elementDesc != null ?
-                elementDesc.getType() : null, items.size());
+        Collection<Object> result = CollectionFactory.createCollection(targetType.getType(),
+                elementDesc != null ? elementDesc.getType() : null, items.size());
         result.addAll(items);
         return result;
     }

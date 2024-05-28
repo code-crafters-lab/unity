@@ -45,10 +45,10 @@ public class TypeHandlerConfiguration {
 
     private void register(TypeHandlerRegistry registry, EnumDictProvider provider,
                           PersistenceMode persistenceMode) {
-        List<Class<? extends FuncEnumDictItem>> classes = provider.getFuncEnumDictItem();
-        List<FuncEnumDictItemTypeHandler> typeHandlers =
-                classes.stream().map(clazz -> new FuncEnumDictItemTypeHandler(clazz, persistenceMode))
-                        .collect(Collectors.toList());
+        List<Class<? super FuncEnumDictItem>> classes = provider.getFuncEnumDictItem();
+        List<FuncEnumDictItemTypeHandler> typeHandlers = classes.stream()
+                .map(clazz -> new FuncEnumDictItemTypeHandler(clazz, persistenceMode))
+                .collect(Collectors.toList());
         typeHandlers.forEach(
                 funcEnumDictItemTypeHandler -> {
                     registry.register(List.class, JdbcType.VARCHAR, funcEnumDictItemTypeHandler);

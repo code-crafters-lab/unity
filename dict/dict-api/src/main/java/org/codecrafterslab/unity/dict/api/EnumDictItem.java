@@ -5,6 +5,8 @@ import org.codecrafterslab.unity.exception.core.BizStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,46 +24,6 @@ import java.util.stream.Collectors;
 public interface EnumDictItem<V> extends DictionaryItem<V> {
 
     Logger log = LoggerFactory.getLogger(EnumDictItem.class);
-
-    /**
-     * 枚举选项的编码,默认值为枚举名称
-     *
-     * @return 描述
-     */
-    @Override
-    default String getCode() {
-        return name();
-    }
-
-    /**
-     * {@link Enum#ordinal()}
-     *
-     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
-     */
-    int ordinal();
-
-    /**
-     * the name of this enum constant
-     * {@link Enum#name()}
-     *
-     * @return 枚举名称
-     */
-    String name();
-
-    @Override
-    default Integer getSort() {
-        return ordinal();
-    }
-
-    /**
-     * 枚举选项的描述,对一个选项进行详细的描述有时候是必要的.默认值为 {@code null}
-     *
-     * @return 描述
-     */
-    @Override
-    default String getDescription() {
-        return null;
-    }
 
     static <T extends EnumDictItem<?>> List<T> findByCondition(Class<T> type, Predicate<Class<T>> typePredicate,
                                                                Predicate<T> predicate) {
@@ -119,13 +81,14 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T findByValue(Class<T> type, Object value) {
+    static <T extends EnumDictItem<?>> T findByValue(Class<T> type, @Nullable Object value) {
+        if (Objects.isNull(value)) return null;
         return findByCondition(type, item -> value.getClass().equals(getValueType(type)) ?
                 item.getValue().equals(value) : item.getValue().toString().equals(value.toString().trim())).stream().findFirst().orElse(null);
     }
 
     /**
-     * 根据枚举的{@link EnumDictItem#name()}来查找.
+     * 根据枚举的{@link EnumDictItem#getCode()}来查找.
      *
      * @param type Class<T>
      * @param code String
@@ -134,7 +97,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @see #findByCondition(Class, Predicate)
      */
     static <T extends EnumDictItem<?>> T findByCode(Class<T> type, String code) {
-        return findByCondition(type, item -> item.name().equalsIgnoreCase(code.trim())).stream().findFirst().orElse(null);
+        return findByCondition(type, item -> item.getCode().equalsIgnoreCase(code.trim())).stream().findFirst().orElse(null);
     }
 
     /**
@@ -157,12 +120,11 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      */
     static <T extends EnumDictItem<?>> BizException unsupported(Class<T> type, Object arg) {
         if (log.isWarnEnabled()) {
-
             String values = findAll(type).stream()
                     .map(item -> String.join("/", Arrays.asList(item.getCode(), item.getValue().toString().trim(),
                             item.getLabel())))
                     .collect(Collectors.joining(","));
-            log.warn("不受支持的值 {} in [{}]", arg, values);
+            log.warn("{} => {} 不支持的值, 可用值范围为：[{}]", arg, type.getName(), values);
         }
         return new BizException(BizStatus.UN_SUPPORTED_VALUE);
     }
@@ -176,29 +138,30 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T find(Class<T> type, Object parameter) {
+    static <T extends EnumDictItem<?>> T find(Class<T> type, @NonNull Object parameter) {
         return find(type, parameter, val -> val);
     }
 
     /**
      * 根据枚举的{@link EnumDictItem#name()}来查找.
      *
-     * @param type      Class<T>
-     * @param parameter 字典项编码、实际值或显示值
-     * @param convert   类型转换
-     * @param <T>       枚举类型
+     * @param type         Class<T>
+     * @param parameter    字典项编码、实际值或显示值
+     * @param valueConvert 实际值类型转换器
+     * @param <T>          枚举类型
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T find(Class<T> type, Object parameter, Function<Object, Object> convert) {
+    static <T extends EnumDictItem<?>> T find(Class<T> type, @NonNull Object parameter,
+                                              Function<Object, Object> valueConvert) {
         T result;
-        /* 1. 如果值时字符串先根据编码进行查找 */
+        /* 1. 如果值是字符串先根据编码进行查找 */
         if (parameter instanceof String) {
             result = findByCode(type, (String) parameter);
             if (!Objects.isNull(result)) return result;
         }
         /* 2. 未找到到再根据实际值进行查找 */
-        Object converted = convert.apply(parameter);
+        Object converted = valueConvert.apply(parameter);
         result = findByValue(type, converted);
         if (!Objects.isNull(result)) {
             return result;
@@ -210,5 +173,44 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
         /* 4. 否则抛出异常 */
         if (Objects.isNull(result)) throw unsupported(type, parameter);
         return result;
+    }
+
+    /**
+     * 枚举项的编码，默认值为枚举名称
+     *
+     * @return 描述
+     */
+    @Override
+    default String getCode() {
+        return name();
+    }
+
+    /**
+     * @return 枚举序号, 如果枚举顺序改变, 此值将被变动
+     * @see Enum#ordinal()
+     */
+    int ordinal();
+
+    /**
+     * the name of this enum constant
+     *
+     * @return 枚举名称
+     * @see Enum#name()
+     */
+    String name();
+
+    @Override
+    default Integer getSort() {
+        return ordinal();
+    }
+
+    /**
+     * 枚举选项的描述，对每一个选项进行详细的描述有时候是必要的，默认值为 {@code null}
+     *
+     * @return 描述
+     */
+    @Override
+    default String getDescription() {
+        return null;
     }
 }

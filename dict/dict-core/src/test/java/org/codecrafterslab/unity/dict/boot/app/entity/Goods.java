@@ -1,6 +1,7 @@
 package org.codecrafterslab.unity.dict.boot.app.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.codecrafterslab.unity.dict.boot.annotation.DictSerialize;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @DictSerialize(SerializeScope.VALUE)
+@Builder
 public class Goods {
 
     @DictSerialize({SerializeScope.CODE_VALUE_LABEL, SerializeScope.CODE})

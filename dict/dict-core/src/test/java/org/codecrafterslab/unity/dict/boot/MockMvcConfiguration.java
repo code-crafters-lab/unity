@@ -12,6 +12,10 @@ public class MockMvcConfiguration implements MockMvcBuilderCustomizer {
 
     @Override
     public void customize(ConfigurableMockMvcBuilder<?> builder) {
+        builder.addFilters((request, response, chain) -> {
+            response.setCharacterEncoding("UTF-8");
+            chain.doFilter(request, response);
+        });
 //        builder.defaultResponseCharacterEncoding(StandardCharsets.UTF_8);
     }
 

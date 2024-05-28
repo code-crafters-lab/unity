@@ -28,11 +28,6 @@
                   <project path="$PROJECT_DIR$/gradle-plugins" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/response" name="response">
-                <projects>
-                  <project path="$PROJECT_DIR$/response" />
-                </projects>
-              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
@@ -50,7 +45,6 @@
             <option value="$PROJECT_DIR$/exception/exception-api" />
             <option value="$PROJECT_DIR$/exception/exception-core" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
-            <option value="$PROJECT_DIR$/response" />
           </set>
         </option>
       </GradleProjectSettings>
