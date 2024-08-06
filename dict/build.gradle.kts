@@ -11,7 +11,7 @@ subprojects {
     apply(plugin = "net.jqsoft.nexus3")
 }
 
-listOf("build", "clean", "publish").forEach { task ->
+listOf("build", "clean", "publish", "publishToMavenLocal").forEach { task ->
     tasks.named(task) {
         dependsOn(
             ":dict-api:${task}",

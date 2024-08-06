@@ -12,8 +12,8 @@ class Nexus3Plugin : Plugin<Project> {
             val publishing = project.extensions.getByType(PublishingExtension::class.java)
             publishing.repositories.maven {
                 name = "Nexus3"
-//                url = project.uri("http://nexus.jqk8s.jqsoft.net/repository/maven-${getVersionType(project)}/")
-                url = project.uri("http://localhost:8081/repository/maven-${getVersionType(project)}/")
+                val nexus3Host = getPriorityProperty("dev.opts.nexus.host", project, "http://localhost:8081")
+                url = project.uri("${nexus3Host}/repository/maven-${getVersionType(project)}/")
                 isAllowInsecureProtocol = true
                 val user = getPriorityProperty("dev.opts.nexus.username", project, "dev")
                 val pwd = getPriorityProperty("dev.opts.nexus.password", project, "dev")
@@ -37,7 +37,6 @@ class Nexus3Plugin : Plugin<Project> {
 
         /* pre-release 部分 */
         val preRelease: String = matchers?.groups?.get(4)?.value ?: ""
-        // val build = matchers?.groups?.get(5)?.value ?: ""
 
         val versionType = when {
             preRelease == "" -> "releases"
