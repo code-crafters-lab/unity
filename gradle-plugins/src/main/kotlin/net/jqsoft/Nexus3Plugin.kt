@@ -11,8 +11,9 @@ class Nexus3Plugin : Plugin<Project> {
         project.plugins.withType(MavenPublishPlugin::class.java) {
             val publishing = project.extensions.getByType(PublishingExtension::class.java)
             publishing.repositories.maven {
-                name = "JinQiSoftNexus3"
-                url = project.uri("http://nexus.jqk8s.jqsoft.net/repository/maven-${getVersionType(project)}/")
+                name = "Nexus3"
+//                url = project.uri("http://nexus.jqk8s.jqsoft.net/repository/maven-${getVersionType(project)}/")
+                url = project.uri("http://localhost:8081/repository/maven-${getVersionType(project)}/")
                 isAllowInsecureProtocol = true
                 val user = getPriorityProperty("dev.opts.nexus.username", project, "dev")
                 val pwd = getPriorityProperty("dev.opts.nexus.password", project, "dev")
@@ -40,7 +41,7 @@ class Nexus3Plugin : Plugin<Project> {
 
         val versionType = when {
             preRelease == "" -> "releases"
-            Regex("^(M|RC|beta).*", RegexOption.IGNORE_CASE).matches(preRelease) -> "prerelease"
+            Regex("^(M|RC|beta).*", RegexOption.IGNORE_CASE).matches(preRelease) -> "pre-releases"
             Regex("^(alpha|SNAPSHOT).*", RegexOption.IGNORE_CASE).matches(preRelease) -> "snapshots"
             else -> "snapshots"
         }
