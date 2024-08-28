@@ -4,7 +4,3 @@ plugins {
 
 group = "org.codecrafterslab"
 description = "Unity Build"
-
-
-
-
