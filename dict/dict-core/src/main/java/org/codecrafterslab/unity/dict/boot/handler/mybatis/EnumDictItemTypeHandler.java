@@ -28,7 +28,11 @@ public class EnumDictItemTypeHandler<T extends EnumDictItem<?>> extends Abstract
 
     @Override
     protected T toDictionaryItem(Object value) {
-        return EnumDictItem.find(type, value);
+        try {
+            return EnumDictItem.find(type, value);
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
 }

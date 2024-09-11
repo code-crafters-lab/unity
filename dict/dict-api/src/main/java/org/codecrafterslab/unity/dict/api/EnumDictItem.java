@@ -5,7 +5,6 @@ import org.codecrafterslab.unity.exception.core.BizStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
@@ -96,7 +95,8 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T findByCode(Class<T> type, String code) {
+    static <T extends EnumDictItem<?>> T findByCode(Class<T> type, @Nullable String code) {
+        if (Objects.isNull(code)) return null;
         return findByCondition(type, item -> item.getCode().equalsIgnoreCase(code.trim())).stream().findFirst().orElse(null);
     }
 
@@ -109,7 +109,8 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T findByLabel(Class<T> type, String label) {
+    static <T extends EnumDictItem<?>> T findByLabel(Class<T> type, @Nullable String label) {
+        if (Objects.isNull(label)) return null;
         return findByCondition(type, item -> item.getLabel().equalsIgnoreCase(label.trim())).stream().findFirst().orElse(null);
     }
 
@@ -138,7 +139,7 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T find(Class<T> type, @NonNull Object parameter) {
+    static <T extends EnumDictItem<?>> T find(Class<T> type, @Nullable Object parameter) {
         return find(type, parameter, val -> val);
     }
 
@@ -152,8 +153,10 @@ public interface EnumDictItem<V> extends DictionaryItem<V> {
      * @return 查找到的结果
      * @see #findByCondition(Class, Predicate)
      */
-    static <T extends EnumDictItem<?>> T find(Class<T> type, @NonNull Object parameter,
+    static <T extends EnumDictItem<?>> T find(Class<T> type, @Nullable Object parameter,
                                               Function<Object, Object> valueConvert) {
+        if (Objects.isNull(parameter)) return null;
+
         T result;
         /* 1. 如果值是字符串先根据编码进行查找 */
         if (parameter instanceof String) {

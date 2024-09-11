@@ -3,6 +3,7 @@ package org.codecrafterslab.unity.dict.boot.handler.mybatis;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.springframework.lang.Nullable;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -53,8 +54,8 @@ public abstract class AbstractDictionaryItemTypeHandler<T> extends BaseTypeHandl
         return toDictionaryItem(object);
     }
 
-    protected abstract Object fromDictionaryItem(Object parameter);
+    protected abstract @Nullable Object fromDictionaryItem(Object parameter);
 
-    protected abstract T toDictionaryItem(Object value);
+    protected abstract @Nullable T toDictionaryItem(Object value);
 
 }
