@@ -40,7 +40,7 @@ class JavaConventions : Plugin<Project> {
 
     private fun configureClean(project: Project) {
         /* 清理任务增加删除目录 */
-        project.tasks.named("clean", Delete::class.java) {
+        project.tasks.withType(Delete::class.java) {
             // todo includeBuild 时清理父项目，子项目未清理
             delete("out", "build")
         }
