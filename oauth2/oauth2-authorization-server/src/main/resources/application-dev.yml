@@ -1,0 +1,8 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          dingtalk:
+            client-id: dingpq80f8uhg9z6vx3l
+            client-secret: Ukz2CfV2i4mLnF34K3sZPBVbTZimFZ24eHmA9ze0TZwK4TJ4Jm7umm-fbQDqfch9

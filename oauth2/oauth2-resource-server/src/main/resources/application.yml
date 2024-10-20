@@ -1,0 +1,26 @@
+server:
+  port: 8090
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://127.0.0.1:9000
+        opaquetoken:
+          introspection-uri: http://127.0.0.1:9000/oauth2/introspect
+          client-id: csdn
+          client-secret: csdn123
+api:
+  security:
+    res-server:
+      # 不需要验证权限的地址
+      ignore:
+        - /demo
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+    com.voc.restful: debug
+#    org.springframework.boot.autoconfigure: DEBUG

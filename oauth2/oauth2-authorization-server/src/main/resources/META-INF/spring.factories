@@ -1,0 +1,5 @@
+# Auto Configure
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#com.voc.security.autoconfigure.AuthorizationServerAutoConfiguration
+#org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer=\
+

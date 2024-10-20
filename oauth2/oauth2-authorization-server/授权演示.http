@@ -1,0 +1,52 @@
+### 1. PKCE 授权码流程
+# 1.1 获取授权码 浏览器打开以下地址 redirect_url 不能使用 localhost
+GET http://localhost:9000/oauth2/authorize?client_id=spa&response_type=code&scope=openid&redirect_uri=http://127.0.0.1:3000/login&code_challenge_method=S256&code_challenge=FWOeBX6Qw_krhUE2M0lOIH3jcxaZzfs5J4jtai5hOX4
+
+###
+# 1.2 根据授权码获取 token (client_secret_post)
+POST http://localhost:9000/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo&client_secret=123456&grant_type=authorization_code&code=QB-wYllFKzKU2_tjYBuc3VAwCOT3oxUNNXlLWunyDFqJCtOd87U7I6_103sw2xGap_WqwGcLZaMhfMPp55uyi7TgJVZJLerARGGXv-RElgnqUMoNXR391Gyni-4TR40L&redirect_uri=http://127.0.0.1:8090/callback
+
+###
+# 2. 根据刷新令牌获取token
+POST http://localhost:9000/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo&client_secret=123456&grant_type=refresh_token&refresh_token=61OqTQucWsE9zTsLOr4tNFTTaatnfqkfBILMgNQif9HSLvUwkLrAdq6Qetea5zZX69bOk9454cbgM0nz6rWdb0eARkOOyxqac_9qmaJai-EpCn1ZhLfYssvBNsk1yDK3
+
+###
+# 3. 客户端凭证(此模式下，没有用户的参与，只有客户端和授权服务器之间的参与)
+POST http://localhost:9000/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo&client_secret=123456&grant_type=client_credentials
+
+### 4.密码模式
+POST http://localhost:9000/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo&client_secret=123456&grant_type=password&username=root&password=123456
+
+### client_id=demo&client_secret=123456&grant_type=password&username=root&password=123456
+
+###
+# 5. 撤销令牌
+POST http://localhost:9000/oauth2/revoke
+Authorization: Basic Y3Nkbjpjc2RuMTIz
+Content-Type: application/x-www-form-urlencoded
+
+token=dff9d0434829d7639eb839024450349dccc484af94a899b994f7c36a9afa3e3e
+
+###
+# 6. 查看 token 的信息（令牌内省） (client_secret_basic)
+POST http://localhost:9000/oauth2/introspect
+#Authorization: Basic ZGVtbzoxMjM0NTY=
+Content-Type: application/x-www-form-urlencoded
+
+client_id=demo&client_secret=123456&token=61OqTQucWsE9zTsLOr4tNFTTaatnfqkfBILMgNQif9HSLvUwkLrAdq6Qetea5zZX69bOk9454cbgM0nz6rWdb0eARkOOyxqac_9qmaJai-EpCn1ZhLfYssvBNsk1yDK3
+
+###
+# 7. 查看JWK信息
+GET http://localhost:9000/oauth2/jwks

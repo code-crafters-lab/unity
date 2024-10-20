@@ -1,0 +1,26 @@
+= 授权服务器
+
+== 使用
+
+== 授权码模式
+- 使用浏览器打开 http://localhost:9000/oauth2/authorize?client_id=demo&response_type=code&scope=openid&redirect_uri=http://127.0.0.1:8090/callback
+-
+
+== 统一业务异常
+
+业务只需关注正常逻辑，异常信息全局统一处理返回
+
+== 统一返回响应结果
+
+接口层只需返回需要的数据即可，返回时自动对数据进行包装处理
+
+- 通过 api.json.automatic-wrapped 可以配置全局响应结果的包装，默认开启
+- 部分接口不需要包装，则可以在类或方法上使用 **ResponseResult** 注解
+- Result 序列化字段名称可以通过 api.json.result 进行配置，满足个性定制需要，兼容遗留项目字段不统一的问题
+
+== 序列化
+
+- jackson 不序列化值为空的属性(包括空对象、空字符串、集合长度为0)
+- 通过 api.json.utc-timestamp 可将时间类型对象序列化为 UTC 时间戳
+- 通过 api.json.format 可设置时间类型序列化格式
+
