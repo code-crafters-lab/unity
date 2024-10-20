@@ -25,12 +25,12 @@ class DependencyConventions : Plugin<Project> {
             withDependencies {
                 dependencies.forEach {
                     if (it.version == null && it is ExternalDependency) {
-                        if ("${it.group}:${it.name}" == "org.projectlombok:lombok") {
-                            it.version { require(lombokVersion) }
-                        }
-                        if ("${it.group}:${it.name}" == "org.springframework.boot:spring-boot-configuration-processor") {
-                            it.version { require(springBootVersion) }
-                        }
+//                        if ("${it.group}:${it.name}" == "org.projectlombok:lombok") {
+//                            it.version { require(lombokVersion) }
+//                        }
+//                        if ("${it.group}:${it.name}" == "org.springframework.boot:spring-boot-configuration-processor") {
+//                            it.version { require(springBootVersion) }
+//                        }
                     }
                 }
             }

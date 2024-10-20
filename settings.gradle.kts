@@ -8,10 +8,12 @@ plugins {
     id("com.voc.repo")
 }
 
-include("dependencies")
+include(":dependencies")
 
 includeBuild(".")
 includeBuild("exception")
 includeBuild("dict")
+includeBuild("oauth2")
+
 //includeBuild("response")
 

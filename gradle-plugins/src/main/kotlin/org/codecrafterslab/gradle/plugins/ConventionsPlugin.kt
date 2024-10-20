@@ -1,6 +1,7 @@
 package org.codecrafterslab.gradle.plugins
 
 import org.codecrafterslab.gradle.plugins.conventions.*
+import org.codecrafterslab.gradle.plugins.dependency.ManagementPlugin
 import org.codecrafterslab.gradle.plugins.dependency.OptionalPlugin
 import org.codecrafterslab.gradle.plugins.ide.IDEPlugin
 import org.gradle.api.Plugin
@@ -16,8 +17,9 @@ class ConventionsPlugin : Plugin<Project> {
             apply(MavenPublishingConventions::class.java)
             apply(AsciidoctorConventions::class.java)
 //            apply(GrpcConventions::class.java)
-            apply(OptionalPlugin::class.java)
             apply(IDEPlugin::class.java)
+            apply(OptionalPlugin::class.java)
+            apply(ManagementPlugin::class.java)
         }
     }
 }

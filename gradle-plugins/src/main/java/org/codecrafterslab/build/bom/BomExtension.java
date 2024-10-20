@@ -7,6 +7,7 @@ import org.codecrafterslab.build.bom.lib.VersionAlignment;
 import org.codecrafterslab.build.bom.lib.handler.LibraryHandler;
 import org.codecrafterslab.build.bom.lib.handler.UpgradeHandler;
 import org.codecrafterslab.build.bom.version.DependencyVersion;
+import org.codecrafterslab.gradle.plugins.dependency.ManagementPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
@@ -152,7 +153,8 @@ public class BomExtension {
                 putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
                 String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion().getVersion());
                 this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, this.dependencyHandler.platform(bomDependency));
-                this.dependencyHandler.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME, this.dependencyHandler.enforcedPlatform(bomDependency));
+                this.dependencyHandler.add(ManagementPlugin.MANAGEMENT_CONFIGURATION_NAME,
+                        this.dependencyHandler.enforcedPlatform(bomDependency));
             }
         }
     }

@@ -27,6 +27,7 @@ dependencies {
     implementation("org.springframework:spring-core")
     implementation("org.apache.maven:maven-artifact:3.9.6")
     implementation("de.skuzzle:semantic-version:2.1.1")
+
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
     implementation("org.gradle:test-retry-gradle-plugin:1.5.6")

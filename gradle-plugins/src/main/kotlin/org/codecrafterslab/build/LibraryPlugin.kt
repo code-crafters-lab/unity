@@ -12,6 +12,8 @@ import org.gradle.api.plugins.JavaLibraryPlugin
 class LibraryPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply(JavaLibraryPlugin::class.java)
+
         project.plugins.apply(ConventionsPlugin::class.java)
+        project.plugins.apply(PublishPlugin::class.java)
     }
 }

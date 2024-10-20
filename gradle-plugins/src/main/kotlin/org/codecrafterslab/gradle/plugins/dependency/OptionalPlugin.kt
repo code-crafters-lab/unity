@@ -25,10 +25,9 @@ class OptionalPlugin : Plugin<Project> {
 
         project.plugins.withType(JavaPlugin::class.java) {
             project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all {
-                project.configurations.filter { it.name == compileClasspathConfigurationName || it.name == runtimeClasspathConfigurationName }
-                    .forEach { it.extendsFrom(optional) }
-//                project.configurations.getByName(compileClasspathConfigurationName).extendsFrom(optional)
-//                project.configurations.getByName(runtimeClasspathConfigurationName).extendsFrom(optional)
+                project.configurations.filter {
+                    it.name == compileClasspathConfigurationName || it.name == runtimeClasspathConfigurationName
+                }.forEach { it.extendsFrom(optional) }
             }
         }
     }

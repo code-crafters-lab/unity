@@ -5,6 +5,7 @@ import groovy.util.Node;
 import org.codecrafterslab.build.PublishPlugin;
 import org.codecrafterslab.build.bom.lib.Group;
 import org.codecrafterslab.build.bom.lib.Module;
+import org.codecrafterslab.gradle.plugins.dependency.ManagementPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -38,11 +39,17 @@ public class BomPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         PluginContainer plugins = project.getPlugins();
-        plugins.apply(PublishPlugin.class);
+//        plugins.apply(DependencyManagementPlugin.class);
+//        plugins.apply("io.spring.dependency-management");
+
+
+//        plugins.apply(de)
         plugins.apply(JavaPlatformPlugin.class);
         JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
         javaPlatform.allowDependencies();
-        createApiEnforcedConfiguration(project);
+        plugins.apply(ManagementPlugin.class);
+        plugins.apply(PublishPlugin.class);
+//        createApiEnforcedConfiguration(project);
         BomExtension bom = project.getExtensions().create(BOM_EXTENSION_NAME, BomExtension.class,
                 project.getDependencies(), project);
 //        CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
@@ -207,24 +214,6 @@ public class BomPlugin implements Plugin<Project> {
             return this.bom.getLibraries().stream().flatMap((library) -> library.getGroups().stream()).filter((group) -> group.getId().equals(groupId)).flatMap((group) -> group.getModules().stream()).filter((module) -> module.getName().equals(artifactId)).map(mapper).filter(Objects::nonNull).collect(Collectors.toSet());
         }
 
-
-        private static class PluginInfo {
-            Library library;
-            String groupId;
-            String artifactId;
-            String versionProperty;
-            String version;
-
-            public PluginInfo(Library library, Group group, String plugin) {
-                this.library = library;
-                this.versionProperty = library.getVersionProperty();
-                this.version = library.getVersion().getVersion().toString();
-                this.groupId = group.getId();
-                this.artifactId = plugin;
-            }
-
-        }
-
         private void addPluginManagement(Node projectNode) {
             this.addPluginManagement(projectNode, this.bom.getLibraries());
         }
@@ -295,6 +284,23 @@ public class BomPlugin implements Plugin<Project> {
                 return name.equals(node.name());
             }
             return false;
+        }
+
+        private static class PluginInfo {
+            Library library;
+            String groupId;
+            String artifactId;
+            String versionProperty;
+            String version;
+
+            public PluginInfo(Library library, Group group, String plugin) {
+                this.library = library;
+                this.versionProperty = library.getVersionProperty();
+                this.version = library.getVersion().getVersion().toString();
+                this.groupId = group.getId();
+                this.artifactId = plugin;
+            }
+
         }
 
     }

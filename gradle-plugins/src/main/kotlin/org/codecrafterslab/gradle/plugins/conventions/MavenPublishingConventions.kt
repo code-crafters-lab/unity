@@ -72,6 +72,7 @@ class MavenPublishingConventions : Plugin<Project> {
         publication.versionMapping {
             usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
             usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
+            allVariants { fromResolutionResult() }
         }
     }
 
@@ -115,10 +116,10 @@ class MavenPublishingConventions : Plugin<Project> {
         val root = xmlProvider.asNode()
 
         // 移除 platform 插件自动生成的 dependencyManagement
-        val dependencyManagement = findDependencyManagement(root)
-        if (dependencyManagement != null) {
-            root.remove(dependencyManagement)
-        }
+//        val dependencyManagement = findDependencyManagement(root)
+//        if (dependencyManagement != null) {
+//            root.remove(dependencyManagement)
+//        }
     }
 
     private fun findDependencyManagement(parent: Node): Node? {

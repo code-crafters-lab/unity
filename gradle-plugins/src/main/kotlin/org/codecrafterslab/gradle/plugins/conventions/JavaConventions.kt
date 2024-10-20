@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.compile.JavaCompile
@@ -138,8 +137,9 @@ class JavaConventions : Plugin<Project> {
     private fun configureJavaConventions(project: Project) {
         val hasToolchainVersion = project.hasProperty("toolchainVersion")
         if (!hasToolchainVersion) {
-            val javaPluginExtension = project.extensions.getByType(JavaPluginExtension::class.java)
-            javaPluginExtension.sourceCompatibility = JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY)
+            // fix 这里代码会导致依传递依赖版本获取不到
+//            val javaPluginExtension = project.extensions.getByType(JavaPluginExtension::class.java)
+//            javaPluginExtension.sourceCompatibility = JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY)
         }
 
         project.tasks.withType(JavaCompile::class.java) {
