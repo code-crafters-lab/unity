@@ -1,34 +1,25 @@
 package org.codecrafterslab.unity.oauth2.config;
 
-import com.nimbusds.jose.jwk.ECKey;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
-import org.codecrafterslab.unity.oauth2.federation.FederatedIdentityIdTokenCustomizer;
-import org.codecrafterslab.unity.oauth2.jose.Jwks;
+import org.codecrafterslab.unity.oauth2.authentication.ThirdCodeAuthenticationConverter;
+import org.codecrafterslab.unity.oauth2.authentication.ThirdCodeAuthenticationProvider;
+import org.codecrafterslab.unity.oauth2.customizer.OidcUserInfoMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 public class AuthorizationServerConfig {
@@ -37,109 +28,70 @@ public class AuthorizationServerConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
                                                                       RegisteredClientRepository registeredClientRepository) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        OAuth2AuthorizationServerConfigurer ass = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
-//        ass.registeredClientRepository(registeredClientRepository);
-        ass.authorizationServerMetadataEndpoint(metadataEndpoint -> {
+        OAuth2AuthorizationServerConfigurer sas = new OAuth2AuthorizationServerConfigurer();
+        RequestMatcher endpointsMatcher = sas.getEndpointsMatcher();
+
+//        sas.getEndpointsMatcher()
+
+//        OAuth2TokenEndpointConfigurer t = http.getConfigurer(OAuth2TokenEndpointConfigurer.class)
+//        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+//        OAuth2AuthorizationServerConfigurer sas = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
+
+        sas.authorizationServerMetadataEndpoint(metadataEndpoint -> {
             metadataEndpoint.authorizationServerMetadataCustomizer(builder -> {
-                builder.grantType(AuthorizationGrantType.AUTHORIZATION_CODE.getValue());
-                builder.grantType(AuthorizationGrantType.REFRESH_TOKEN.getValue());
-                builder.grantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
                 // oauth2 授权类型支持密码模式
                 builder.grantType(AuthorizationGrantType.PASSWORD.getValue());
-                builder.grantType(AuthorizationGrantType.DEVICE_CODE.getValue());
-                builder.grantType(AuthorizationGrantType.TOKEN_EXCHANGE.getValue());
-
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC
-                        .getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST
-                        .getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT
-                        .getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.PRIVATE_KEY_JWT
-                        .getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.NONE.getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod.TLS_CLIENT_AUTH
-                        .getValue());
-                builder.tokenRevocationEndpointAuthenticationMethod(ClientAuthenticationMethod
-                        .SELF_SIGNED_TLS_CLIENT_AUTH.getValue());
-
                 builder.codeChallengeMethod(CodeChallengeMethod.PLAIN.getValue());
-                builder.codeChallengeMethod(CodeChallengeMethod.S256.getValue());
 
-                builder.scope("openid");
-                builder.scope("profile");
-                builder.scope("email");
-
-                builder.build();
+                builder.scope(OidcScopes.PROFILE);
+                builder.scope(OidcScopes.EMAIL);
+                builder.scope(OidcScopes.PHONE);
+                builder.scope("dingtalk");
+                builder.scope("job_number");
             });
         });
+
         // Enable OpenID Connect 1.0
-        ass.oidc(Customizer.withDefaults());
+        sas.oidc(oidc -> {
+            oidc.providerConfigurationEndpoint(Customizer.withDefaults());
+            oidc.userInfoEndpoint(userInfo -> {
+                userInfo.userInfoMapper(new OidcUserInfoMapper());
+            });
+        });
+
+
+        sas.tokenEndpoint(tokenEndpoint -> {
+            tokenEndpoint.accessTokenRequestConverter(new ThirdCodeAuthenticationConverter());
+            tokenEndpoint.authenticationProvider(new ThirdCodeAuthenticationProvider(http, registeredClientRepository));
+        });
+
+        http.securityMatcher(endpointsMatcher).authorizeHttpRequests((authorize) ->
+                // todo 只有第三方临时授权码的请求才放行，目前全部放开
+                authorize
+//                        .requestMatchers("/oauth2/token").permitAll()
+//                                authorize.requestMatchers(endpointsMatcher).permitAll()
+                        .anyRequest().authenticated()).csrf((csrf) -> csrf.ignoringRequestMatchers(endpointsMatcher)).apply(sas);
 
         // 跨域配置
         http.cors(Customizer.withDefaults());
 
         // Redirect to the login page when not authenticated from the authorization endpoint
-//        http.exceptionHandling((exceptions) -> exceptions.defaultAuthenticationEntryPointFor(new
-//        LoginUrlAuthenticationEntryPoint("/login"), new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
+        http.exceptionHandling((exceptions) -> exceptions.defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/login"), new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
 
         // Accept access tokens for User Info and/or Client Registration
-        http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(Customizer.withDefaults()));
+        // http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(Customizer.withDefaults()));
+
+        // 第三方授权直接登录过滤器
+//        ThirdCodeLoginAuthenticationFilter filter = new ThirdCodeLoginAuthenticationFilter("/oauth2/token");
+//        http.addFilterBefore(filter, OAuth2LoginAuthenticationFilter.class);
 
         return http.build();
     }
 
 
-//    @Bean
-//    public JdbcOAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate,
-//                                                               RegisteredClientRepository
-//                                                               registeredClientRepository) {
-//        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
-//    }
-//
-//    @Bean
-//    public JdbcOAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate,
-//                                                                             RegisteredClientRepository
-//                                                                             registeredClientRepository) {
-//        // Will be used by the ConsentController
-//        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
-//    }
-
     @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> idTokenCustomizer() {
-        return new FederatedIdentityIdTokenCustomizer();
+    public AuthorizationServerSettings authorizationServerSettings() {
+        return AuthorizationServerSettings.builder().build();
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addAllowedOrigin("*");
-        config.setAllowCredentials(false);
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        RSAKey rsaKey = Jwks.generateRsa();
-        ECKey ecKey = Jwks.generateEc();
-        OctetSequenceKey octetSequenceKey = Jwks.generateSecret();
-        JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey, ecKey, octetSequenceKey));
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-    }
-
-//    @Bean
-//    public AuthorizationServerSettings authorizationServerSettings() {
-//        return AuthorizationServerSettings.builder().build();
-//    }
 
 }

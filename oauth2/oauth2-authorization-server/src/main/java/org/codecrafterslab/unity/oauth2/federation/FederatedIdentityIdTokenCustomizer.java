@@ -3,13 +3,13 @@ package org.codecrafterslab.unity.oauth2.federation;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,15 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
         } else if (principal.getPrincipal() instanceof OAuth2User oauth2User) {
             claims = oauth2User.getAttributes();
         } else {
-            claims = Collections.emptyMap();
+            // todo 获取用户细腻
+            claims = new HashMap<>();
+            claims.put(StandardClaimNames.NICKNAME, "coffee377");
+            claims.put("job_number", "0634");
+            claims.put("openid", "2");
+            claims.put("union_id", "1");
+            claims.put(StandardClaimNames.PREFERRED_USERNAME, "吴玉杰");
+            claims.put(StandardClaimNames.PICTURE, "https://gw.alipayobjects" +
+                    ".com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png");
         }
 
         return new HashMap<>(claims);

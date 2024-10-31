@@ -1,7 +1,9 @@
 package com.voc.security.core.autoconfigure;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
@@ -15,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
-//@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class SecurityCoreAutoConfiguration {
 
     /**

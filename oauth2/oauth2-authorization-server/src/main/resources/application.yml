@@ -16,19 +16,18 @@ spring:
             client-secret: 6Il0DuPZPPIr-OG03uMrnqDNu_o03tpIkK03ScpuEPP6NAw7J52D0LWPvTjRf4BR
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: openid,corpid
-          github-idp:
+            scope: corpid
+          github:
             provider: github
             client-id: db3bd3536a1d3163acf9
             client-secret: 45e9229144cfd3e083ee6994f4719c31bc553cf5
-        #          gitee:
-        #            client-id: 96e5747bd3ba7792345f60d8812e1c579cee9c6557ef9bd377f3391d2cc9930c
-        #            client-secret: 278877235bd765f8912fc30e2cef06fbad72be331014dcc40175b7da70b02954
         provider:
           dingtalk:
             authorization-uri: https://login.dingtalk.com/oauth2/auth
             token-uri: https://api.dingtalk.com/v1.0/oauth2/userAccessToken
             user-info-uri: https://api.dingtalk.com/v1.0/contact/users/me
+            user-info-authentication-method: header
+            user-name-attribute: nick
 logging:
   level:
     root: warn
@@ -37,6 +36,7 @@ logging:
     org.springframework.security.oauth2: trace
     org.springframework.security.authorization: trace
     org.springframework.security.authentication: trace
+    org.codecrafterslab.unity.oauth2: trace
 management:
   endpoint:
     health:
