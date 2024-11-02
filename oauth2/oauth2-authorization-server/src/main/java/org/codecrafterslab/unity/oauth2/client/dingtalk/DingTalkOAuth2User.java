@@ -2,7 +2,6 @@ package org.codecrafterslab.unity.oauth2.client.dingtalk;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.Map;
  * @email coffee377@dingtalk.com
  * @time 2022/10/30 10:30
  */
-public class DingTalkOAuth2User extends DefaultOAuth2User implements OAuth2User {
+public class DingTalkOAuth2User extends DefaultOAuth2User {
     public final static String NAME_ATTRIBUTE_KEY = "nick";
 
     public DingTalkOAuth2User(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
@@ -83,12 +82,12 @@ public class DingTalkOAuth2User extends DefaultOAuth2User implements OAuth2User 
     }
 
     /**
-     * 用户登录是选择的企业
+     * 用户登录时选择的企业
      *
      * @return 企业 ID
      */
     public String getCorpId() {
-        return null;
+        return getAttribute("corpId");
     }
 
 }

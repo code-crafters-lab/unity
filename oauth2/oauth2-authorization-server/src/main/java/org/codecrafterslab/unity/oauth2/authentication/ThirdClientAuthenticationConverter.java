@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Setter
-public class ThirdCodeAuthenticationConverter implements AuthenticationConverter {
-
+public class ThirdClientAuthenticationConverter implements AuthenticationConverter {
     public static final String PROVIDER_NAME_KEY = "provider";
     private Converter<String, AuthProvider> authProviderConverter = name -> () -> name;
 
@@ -30,17 +29,25 @@ public class ThirdCodeAuthenticationConverter implements AuthenticationConverter
 
         MultiValueMap<String, String> parameters = ThirdCodeUtils.getParameters(request);
 
-//        // client_id (REQUIRED)
-//        String clientId = parameters.getFirst(OAuth2ParameterNames.CLIENT_ID); // <2>
-//        if (!StringUtils.hasText(clientId) || parameters.get(OAuth2ParameterNames.CLIENT_ID).size() != 1) {
-//            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
-//        }
+        // client_id (REQUIRED)
+        String clientId = parameters.getFirst(OAuth2ParameterNames.CLIENT_ID); // <2>
+        if (!StringUtils.hasText(clientId) || parameters.get(OAuth2ParameterNames.CLIENT_ID).size() != 1) {
+            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
+        }
 
         // code (REQUIRED)
         String code = parameters.getFirst(OAuth2ParameterNames.CODE); // <2>
         if (!StringUtils.hasText(code) || parameters.get(OAuth2ParameterNames.CODE).size() != 1) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
         }
+
+        // provider (REQUIRED)
+        String providerName = parameters.getFirst(PROVIDER_NAME_KEY); // <2>
+        if (!StringUtils.hasText(providerName) || parameters.get(PROVIDER_NAME_KEY).size() != 1) {
+            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
+        }
+        AuthProvider provider = authProviderConverter.convert(providerName);
+        assert provider != null;
 
         Map<String, Object> additionalParameters = new HashMap<>();
         parameters.forEach((key, value) -> {
@@ -53,8 +60,12 @@ public class ThirdCodeAuthenticationConverter implements AuthenticationConverter
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return new ThirdCodeAuthenticationToken(code, authentication, additionalParameters);
+        if (authentication == null) {
+            return ThirdClientAuthenticationToken.unauthenticated(provider, clientId, code, additionalParameters);
+        }
+
+        return ThirdClientAuthenticationToken.authenticated(provider, clientId, code, authentication,
+                additionalParameters);
 
     }
-
 }

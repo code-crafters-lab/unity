@@ -6,12 +6,12 @@ public interface ProjectInfo {
 
     boolean isRootProject();
 
-    File getDir();
-
     String getBuildFileName();
 
-    String getPath();
+    File getDir();
 
     String getName();
+
+    String getPath();
 
 }

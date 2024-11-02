@@ -2,7 +2,7 @@ package org.codecrafterslab.unity.oauth2.config;
 
 import org.codecrafterslab.unity.oauth2.client.dingtalk.DingTalkAccessTokenResponseConverter;
 import org.codecrafterslab.unity.oauth2.client.dingtalk.DingTalkOAuth2AuthorizationCodeGrantRequestEntityConverter;
-import org.codecrafterslab.unity.oauth2.client.dingtalk.OAuth2UserRequestEntityConverterPlus;
+import org.codecrafterslab.unity.oauth2.client.dingtalk.DingTalkOAuth2UserService;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -23,12 +23,17 @@ import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationC
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.DelegatingOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -70,16 +75,9 @@ public class DefaultSecurityConfig {
             });
             /* 用户信息端点配置 */
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
-//                List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices = new ArrayList<>();
-//                DingTalkOAuth2UserService dingTalkOAuth2UserService = new DingTalkOAuth2UserService();
-//                userServices.add(dingTalkOAuth2UserService);
-                DefaultOAuth2UserService defUserService = new DefaultOAuth2UserService();
-                /* 请求参数转换 */
-                defUserService.setRequestEntityConverter(new OAuth2UserRequestEntityConverterPlus());
-                userInfoEndpoint.userService(defUserService);
-//                userServices.add(defUserService);
-                // TODO: 2023/2/26 16:06 使用委托类注入不同实现
-//                userInfoEndpoint.userService(new DelegatingOAuth2UserService<>(userServices));
+                List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
+                        Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
+                userInfoEndpoint.userService(new DelegatingOAuth2UserService<>(userServices));
             });
         });
         http.cors(withDefaults());

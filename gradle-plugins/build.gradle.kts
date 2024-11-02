@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.voc.lib")
     id("com.voc.publish")
-    id("net.jqsoft.nexus3")
+//    id("net.jqsoft.nexus3")
     `kotlin-dsl`
     `java-gradle-plugin`
 }
@@ -12,13 +12,6 @@ plugins {
 group = "org.codecrafterslab"
 description = "Unity Gradle Plugin"
 
-sourceSets {
-//    create("dependency-management") {
-//        java {
-//            srcDirs("src/dependency-management")
-//        }
-//    }
-}
 
 dependencies {
     implementation(platform("org.springframework:spring-framework-bom:5.3.34"))
@@ -28,8 +21,9 @@ dependencies {
     implementation("org.apache.maven:maven-artifact:3.9.6")
     implementation("de.skuzzle:semantic-version:2.1.1")
 
+    /* gradle 插件 */
     implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25")
     implementation("org.gradle:test-retry-gradle-plugin:1.5.6")
 
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -58,14 +52,21 @@ gradlePlugin {
             id = "com.voc.repo"
             implementationClass = "org.codecrafterslab.build.settings.RepositoriesPlugin"
         }
+        create("JinQiSoftNexus3") {
+            id = "net.jqsoft.nexus3"
+            implementationClass = "net.jqsoft.Nexus3Plugin"
+        }
+
+
         create("settings") {
             id = "com.voc.settings"
             implementationClass = "org.codecrafterslab.build.settings.ConventionsPlugin"
         }
-
-        create("JinQiSoftNexus3") {
-            id = "net.jqsoft.nexus3"
-            implementationClass = "net.jqsoft.Nexus3Plugin"
+        create("AutoInclude") {
+            id = "io.github.coffee377.auto-include"
+            implementationClass = "org.codecrafterslab.build.settings.conventions.AutoIncludeConventions"
+            displayName = "Auto Include"
+            description = "auto include project for root project"
         }
     }
 
@@ -78,6 +79,19 @@ tasks {
     withType(KotlinCompile::class.java) {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "AliYun"
+            credentials {
+                username = "5f4ba059fa82bfeb805a1e09"
+                password = "a3XkZLNApybs"
+            }
+            url = uri("https://packages.aliyun.com/5f6a9b06d24814603933faab/maven/2038604-snapshot-xnrepo")
         }
     }
 }

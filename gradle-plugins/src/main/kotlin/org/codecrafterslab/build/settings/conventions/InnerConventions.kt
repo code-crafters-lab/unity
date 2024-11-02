@@ -26,8 +26,8 @@ class InnerConventions : Plugin<Settings> {
                     innerPluginList.forEach {
                         // 如果插件已经在类路径上，则插件声明不能使用版本
                         id(it) apply false
-                        id("com.google.protobuf") version "0.9.4" apply false
                     }
+                    id("com.google.protobuf") version "0.9.4" apply false
                 }
 
                 resolutionStrategy {
