@@ -64,6 +64,13 @@ public class DefaultSecurityConfig {
     }
 
     @Bean
+    OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+        List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
+                Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
+        return new DelegatingOAuth2UserService<>(userServices);
+    }
+
+    @Bean
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 5)
     SecurityFilterChain defaultSecurityFilterChain2(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests.requestMatchers("/assets/**", "/actuator/health/liveness").permitAll().anyRequest().authenticated());
@@ -75,9 +82,9 @@ public class DefaultSecurityConfig {
             });
             /* 用户信息端点配置 */
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
-                List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
-                        Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
-                userInfoEndpoint.userService(new DelegatingOAuth2UserService<>(userServices));
+//                List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
+//                        Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
+//                userInfoEndpoint.userService(new DelegatingOAuth2UserService<>(userServices));
             });
         });
         http.cors(withDefaults());

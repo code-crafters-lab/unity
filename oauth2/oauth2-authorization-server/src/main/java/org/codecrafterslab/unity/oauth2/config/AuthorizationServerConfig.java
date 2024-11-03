@@ -6,6 +6,7 @@ import org.codecrafterslab.unity.oauth2.authentication.ThirdClientAuthentication
 import org.codecrafterslab.unity.oauth2.authentication.ThirdCodeAuthenticationConverter;
 import org.codecrafterslab.unity.oauth2.authentication.ThirdCodeAuthenticationProvider;
 import org.codecrafterslab.unity.oauth2.customizer.OidcUserInfoMapper;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -13,8 +14,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -31,7 +38,12 @@ public class AuthorizationServerConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
                                                                       OAuth2AuthorizationService authorizationService,
-                                                                      RegisteredClientRepository registeredClientRepository) throws Exception {
+                                                                      RegisteredClientRepository registeredClientRepository,
+                                                                      ClientRegistrationRepository clientRegistrationRepository,
+                                                                      OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient,
+                                                                      OAuth2UserService<OAuth2UserRequest,
+                                                                              OAuth2User> userService,
+                                                                      RestTemplateBuilder restTemplateBuilder) throws Exception {
         OAuth2AuthorizationServerConfigurer sas = new OAuth2AuthorizationServerConfigurer();
         RequestMatcher endpointsMatcher = sas.getEndpointsMatcher();
 
@@ -58,7 +70,7 @@ public class AuthorizationServerConfig {
         /* 授权服务器客户端认证 */
         sas.clientAuthentication(clientAuthentication -> {
             clientAuthentication.authenticationConverter(new ThirdClientAuthenticationConverter());
-            clientAuthentication.authenticationProvider(new ThirdClientAuthenticationProvider(registeredClientRepository));
+            clientAuthentication.authenticationProvider(new ThirdClientAuthenticationProvider(registeredClientRepository, clientRegistrationRepository, restTemplateBuilder));
         });
 
         // Enable OpenID Connect 1.0

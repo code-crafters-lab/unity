@@ -45,12 +45,12 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
         }
     }
 
-    private Map<String, Object> extractClaims(Authentication principal) {
+    private Map<String, Object> extractClaims(Authentication authentication) {
         Map<String, Object> claims;
-        if (principal.getPrincipal() instanceof OidcUser oidcUser) {
+        if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
             OidcIdToken idToken = oidcUser.getIdToken();
             claims = idToken.getClaims();
-        } else if (principal.getPrincipal() instanceof OAuth2User oauth2User) {
+        } else if (authentication.getPrincipal() instanceof OAuth2User oauth2User) {
             claims = oauth2User.getAttributes();
         } else {
             // todo 获取用户细腻
