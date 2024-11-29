@@ -26,12 +26,12 @@ bom {
             setModules(listOf("api", "cache", "server"))
         }
     }
-    library("protobuf", "4.26.1") {
+    library("protobuf", "4.28.3") {
         group("com.google.protobuf") {
             imports = listOf("protobuf-bom")
         }
     }
-    library("grpc", "1.63.0") {
+    library("grpc", "1.66.0") {
         group("io.grpc") {
             imports = listOf("grpc-bom")
         }
@@ -47,6 +47,11 @@ bom {
     library("Mybatis Plus Boot", "3.5.5") {
         group("com.baomidou") {
             setModules(listOf("mybatis-plus-boot-starter"))
+        }
+    }
+    library("ETCD", "0.8.3") {
+        group("io.etcd") {
+            setModules(listOf("jetcd-core"))
         }
     }
 }
