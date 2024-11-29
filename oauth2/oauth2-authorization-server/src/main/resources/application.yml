@@ -1,10 +1,21 @@
 server:
   port: 9998
 spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://127.0.0.1:13306/unity
+    username: root
+    password: root!@@&
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: embedded
+      encoding: utf-8
+      continue-on-error: on
+      schema-locations:
+        - classpath:META-INF/schema.sql
+        - classpath:META-INF/data.sql
   security:
-    user:
-      name: "admin"
-      password: "123456"
     oauth2:
       authorizationserver:
         multiple-issuers-allowed: false

@@ -96,6 +96,9 @@ public class AuthorizationServerConfig {
 
         // 跨域配置
         http.cors(Customizer.withDefaults());
+        // 资源服务配置 Accept access tokens for User Info and/or Client Registration
+        http.oauth2ResourceServer((resourceServer) -> resourceServer
+                .jwt(Customizer.withDefaults()));
 
         // Redirect to the login page when not authenticated from the authorization endpoint
         http.exceptionHandling((exceptions) -> exceptions.defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/login"), new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));

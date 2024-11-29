@@ -1,7 +1,9 @@
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.*;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
  * @author WuYujie
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.*;
 @Slf4j
 public class PasswordEncoderTest {
     String password = "password";
+
     @Test
     void addClient() {
         String plain = "password";
@@ -19,8 +22,8 @@ public class PasswordEncoderTest {
         MessageDigestPasswordEncoder messageDigestPasswordEncoder = new MessageDigestPasswordEncoder("MD5");
         String encode2 = messageDigestPasswordEncoder.encode(plain);
         log.warn("{} => {}", encode1, encode2);
-        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder("");
-        pbkdf2PasswordEncoder.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
+
+        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         String encode = pbkdf2PasswordEncoder.encode("password");
         log.info("{}", encode);
     }

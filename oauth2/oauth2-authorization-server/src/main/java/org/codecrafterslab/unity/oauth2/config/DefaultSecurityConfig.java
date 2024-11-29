@@ -32,6 +32,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,7 +67,8 @@ public class DefaultSecurityConfig {
     @Bean
     OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
         List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
-                Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
+                new ArrayList<>(List.of(new DefaultOAuth2UserService()));
+        userServices.add(0, new DingTalkOAuth2UserService());
         return new DelegatingOAuth2UserService<>(userServices);
     }
 
@@ -78,14 +80,10 @@ public class DefaultSecurityConfig {
         http.oauth2Login(oauth2 -> {
             /* 令牌端点配置 */
             oauth2.tokenEndpoint(tokenEndpoint -> {
-                tokenEndpoint.accessTokenResponseClient(accessTokenResponseClient());
+//                tokenEndpoint.accessTokenResponseClient(accessTokenResponseClient());
             });
             /* 用户信息端点配置 */
-            oauth2.userInfoEndpoint(userInfoEndpoint -> {
-//                List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices =
-//                        Arrays.asList(new DingTalkOAuth2UserService(), new DefaultOAuth2UserService());
-//                userInfoEndpoint.userService(new DelegatingOAuth2UserService<>(userServices));
-            });
+            oauth2.userInfoEndpoint(withDefaults());
         });
         http.cors(withDefaults());
         return http.build();
@@ -110,15 +108,5 @@ public class DefaultSecurityConfig {
                 User.withUsername("demo").password("123456").passwordEncoder(passwordEncoder::encode).roles("USER").build();
         return new InMemoryUserDetailsManager(user1, user2);
     }
-
-//    @Bean
-//    public SessionRegistry sessionRegistry() {
-//        return new SessionRegistryImpl();
-//    }
-//
-//    @Bean
-//    public HttpSessionEventPublisher httpSessionEventPublisher() {
-//        return new HttpSessionEventPublisher();
-//    }
 
 }

@@ -1,7 +1,6 @@
 package com.voc.security;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -11,8 +10,7 @@ import java.util.List;
  * @email coffee377@dingtalk.com
  * @time 2020/09/24 15:47
  */
-@Getter
-@Setter
+@Data
 @ConfigurationProperties(prefix = "api.security.res-server")
 public class ResourceServerProperties {
 

@@ -30,6 +30,8 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
     @Override
     public void customize(JwtEncodingContext context) {
+        // todo 根据配置自动获取
+        context.getJwsHeader().type("JWT");
         if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
             Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
             context.getClaims().claims(existingClaims -> {

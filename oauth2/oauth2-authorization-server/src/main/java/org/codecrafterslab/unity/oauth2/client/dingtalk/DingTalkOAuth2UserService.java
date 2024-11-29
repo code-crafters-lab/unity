@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.util.Assert;
@@ -48,14 +49,14 @@ public class DingTalkOAuth2UserService implements OAuth2UserService<OAuth2UserRe
     }
 
     @Override
-    public DingTalkOAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public DefaultOAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         Assert.notNull(userRequest, "userRequest cannot be null");
         RequestEntity<?> request = this.requestEntityConverter.convert(userRequest);
         ResponseEntity<Map<String, Object>> response = this.getResponse(userRequest, request);
         Map<String, Object> userAttributes = response.getBody();
         Set<GrantedAuthority> authorities = new LinkedHashSet<>();
         authorities.add(new OAuth2UserAuthority(userAttributes));
-        return new DingTalkOAuth2User(authorities, userAttributes);
+        return new DefaultOAuth2User(authorities, userAttributes, "nick");
     }
 
     private ResponseEntity<Map<String, Object>> getResponse(OAuth2UserRequest userRequest, RequestEntity<?> request) {

@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -84,23 +82,23 @@ public class CommonConfiguration {
         return new InMemoryRegisteredClientRepository(webClient, dingtalk);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    OAuth2AuthorizationService authorizationService(RegisteredClientRepository registeredClientRepository) {
-        return new InMemoryOAuth2AuthorizationService();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    OAuth2AuthorizationService authorizationService(RegisteredClientRepository registeredClientRepository) {
+//        return new InMemoryOAuth2AuthorizationService();
+//    }
 
-    //    @Bean
+//    @Bean
 //    public JdbcOAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate,
 //                                                               RegisteredClientRepository
-//                                                               registeredClientRepository) {
+//                                                                       registeredClientRepository) {
 //        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
 //    }
 //
 //    @Bean
 //    public JdbcOAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate,
 //                                                                             RegisteredClientRepository
-//                                                                             registeredClientRepository) {
+//                                                                                     registeredClientRepository) {
 //        // Will be used by the ConsentController
 //        return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
 //    }
