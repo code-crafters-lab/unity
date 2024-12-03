@@ -3,7 +3,7 @@ pluginManagement {
 }
 
 plugins {
-    id("com.voc.repo")
+    id("ccl.repo")
 }
 
 include("exception-api")

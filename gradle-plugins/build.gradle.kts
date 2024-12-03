@@ -1,12 +1,10 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("ccl.lib")
     id("ccl.publish.aliyun")
     `kotlin-dsl`
-//    kotlin("jvm") version "1.9.24"
-//    id("org.jetbrains.kotlin.jvm") version "2.1.0"
     `java-gradle-plugin`
 }
 
@@ -118,38 +116,17 @@ gradlePlugin {
 tasks {
     withType(JavaCompile::class.java) {
         options.release.set(17)
-        options.compilerArgs.add("-Xlint:deprecation")
+//        options.compilerArgs.add("-Xlint:deprecation")
     }
     withType(KotlinCompile::class.java) {
-
         compilerOptions {
-            languageVersion.set(KotlinVersion.KOTLIN_1_9)
-            apiVersion.set(KotlinVersion.KOTLIN_1_9)
-            suppressWarnings.set(true)
-            if (!freeCompilerArgs.get().contains("-Xsuppress-version-warnings")) {
-//                freeCompilerArgs.add("-Xsuppress-version-warnings")
-            }
-            progressiveMode.set(true)
-            verbose.set(true)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
 
     }
 
     withType(Jar::class.java) {
-        /* 重复文件策略，排除 */
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        /* 重复文件策略 */
+//        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
-
-//publishing {
-//    repositories {
-//        maven {
-//            name = "AliYun"
-//            credentials {
-//                username = "5f4ba059fa82bfeb805a1e09"
-//                password = "a3XkZLNApybs"
-//            }
-//            url = uri("https://packages.aliyun.com/5f6a9b06d24814603933faab/maven/2038604-snapshot-xnrepo")
-//        }
-//    }
-//}

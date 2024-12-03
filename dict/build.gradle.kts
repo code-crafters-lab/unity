@@ -1,14 +1,17 @@
 plugins {
-    id("com.voc.bom")
+    id("ccl.bom")
 }
 
 description = "Unity Dict"
 group = "org.codecrafterslab.unity"
 
-subprojects {
+allprojects {
     group = "org.codecrafterslab.unity"
-    apply(plugin = "com.voc.publish")
-    apply(plugin = "net.jqsoft.nexus3")
+    apply(plugin = "ccl.publish.aliyun")
+}
+
+subprojects {
+    apply(plugin = "ccl.lib")
 }
 
 listOf("build", "clean", "publish", "publishToMavenLocal").forEach { task ->

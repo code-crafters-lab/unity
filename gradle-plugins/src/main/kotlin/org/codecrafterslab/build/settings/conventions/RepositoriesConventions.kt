@@ -17,7 +17,8 @@ class RepositoriesConventions : Plugin<Settings> {
             pluginManagement {
                 repositories {
                     common(rootDir.parentFile)
-                    maven { url = uri("https://maven.aliyun.com/repository/public") }
+                    maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+                    maven { url = uri("https://repo.spring.io/plugins-release") }
                     gradlePluginPortal()
                 }
             }
@@ -25,12 +26,8 @@ class RepositoriesConventions : Plugin<Settings> {
             dependencyResolutionManagement {
                 repositories {
                     common(rootDir.parentFile)
-                    maven {
-                        url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public/"); isAllowInsecureProtocol =
-                        true
-                    }
+                    maven { url = uri("https://maven.aliyun.com/repository/public") }
                     maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-                    maven { url = uri("https://repo.spring.io/plugins-release") }
                 }
                 // https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/resolve/RepositoriesMode.html
                 // repositoriesMode = RepositoriesMode.PREFER_SETTINGS
@@ -45,6 +42,14 @@ class RepositoriesConventions : Plugin<Settings> {
         }
         mavenLocal()
         maven { url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public"); isAllowInsecureProtocol = true }
+        maven {
+            url = uri("https://packages.aliyun.com/5f6a9b06d24814603933faab/maven/2038604-snapshot-xnrepo")
+            credentials {
+                username = "5f4ba059fa82bfeb805a1e09"
+                password = "a3XkZLNApybs"
+            }
+        }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
     }
 
     /**

@@ -1,9 +1,5 @@
 pluginManagement {
     repositories {
-//        common(rootDir.parentFile)
-//        maven {
-//            url = uri(File(rootDir, arrayOf(Project.DEFAULT_BUILD_DIR_NAME, "maven-repository").joinToString("/")))
-//        }
         mavenLocal()
         maven { url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public"); isAllowInsecureProtocol = true }
         maven {
@@ -13,6 +9,7 @@ pluginManagement {
                 password = "a3XkZLNApybs"
             }
         }
+
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         maven { url = uri("https://repo.spring.io/plugins-release") }
         gradlePluginPortal()
@@ -25,8 +22,6 @@ pluginManagement {
     plugins {
         // 如果插件已经在类路径上，则插件声明不能使用版本
         innerPluginList.forEach { id(it) apply false }
-//        id("ccl.lib") apply false
-//        id("ccl.publish") apply false
         id("com.google.protobuf") version "0.9.4" apply false
     }
 
@@ -47,9 +42,6 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-//        maven {
-//            url = uri(File(rootDir, arrayOf(Project.DEFAULT_BUILD_DIR_NAME, "maven-repository").joinToString("/")))
-//        }
         mavenLocal()
         maven { url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public"); isAllowInsecureProtocol = true }
         maven {
@@ -61,7 +53,7 @@ dependencyResolutionManagement {
         }
         maven { url = uri("https://maven.aliyun.com/repository/public") }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        maven { url = uri("https://repo.spring.io/plugins-release") }
+//        maven { url = uri("https://repo.spring.io/plugins-release") }
     }
 
     // https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/resolve/RepositoriesMode.html

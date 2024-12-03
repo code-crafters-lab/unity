@@ -13,7 +13,7 @@ dependencies {
 
     /* 资源服务器 */
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:oauth2-oidc-sdk")
+//    implementation("com.nimbusds:oauth2-oidc-sdk")
 
 
     annotationProcessor("org.projectlombok:lombok")
