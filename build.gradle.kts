@@ -1,5 +1,5 @@
 plugins {
-    id("com.voc.publish")
+    id("ccl.bom")
 }
 
 group = "org.codecrafterslab"

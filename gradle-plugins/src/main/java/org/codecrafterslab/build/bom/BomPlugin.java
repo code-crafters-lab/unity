@@ -2,10 +2,10 @@ package org.codecrafterslab.build.bom;
 
 import groovy.namespace.QName;
 import groovy.util.Node;
-import org.codecrafterslab.build.PublishPlugin;
 import org.codecrafterslab.build.bom.lib.Group;
 import org.codecrafterslab.build.bom.lib.Module;
 import org.codecrafterslab.gradle.plugins.dependency.ManagementPlugin;
+import org.codecrafterslab.publish.PublishPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;

@@ -2,6 +2,7 @@ package org.codecrafterslab.gradle.plugins.conventions
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class KotlinConventions : Plugin<Project> {
@@ -14,17 +15,15 @@ class KotlinConventions : Plugin<Project> {
     }
 
     private fun configure(compile: KotlinCompile) {
-        val kotlinOptions = compile.kotlinOptions
-        kotlinOptions.apiVersion = "1.9"
-        kotlinOptions.languageVersion = "1.9"
-        // kotlinOptions.jvmTarget = "1.8"
-        kotlinOptions.suppressWarnings = true
-        // kotlinOptions.allWarningsAsErrors = true
-        val freeCompilerArgs = ArrayList(compile.kotlinOptions.freeCompilerArgs)
-        if (!freeCompilerArgs.contains("-Xsuppress-version-warnings")) {
-            freeCompilerArgs.add("-Xsuppress-version-warnings")
-            compile.kotlinOptions.freeCompilerArgs = freeCompilerArgs
+        compile.compilerOptions {
+            languageVersion.set(KotlinVersion.KOTLIN_1_9)
+            apiVersion.set(KotlinVersion.KOTLIN_1_9)
+            suppressWarnings.set(true)
+            if (!freeCompilerArgs.get().contains("-Xsuppress-version-warnings")) {
+                freeCompilerArgs.add("-Xsuppress-version-warnings")
+            }
+            progressiveMode.set(true)
+            verbose.set(true)
         }
-
     }
 }

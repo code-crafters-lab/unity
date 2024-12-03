@@ -16,7 +16,6 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.testretry.TestRetryPlugin
 import org.gradle.testretry.TestRetryTaskExtension
 
-@Suppress("unused")
 class JavaConventions : Plugin<Project> {
 
     companion object {
@@ -86,8 +85,8 @@ class JavaConventions : Plugin<Project> {
 
     private fun configureJarOtherConventions(project: Project) {
         project.tasks.withType(Jar::class.java) {
-            /* 重复文件策略，排除 */
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            /* 重复文件策略 */
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
             includeEmptyDirs = false
             exclude("rebel.xml")
         }

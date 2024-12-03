@@ -1,6 +1,7 @@
 package org.codecrafterslab.build
 
 import org.codecrafterslab.gradle.plugins.ConventionsPlugin
+import org.codecrafterslab.publish.PublishPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin

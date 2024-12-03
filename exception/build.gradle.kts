@@ -1,14 +1,17 @@
 plugins {
-    id("com.voc.bom")
+    id("ccl.bom")
 }
 
 description = "Unity Exception"
 group = "org.codecrafterslab.unity"
 
+allprojects {
+    apply(plugin = "ccl.publish.aliyun")
+}
+
 subprojects {
     group = "org.codecrafterslab.unity"
-    apply(plugin = "com.voc.publish")
-    apply(plugin = "net.jqsoft.nexus3")
+    apply(plugin = "ccl.lib")
 }
 
 listOf("build", "clean", "publish").forEach { task ->
