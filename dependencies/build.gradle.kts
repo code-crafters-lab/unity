@@ -1,5 +1,5 @@
 plugins {
-    id("com.voc.bom")
+    id("ccl.bom")
 }
 
 group = "org.codecrafterslab.unity"
