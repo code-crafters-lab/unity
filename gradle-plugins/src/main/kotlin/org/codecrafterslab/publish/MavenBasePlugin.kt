@@ -22,6 +22,7 @@ abstract class MavenBasePlugin : Plugin<Project> {
                 url = getMavenUrl(project)
                 val user = getPriorityProperty("dev.opts.${name.lowercase()}.username", project, "dev")
                 val pwd = getPriorityProperty("dev.opts.${name.lowercase()}.password", project, "dev")
+                isAllowInsecureProtocol = true
                 credentials {
                     if (StringUtils.hasText(user) && StringUtils.hasText(pwd)) {
                         username = user
@@ -42,28 +43,34 @@ abstract class MavenBasePlugin : Plugin<Project> {
     /**
      * 获取 Maven 配置 URL
      */
-    abstract fun getMavenUrl(project: Project): URI
-
-
-//    private fun getVersionType(project: Project): String {
-//        val matchers = Regex(
-//            "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-(" + "(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?" + "(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$",
-//            setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)
-//        ).find(project.version.toString())
-//
-//        /* pre-release 部分 */
-//        val preRelease: String = matchers?.groups?.get(4)?.value ?: ""
-//
-//        val versionType = when {
-//            preRelease == "" -> "release"
-//            Regex("^(M|RC).*", RegexOption.IGNORE_CASE).matches(preRelease) -> "release"
-//            Regex("^(alpha|beta|SNAPSHOT).*", RegexOption.IGNORE_CASE).matches(preRelease) -> "snapshot"
-//            else -> "snapshot"
-//        }
-//        return versionType
-//    }
-
-    fun getVersionType(project: Project): VersionType {
-        return VersionType.forProject(project)
+    protected open fun getMavenUrl(project: Project): URI {
+        val host = getRepositoryHost(project)
+        val namespace = getRepositoryNamespace(project)
+        val plural =
+            getPriorityProperty("dev.opts.${getMavenName().lowercase()}.password", project, "false").toBoolean()
+        var repoId = getRepositoryId(VersionType.forProject(project))
+        repoId = if (plural) "${repoId}s" else repoId
+        return project.uri("${host}/${namespace}/${repoId}")
     }
+
+    protected open fun getRepositoryHost(project: Project): String {
+        return getPriorityProperty("dev.opts.${getMavenName()}.host", project, "http://localhost:8081").toString()
+    }
+
+    protected open fun getRepositoryNamespace(project: Project): String {
+        return getPriorityProperty("dev.opts.${getMavenName()}.namespace", project, "repository").toString()
+    }
+
+    protected open fun getRepositoryId(versionType: VersionType): String {
+        return when (versionType) {
+            VersionType.SNAPSHOT -> "snapshot"
+            VersionType.ALPHA -> "snapshot"
+            VersionType.BETA -> "snapshot"
+
+            VersionType.RELEASE_CANDIDATE -> "release"
+            VersionType.MILESTONE -> "release"
+            VersionType.RELEASE -> "release"
+        }
+    }
+
 }

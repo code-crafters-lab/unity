@@ -116,7 +116,7 @@ gradlePlugin {
 tasks {
     withType(JavaCompile::class.java) {
         options.release.set(17)
-//        options.compilerArgs.add("-Xlint:deprecation")
+        // options.compilerArgs.add("-Xlint:deprecation")
     }
     withType(KotlinCompile::class.java) {
         compilerOptions {
@@ -127,6 +127,6 @@ tasks {
 
     withType(Jar::class.java) {
         /* 重复文件策略 */
-//        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        // duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }

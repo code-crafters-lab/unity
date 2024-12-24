@@ -3,7 +3,7 @@ package org.codecrafterslab
 import org.gradle.api.Project
 import org.gradle.internal.impldep.org.eclipse.jgit.annotations.NonNull
 
-enum class VersionType(private val type: String, private val description: String) {
+enum class VersionType(val type: String, val description: String) {
 
     SNAPSHOT("snapshot", "快照版本"),
     ALPHA("alpha", "开发版本"),
