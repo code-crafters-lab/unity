@@ -9,6 +9,7 @@ import org.codecrafterslab.unity.dict.boot.PersistenceMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +55,7 @@ public class FuncEnumDictItemTypeHandler<T extends FuncEnumDictItem> extends Lis
                 case COMMA_SPLIT:
                     result = Arrays.stream(((String) value).split(","))
                             .map(val -> EnumDictItem.findByValue(type, val))
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                     break;
                 case OR_OPERATION:
