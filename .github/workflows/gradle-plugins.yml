@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'gradle-plugins/gradle.properties'
 jobs:
   build-and-publish:
     name: Build and Publish

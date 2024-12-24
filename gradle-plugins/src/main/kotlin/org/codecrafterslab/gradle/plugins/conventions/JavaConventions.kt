@@ -145,7 +145,7 @@ class JavaConventions : Plugin<Project> {
             if (options.encoding == null) {
                 options.encoding = "UTF-8"
             }
-            options.release.set(8)
+
             val args = options.compilerArgs
             if (!args.contains("-parameters")) {
                 args.add("-parameters")
