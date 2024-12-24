@@ -27,12 +27,12 @@ class AliYunPlugin : MavenBasePlugin() {
         ).toString()
     }
 
-    override fun getRepositoryId(versionType: VersionType): String {
+    override fun getRepositoryId(versionType: VersionType, project: Project): String {
         return if (VersionType.RELEASE == versionType) {
             "2038604-release-0bMxsA"
         } else {
             "2038604-snapshot-XNRePo"
         }
-        return super.getRepositoryId(versionType)
+        return super.getRepositoryId(versionType, project)
     }
 }

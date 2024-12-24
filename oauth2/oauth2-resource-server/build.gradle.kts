@@ -1,5 +1,5 @@
 plugins {
-    id("com.voc.lib")
+    id("ccl.lib")
 }
 
 dependencies {

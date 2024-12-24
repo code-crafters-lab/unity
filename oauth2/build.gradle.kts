@@ -1,5 +1,5 @@
 plugins {
-    id("com.voc.bom")
+    id("ccl.bom")
 }
 
 description = "Unity OAuth"
@@ -8,12 +8,12 @@ group = "org.codecrafterslab.unity"
 subprojects {
     group = "org.codecrafterslab.unity"
 
-    apply(plugin = "com.voc.lib")
+//    apply(plugin = "ccl.lib")
     //    apply(plugin = "net.jqsoft.nexus3")
 
-    dependencies {
-        management(platform("org.codecrafterslab.unity:dependencies"))
-    }
+//    dependencies {
+//        management(platform("org.codecrafterslab.unity:dependencies"))
+//    }
     
 }
 

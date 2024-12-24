@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("ccl.lib")
     id("ccl.publish.aliyun")
+    id("ccl.publish.nexus3")
     `kotlin-dsl`
     `java-gradle-plugin`
 }
@@ -32,51 +33,31 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        // todo deprecated remove in next
-        create("bom-deprecated") {
-            id = "com.voc.bom"
-            implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
-        }
         create("bom") {
             id = "ccl.bom"
             implementationClass = "org.codecrafterslab.build.bom.BomPlugin"
         }
-        // todo deprecated remove in next
-        create("lib-deprecated") {
-            id = "com.voc.lib"
-            implementationClass = "org.codecrafterslab.build.LibraryPlugin"
-        }
         create("lib") {
             id = "ccl.lib"
             implementationClass = "org.codecrafterslab.build.LibraryPlugin"
-        }
-        // todo deprecated remove in next
-        create("app-deprecated") {
-            id = "com.voc.app"
-            implementationClass = "org.codecrafterslab.build.AppPlugin"
         }
         create("app") {
             id = "ccl.app"
             implementationClass = "org.codecrafterslab.build.AppPlugin"
         }
 
-        // todo deprecated remove in next
-        create("publish-deprecated") {
-            id = "com.voc.publish"
-            implementationClass = "org.codecrafterslab.publish.PublishPlugin"
-        }
         create("publish") {
             id = "ccl.publish"
             implementationClass = "org.codecrafterslab.publish.PublishPlugin"
         }
         // todo deprecated remove in next
-        create("JinQiSoftNexus3") {
-            id = "net.jqsoft.nexus3"
-            implementationClass = "org.codecrafterslab.publish.Nexus3Plugin"
-        }
         create("publish-nexus3") {
             id = "ccl.publish.nexus3"
             implementationClass = "org.codecrafterslab.publish.Nexus3Plugin"
+        }
+        create("publish-nexus") {
+            id = "ccl.publish.nexus"
+            implementationClass = "org.codecrafterslab.publish.NexusPlugin"
         }
         create("publish-aliyun") {
             id = "ccl.publish.aliyun"
@@ -84,20 +65,9 @@ gradlePlugin {
         }
 
         /* settings 插件 */
-        // todo deprecated remove in next
-        create("repository-deprecated") {
-            id = "com.voc.repo"
-            implementationClass = "org.codecrafterslab.build.settings.RepositoriesPlugin"
-        }
         create("repository") {
             id = "ccl.repo"
             implementationClass = "org.codecrafterslab.build.settings.RepositoriesPlugin"
-        }
-
-        // todo deprecated remove in next
-        create("settings-deprecated") {
-            id = "com.voc.settings"
-            implementationClass = "org.codecrafterslab.build.settings.ConventionsPlugin"
         }
         create("settings") {
             id = "ccl.settings"

@@ -47,8 +47,12 @@ abstract class MavenBasePlugin : Plugin<Project> {
         val host = getRepositoryHost(project)
         val namespace = getRepositoryNamespace(project)
         val plural =
-            getPriorityProperty("dev.opts.${getMavenName().lowercase()}.password", project, "false").toBoolean()
-        var repoId = getRepositoryId(VersionType.forProject(project))
+            getPriorityProperty(
+                "dev.opts.${getMavenName().lowercase()}.repository.id.plural",
+                project,
+                "false"
+            ).toBoolean()
+        var repoId = getRepositoryId(VersionType.forProject(project), project)
         repoId = if (plural) "${repoId}s" else repoId
         return project.uri("${host}/${namespace}/${repoId}")
     }
@@ -61,7 +65,7 @@ abstract class MavenBasePlugin : Plugin<Project> {
         return getPriorityProperty("dev.opts.${getMavenName()}.namespace", project, "repository").toString()
     }
 
-    protected open fun getRepositoryId(versionType: VersionType): String {
+    protected open fun getRepositoryId(versionType: VersionType, project: Project): String {
         return when (versionType) {
             VersionType.SNAPSHOT -> "snapshot"
             VersionType.ALPHA -> "snapshot"
