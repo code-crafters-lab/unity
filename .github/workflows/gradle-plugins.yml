@@ -23,7 +23,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Publish to AliYun
-        run: ./gradlew :gradle-plugins:publish
+        run: ./gradlew :gradle-plugins:publishAllPublicationsToAliYunRepository
         env:
           DEV_OPTS_ALIYUN_USERNAME: ${{ secrets.DEV_OPTS_ALIYUN_USERNAME }}
           DEV_OPTS_ALIYUN_PASSWORD: ${{ secrets.DEV_OPTS_ALIYUN_PASSWORD }}
