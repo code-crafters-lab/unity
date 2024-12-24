@@ -9,9 +9,9 @@ allprojects {
     group = "org.codecrafterslab.unity"
     apply(plugin = "ccl.publish.aliyun")
 
-//    tasks.withType<JavaCompile> {
-//        options.release.set(8)
-//    }
+    tasks.withType<JavaCompile> {
+        options.release.set(8)
+    }
 
 }
 

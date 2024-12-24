@@ -7,6 +7,10 @@ group = "org.codecrafterslab.unity"
 
 allprojects {
     apply(plugin = "ccl.publish.aliyun")
+
+    tasks.withType<JavaCompile> {
+        options.release.set(8)
+    }
 }
 
 subprojects {
