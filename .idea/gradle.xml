@@ -28,18 +28,11 @@
                   <project path="$PROJECT_DIR$/gradle-plugins" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/oauth2" name="oauth2">
-                <projects>
-                  <project path="$PROJECT_DIR$/oauth2" />
-                  <project path="$PROJECT_DIR$/oauth2/oauth2-authorization-server" />
-                  <project path="$PROJECT_DIR$/oauth2/oauth2-resource-server" />
-                  <project path="$PROJECT_DIR$/oauth2/oauth2-security" />
-                </projects>
-              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="ms-21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -53,10 +46,6 @@
             <option value="$PROJECT_DIR$/exception/exception-api" />
             <option value="$PROJECT_DIR$/exception/exception-core" />
             <option value="$PROJECT_DIR$/gradle-plugins" />
-            <option value="$PROJECT_DIR$/oauth2" />
-            <option value="$PROJECT_DIR$/oauth2/oauth2-authorization-server" />
-            <option value="$PROJECT_DIR$/oauth2/oauth2-resource-server" />
-            <option value="$PROJECT_DIR$/oauth2/oauth2-security" />
           </set>
         </option>
       </GradleProjectSettings>

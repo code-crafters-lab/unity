@@ -20,6 +20,7 @@ class RepositoriesConventions : Plugin<Settings> {
                     maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
                     maven { url = uri("https://repo.spring.io/plugins-release") }
                     gradlePluginPortal()
+                    mavenCentral()
                 }
             }
 
@@ -50,6 +51,7 @@ class RepositoriesConventions : Plugin<Settings> {
             }
         }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        mavenCentral()
     }
 
     /**
