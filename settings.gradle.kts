@@ -13,7 +13,7 @@ include(":dependencies")
 includeBuild(".")
 includeBuild("exception")
 includeBuild("dict")
-//includeBuild("oauth2")
+includeBuild("response")
 
-//includeBuild("response")
+//includeBuild("oauth2")
 
