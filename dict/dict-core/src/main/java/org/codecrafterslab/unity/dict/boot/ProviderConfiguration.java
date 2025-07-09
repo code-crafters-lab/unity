@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,19 +48,18 @@ public class ProviderConfiguration {
     @Slf4j
     final static class DefaultEnumDictProviderBuilderCustomizer implements EnumDictProviderBuilderCustomizer {
 
-        private final String enumPackage;
+        private final List<String> enumPackages;
         private final boolean globalScan;
 
         public DefaultEnumDictProviderBuilderCustomizer(DictProperties dictProperties) {
-            this.enumPackage = dictProperties.getEnumDictItemPackage();
+            this.enumPackages = new ArrayList<>(dictProperties.getEnumDictItemPackages());
             this.globalScan = dictProperties.isGlobalScan();
         }
 
         @Override
         public void customize(EnumDictProviderBuilder builder) {
-            builder.globalScan(globalScan).scan(enumPackage).exclude(Scope.class, SerializeScope.class);
+            builder.globalScan(globalScan).scan(enumPackages).exclude(Scope.class, SerializeScope.class);
         }
-
 
     }
 

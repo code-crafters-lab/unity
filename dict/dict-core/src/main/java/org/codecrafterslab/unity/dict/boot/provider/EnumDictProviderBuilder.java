@@ -16,11 +16,12 @@ public class EnumDictProviderBuilder {
     private final Set<Class<? super EnumDictItem<?>>> classes;
     private final List<TypeFilter> excludeFilters;
     private boolean globalScan = false;
-    private String scanPackage;
+    private List<String> scanPackages;
 
     public EnumDictProviderBuilder() {
         this.classes = new HashSet<>();
         this.excludeFilters = new ArrayList<>();
+        this.scanPackages = new ArrayList<>();
     }
 
     public EnumDictProviderBuilder globalScan(boolean globalScan) {
@@ -28,8 +29,8 @@ public class EnumDictProviderBuilder {
         return this;
     }
 
-    public EnumDictProviderBuilder scan(String packageName) {
-        this.scanPackage = packageName;
+    public EnumDictProviderBuilder scan(List<String> packageNames) {
+        this.scanPackages = packageNames;
         return this;
     }
 
@@ -69,16 +70,19 @@ public class EnumDictProviderBuilder {
     }
 
     private void processScanClasses() {
-        String packageName = scanPackage;
-        if (globalScan && !StringUtils.hasText(scanPackage)) {
+        if (globalScan && scanPackages.isEmpty()) {
             Class<?> mainApplicationClass = deduceMainApplicationClass();
             if (null != mainApplicationClass) {
-                packageName = ClassUtils.getPackageName(mainApplicationClass);
+                String packageName = ClassUtils.getPackageName(mainApplicationClass);
+                scanPackages.add(packageName);
             }
         }
-        Collection<Class<? super EnumDictItem<?>>> classes1 = packageScan(packageName,
-                excludeFilters.toArray(new TypeFilter[]{}));
-        this.classes.addAll(classes1);
+
+        for (String packageName : scanPackages) {
+            Collection<Class<? super EnumDictItem<?>>> result = packageScan(packageName,
+                    excludeFilters.toArray(new TypeFilter[]{}));
+            this.classes.addAll(result);
+        }
     }
 
     /**
@@ -102,7 +106,7 @@ public class EnumDictProviderBuilder {
 
     @SuppressWarnings("unchecked")
     private Collection<Class<? super EnumDictItem<?>>> packageScan(String enumDictPackage,
-                                                                     TypeFilter... excludeFilters) {
+                                                                   TypeFilter... excludeFilters) {
         if (!StringUtils.hasText(enumDictPackage)) return Collections.emptyList();
 
         /* 查找 package 下枚举字典实现类 */
