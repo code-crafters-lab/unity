@@ -20,11 +20,13 @@ class AliYunPlugin : MavenBasePlugin() {
     }
 
     override fun getRepositoryNamespace(project: Project): String {
-        return getPriorityProperty(
+        val namespace = getPriorityProperty(
             "dev.opts.${getMavenName()}.namespace",
             project,
             "5f6a9b06d24814603933faab"
-        ).toString()
+        )
+
+        return "${namespace}/maven"
     }
 
     override fun getRepositoryId(versionType: VersionType, project: Project): String {

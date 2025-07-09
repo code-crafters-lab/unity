@@ -50,11 +50,6 @@ gradlePlugin {
             id = "ccl.publish"
             implementationClass = "org.codecrafterslab.publish.PublishPlugin"
         }
-        // todo deprecated remove in next
-        create("publish-nexus3") {
-            id = "ccl.publish.nexus3"
-            implementationClass = "org.codecrafterslab.publish.Nexus3Plugin"
-        }
         create("publish-nexus") {
             id = "ccl.publish.nexus"
             implementationClass = "org.codecrafterslab.publish.NexusPlugin"
