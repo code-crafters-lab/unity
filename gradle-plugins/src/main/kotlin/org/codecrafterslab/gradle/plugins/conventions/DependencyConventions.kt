@@ -9,7 +9,7 @@ class DependencyConventions : Plugin<Project> {
 
     override fun apply(project: Project) {
         val springBootVersion = project.properties.getOrDefault("spring-boot.version", "2.5.15").toString()
-        val lombokVersion = project.properties.getOrDefault("lombok.version", "1.18.26").toString()
+        val lombokVersion = project.properties.getOrDefault("lombok.version", "1.18.38").toString()
 
         project.configurations.all {
             resolutionStrategy {
