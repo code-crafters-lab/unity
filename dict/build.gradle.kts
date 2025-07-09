@@ -19,7 +19,7 @@ subprojects {
     apply(plugin = "ccl.lib")
 }
 
-listOf("build", "clean", "publish", "publishToMavenLocal").forEach { task ->
+listOf("build", "clean", "publish", "publishToMavenLocal", "publishAllPublicationsToAliYunRepository").forEach { task ->
     tasks.named(task) {
         dependsOn(
             ":dict-api:${task}",
