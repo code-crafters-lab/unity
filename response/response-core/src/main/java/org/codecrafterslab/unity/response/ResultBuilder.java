@@ -3,6 +3,7 @@ package org.codecrafterslab.unity.response;
 import org.codecrafterslab.unity.exception.api.Status;
 import org.codecrafterslab.unity.exception.core.BizException;
 import org.codecrafterslab.unity.exception.core.BizStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.web.util.NestedServletException;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.io.Serializable;
  * @email coffee377@dingtalk.com
  * @time 2022/08/07 09:23
  */
-public class ResultBuilder<D> implements Serializable {
+class ResultBuilder<D, S> implements Serializable {
     /**
      * 是否正常响应
      */
@@ -34,6 +35,11 @@ public class ResultBuilder<D> implements Serializable {
     private D data;
 
     /**
+     * 汇总数据
+     */
+    private S summary;
+
+    /**
      * 分页总数据数
      */
     private Integer total;
@@ -45,7 +51,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param code 业务错误编码
      * @return ResultBuilder
      */
-    public ResultBuilder<D> code(Long code) {
+    public ResultBuilder<D, S> code(Long code) {
         this.code = code;
         return this;
     }
@@ -56,7 +62,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param message 信息
      * @return ResultBuilder
      */
-    public ResultBuilder<D> message(String message) {
+    public ResultBuilder<D, S> message(String message) {
         this.message = message;
         return this;
     }
@@ -67,8 +73,19 @@ public class ResultBuilder<D> implements Serializable {
      * @param data 数据
      * @return ResultBuilder
      */
-    public ResultBuilder<D> data(D data) {
+    public ResultBuilder<D, S> data(D data) {
         this.data = data;
+        return this;
+    }
+
+    /**
+     * 汇总数据
+     *
+     * @param summary 数据
+     * @return ResultBuilder
+     */
+    public ResultBuilder<D, S> summary(S summary) {
+        this.summary = summary;
         return this;
     }
 
@@ -78,11 +95,10 @@ public class ResultBuilder<D> implements Serializable {
      * @param total 总数据数
      * @return ResultBuilder
      */
-    public ResultBuilder<D> total(Integer total) {
+    public ResultBuilder<D, S> total(Integer total) {
         this.total = total;
         return this;
     }
-
 
     /**
      * 成功响应
@@ -91,12 +107,14 @@ public class ResultBuilder<D> implements Serializable {
      * @param data    数据
      * @return Builder
      */
-    public ResultBuilder<D> success(String message, D data, Integer total) {
+    public ResultBuilder<D, S> success(@Nullable String message, @Nullable D data,
+                                       @Nullable Integer total, @Nullable S summary) {
         this.success = true;
         this.code = 0L;
         this.message = message;
         this.data = data;
         this.total = total;
+        this.summary = summary;
         return this;
     }
 
@@ -107,7 +125,18 @@ public class ResultBuilder<D> implements Serializable {
      * @param data    数据
      * @return Builder
      */
-    public ResultBuilder<D> success(String message, D data) {
+    public ResultBuilder<D, S> success(@Nullable String message, @Nullable D data, @Nullable Integer total) {
+        return success(message, data, total, null);
+    }
+
+    /**
+     * 成功响应
+     *
+     * @param message 响应信息
+     * @param data    数据
+     * @return Builder
+     */
+    public ResultBuilder<D, S> success(@Nullable String message, @Nullable D data) {
         return success(message, data, null);
     }
 
@@ -117,7 +146,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param data 数据
      * @return Builder
      */
-    public ResultBuilder<D> success(D data, Integer total) {
+    public ResultBuilder<D, S> success(D data, Integer total) {
         return success(null, data, total);
     }
 
@@ -127,7 +156,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param data 数据
      * @return Builder
      */
-    public ResultBuilder<D> success(D data) {
+    public ResultBuilder<D, S> success(@Nullable D data) {
         return success("ok", data);
     }
 
@@ -136,7 +165,7 @@ public class ResultBuilder<D> implements Serializable {
      *
      * @return Builder
      */
-    public ResultBuilder<D> success() {
+    public ResultBuilder<D, S> success() {
         return success(null);
     }
 
@@ -149,7 +178,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param data    响应数据
      * @return Builder
      */
-    public ResultBuilder<D> failure(long code, String message, D data) {
+    public ResultBuilder<D, S> failure(long code, String message, @Nullable D data) {
         this.success = false;
         this.code = code;
         this.message = message;
@@ -164,7 +193,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param data      响应数据
      * @return Builder
      */
-    public ResultBuilder<D> failure(Status bizStatus, D data) {
+    public ResultBuilder<D, S> failure(Status bizStatus, @Nullable D data) {
         return failure(bizStatus.getCode(), bizStatus.getMessage(), data);
     }
 
@@ -174,7 +203,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param bizStatus 业务状态
      * @return Builder
      */
-    public ResultBuilder<D> failure(Status bizStatus) {
+    public ResultBuilder<D, S> failure(Status bizStatus) {
         return failure(bizStatus, null);
     }
 
@@ -185,7 +214,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param data      响应数据
      * @return Builder
      */
-    public ResultBuilder<D> failure(Exception exception, D data) {
+    public ResultBuilder<D, S> failure(Exception exception, @Nullable D data) {
         this.success = false;
         if (exception instanceof NestedServletException) {
             Throwable cause = exception.getCause();
@@ -213,7 +242,7 @@ public class ResultBuilder<D> implements Serializable {
      * @param exception Exception
      * @return Builder
      */
-    public ResultBuilder<D> failure(Exception exception) {
+    public ResultBuilder<D, S> failure(Exception exception) {
         return failure(exception, null);
     }
 
@@ -222,9 +251,14 @@ public class ResultBuilder<D> implements Serializable {
      *
      * @return Result
      */
-    public Result<D> build() {
-        Result<D> result = new Result<>();
-        result.success(success).code(code).message(message).data(data).total(total);
+    public Result<D, Object> build() {
+        Result<D, Object> result = new Result<>();
+        result.setSuccess(success);
+        result.setCode(code);
+        result.setMessage(message);
+        result.setData(data);
+        result.setSummary(summary);
+        result.setTotal(total);
         return result;
     }
 

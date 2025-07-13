@@ -28,4 +28,5 @@ public class ResultJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBu
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE;
     }
+
 }

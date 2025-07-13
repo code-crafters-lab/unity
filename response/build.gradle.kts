@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
+
 plugins {
     id("ccl.bom")
 }
@@ -18,13 +20,15 @@ subprojects {
     apply(plugin = "ccl.lib")
 }
 
+val moduleName  = "response"
+
 listOf("build", "clean", "publish").forEach { task ->
     tasks.named(task) {
         dependsOn(
-            ":exception-api:${task}",
-            ":exception-core:${task}",
-            ":exception-autoconfigure:${task}",
-            ":exception-starter:${task}"
+            ":${moduleName}-api:${task}",
+            ":${moduleName}-core:${task}",
+            ":${moduleName}-autoconfigure:${task}",
+            ":${moduleName}-starter:${task}"
         )
     }
 }

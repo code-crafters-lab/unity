@@ -5,10 +5,10 @@ package org.codecrafterslab.unity.response.api;
  * @email coffee377@dingtalk.com
  * @time 2022/08/07 09:03
  */
-public interface IPageResult<T> extends IResult<T> {
+public interface IPageResult<T, S> extends ISummaryResult<T, S> {
 
     /**
-     * 总数据数
+     * 总数据
      *
      * @return int
      */

@@ -53,10 +53,6 @@ public class ResultErrorController extends AbstractErrorController implements Er
         ErrorAttributeOptions options = getErrorAttributeOptions(request, MediaType.ALL);
         Map<String, Object> model = getErrorAttributes(request, options);
         Exception exception = (Exception) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
-//        ExceptionData exceptionData = new ExceptionData(exception, model);
-//        model.put("status", exceptionData.getStatus().value());
-//        model.put("error", exceptionData.getStatus().toString());
-//        model.put("message", exceptionData.getMessage());
         return Result.failure(exception, model);
     }
 

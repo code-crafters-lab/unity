@@ -29,7 +29,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Import({ResultAdvice.class, ResultErrorController.class})
 @EnableConfigurationProperties({ResponseProperties.class, ResponseWrapperProperties.class})
 @AutoConfigureBefore(ErrorMvcAutoConfiguration.class)
-public class ResultAutoConfiguration {
+public class ResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

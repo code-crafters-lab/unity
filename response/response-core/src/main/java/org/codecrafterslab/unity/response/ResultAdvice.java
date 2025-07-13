@@ -2,10 +2,10 @@ package org.codecrafterslab.unity.response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codecrafterslab.unity.response.annotation.ResponseResult;
 import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.response.api.IResult;
-import org.codecrafterslab.unity.response.api.ResponseResult;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -78,19 +79,21 @@ public class ResultAdvice implements ResponseBodyAdvice<Object>, ApplicationCont
     }
 
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        Object out;
+    @Nullable
+    public Object beforeBodyWrite(@Nullable Object body, MethodParameter methodParameter, MediaType selectedContentType,
+                                  Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        Object out = null;
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         /* 响应结果为 IResult 直接返回 */
         if (body instanceof IResult) {
             out = body;
-        } else {
+        } else if (body != null){
             out = Result.success(body);
         }
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
             try {
-                out = objectMapper.writeValueAsString(out);
+                out = objectMapper.writeValueAsString(body);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage(), e);
             }
@@ -116,7 +119,9 @@ public class ResultAdvice implements ResponseBodyAdvice<Object>, ApplicationCont
         /* 1. 方法上的注解优先 */
         ResponseResult methodAnnotation = AnnotationUtils.getAnnotation(method, ResponseResult.class);
         if (methodAnnotation != null) {
-            log.debug("方法上注解 value：{} wrapped：{}", methodAnnotation.value(), methodAnnotation.wrapped());
+            if (log.isDebugEnabled()) {
+                log.debug("方法上注解 value：{} wrapped：{}", methodAnnotation.value(), methodAnnotation.wrapped());
+            }
             return methodAnnotation.value();
         }
 
@@ -124,9 +129,12 @@ public class ResultAdvice implements ResponseBodyAdvice<Object>, ApplicationCont
         Class<?> clazz = method.getDeclaringClass();
         ResponseResult classAnnotation = AnnotationUtils.getAnnotation(clazz, ResponseResult.class);
         if (classAnnotation != null) {
-            log.debug("类上注解 value：{} wrapped：{}", classAnnotation.value(), classAnnotation.wrapped());
+            if (log.isDebugEnabled()) {
+                log.debug("类上注解 value：{} wrapped：{}", classAnnotation.value(), classAnnotation.wrapped());
+            }
             return classAnnotation.value();
         }
+
         /* 3. 都不存在时返回 true */
         return true;
     }

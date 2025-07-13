@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
-org.codecrafterslab.unity.response.autoconfigure.ResultAutoConfiguration
+org.codecrafterslab.unity.response.autoconfigure.ResponseAutoConfiguration
 

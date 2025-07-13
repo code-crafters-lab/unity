@@ -1,6 +1,7 @@
-package org.codecrafterslab.unity.response.api;
+package org.codecrafterslab.unity.response.annotation;
 
 import org.codecrafterslab.unity.response.Result;
+import org.codecrafterslab.unity.response.api.IResult;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -36,7 +37,7 @@ public @interface ResponseResult {
      * 是否原始数据
      *
      * <p>
-     * 若 Controller 返回类型为 {@link Result}，则返回 {@link  Result#getData()} 数据
+     * 若 Controller 返回类型为 {@link IResult}，则返回 {@link  IResult#getData()} 数据
      * </p>
      *
      * @return boolean

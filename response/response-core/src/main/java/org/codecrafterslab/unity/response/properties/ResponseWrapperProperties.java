@@ -25,12 +25,12 @@ public class ResponseWrapperProperties {
     /**
      * 全局包装需要忽略的类名称(完全限定名)
      */
-    List<String> ignoredClass = new ArrayList<>();
+    private List<String> ignoredClass = new ArrayList<>();
 
     /**
      * 是否 springdoc 项目，若是则自动添加忽略的类
      */
-    Boolean springdoc = false;
+    private Boolean springdoc = false;
 
     public void setSpringdoc(Boolean springdoc) {
         this.springdoc = springdoc;
