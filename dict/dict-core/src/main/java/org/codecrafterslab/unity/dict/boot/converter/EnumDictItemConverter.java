@@ -29,6 +29,7 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
     }
 
     @Override
+    @Nullable
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
         if (Objects.isNull(source)) return null;
@@ -40,7 +41,7 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
             /* 字符串转实际值时可能存在异常，需要处理掉，不然后面根据显示值无法进行查找 */
             try {
                 converted = this.conversionService.convert(val, sourceType, targetTypeDescriptor);
-                if (log.isTraceEnabled()) {
+                if (log.isTraceEnabled() && !Objects.equals(val, converted)) {
                     log.trace("convert {}({}) to {}({})", sourceType, source, targetTypeDescriptor, converted);
                 }
             } catch (Exception ignored) {
@@ -53,6 +54,5 @@ public class EnumDictItemConverter implements ConditionalGenericConverter {
     public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
         return EnumDictItem.class.isAssignableFrom(targetType.getType());
     }
-
 
 }
