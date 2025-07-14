@@ -126,7 +126,7 @@ jobs:
           
           CHANGELOG_FILE="CHANGELOG_${MODULE_NAME}.md"
           
-          cho "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
+          echo "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
           echo "发布时间：$(date +'%Y-%m-%d')" >> $CHANGELOG_FILE
           echo "" >> $CHANGELOG_FILE
           
@@ -139,7 +139,6 @@ jobs:
           echo "使用日志范围：$LOG_RANGE"
           
           # 提取提交记录（按类型分类）
-          LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}$CURRENT_TAG"
           FEATURES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
           BUGFIXES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
           DOCS=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
