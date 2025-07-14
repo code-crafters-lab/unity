@@ -72,6 +72,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
 
+
       # 验证模块存在
       - name: 验证模块目录
         run: |
@@ -79,6 +80,19 @@ jobs:
           if [ ! -d "$MODULE_NAME" ]; then
             echo "❌ 模块 $MODULE_NAME 不存在"
             exit 1
+          fi
+
+      # 检查 CURRENT_TAG 是否存在
+      - name: 检查 CURRENT_TAG 是否存在
+        id: check_current_tag
+        run: |
+          CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
+          if git rev-parse "$CURRENT_TAG" >/dev/null 2>&1; then
+            echo "✅ Tag $CURRENT_TAG 存在"
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Tag $CURRENT_TAG 不存在，将使用 HEAD 作为当前版本参考点"
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
 
       # 查找当前模块的上一个发布 Tag
@@ -108,14 +122,23 @@ jobs:
           CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
           PREVIOUS_TAG="${{ steps.find_previous_tag.outputs.previous_tag }}"
           VERSION="${{ steps.parse_tag.outputs.version }}"
+          TAG_EXISTS="${{ steps.check_current_tag.outputs.tag_exists }}"
           
           CHANGELOG_FILE="CHANGELOG_${MODULE_NAME}.md"
           
-          echo "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
+          cho "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
           echo "发布时间：$(date +'%Y-%m-%d')" >> $CHANGELOG_FILE
           echo "" >> $CHANGELOG_FILE
           
-          # 按类型分类提交
+          # 动态调整日志范围
+          if [ "$TAG_EXISTS" = "true" ]; then
+            LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}$CURRENT_TAG"
+          else
+            LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}HEAD"
+          fi
+          echo "使用日志范围：$LOG_RANGE"
+          
+          # 提取提交记录（按类型分类）
           LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}$CURRENT_TAG"
           FEATURES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
           BUGFIXES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
