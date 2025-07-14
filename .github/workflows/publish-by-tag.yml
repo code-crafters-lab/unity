@@ -1,0 +1,215 @@
+name: 基于 Tag 发布模块并生成更新日志
+
+on:
+  push:
+    tags:
+      - '*-v*'  # 匹配 <模块名>-v<版本号> 格式的 Tag
+  workflow_dispatch:
+    inputs:
+      module_name:
+        description: '模块名称'
+        required: true
+      version:
+        description: '版本号 (格式: x.y.z)'
+        required: true
+        default: '0.0.0'
+      is_test:
+        description: '是否为测试模式 (不实际发布)'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 打印触发信息
+        run: |
+          echo "触发类型: ${{ github.event_name }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "手动触发参数:"
+            echo "  模块名称: ${{ github.event.inputs.module_name }}"
+            echo "  版本号: ${{ github.event.inputs.version }}"
+            echo "  测试模式: ${{ github.event.inputs.is_test }}"
+          else
+            echo "自动触发 Tag: ${{ github.ref_name }}"
+          fi
+
+      - name: Checkout代码（含完整历史）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 解析当前 Tag 的模块名和版本号
+      - name: 解析Tag获取模块和版本
+        id: parse_tag
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # 手动触发时使用输入参数
+            MODULE_NAME="${{ github.event.inputs.module_name }}"
+            VERSION="${{ github.event.inputs.version }}"
+            CURRENT_TAG="${MODULE_NAME}-v${VERSION}"
+          
+            # 验证版本号格式
+            if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "❌ 版本号 $VERSION 不符合语义化版本规范 (MAJOR.MINOR.PATCH)"
+              exit 1
+            fi
+          else
+            # 自动触发时解析Tag
+            TAG_NAME="${{ github.ref_name }}"
+            if [[ $TAG_NAME =~ ^([a-zA-Z0-9_-]+)-v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+              MODULE_NAME="${BASH_REMATCH[1]}"
+              VERSION="${BASH_REMATCH[2]}"
+              CURRENT_TAG="${TAG_NAME}"
+            else
+              echo "❌ Tag 格式错误！需符合：<模块名>-v<版本号>（如moduleA-v1.0.0）"
+              exit 1
+            fi
+          fi
+          
+          echo "module_name=$MODULE_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
+
+      # 验证模块存在
+      - name: 验证模块目录
+        run: |
+          MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
+          if [ ! -d "$MODULE_NAME" ]; then
+            echo "❌ 模块 $MODULE_NAME 不存在"
+            exit 1
+          fi
+
+      # 查找当前模块的上一个发布 Tag
+      - name: 查找上一个发布 Tag
+        id: find_previous_tag
+        run: |
+          MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
+          CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
+          ALL_MODULE_TAGS=$(git tag --list "${MODULE_NAME}-v*" | sort -V)
+          echo "该模块的所有发布 Tag：$ALL_MODULE_TAGS"
+          
+          PREVIOUS_TAG=$(echo "$ALL_MODULE_TAGS" | grep -v "^$CURRENT_TAG$" | tail -1)
+          
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "⚠️ 未找到上一个发布Tag，日志将包含从初始提交到当前的变更"
+            echo "previous_tag=" >> $GITHUB_OUTPUT
+          else
+            echo "✅ 上一个发布Tag：$PREVIOUS_TAG"
+            echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          fi
+
+      # 生成更新日志（分类）
+      - name: 生成更新日志
+        id: generate_changelog
+        run: |
+          MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
+          CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
+          PREVIOUS_TAG="${{ steps.find_previous_tag.outputs.previous_tag }}"
+          VERSION="${{ steps.parse_tag.outputs.version }}"
+          
+          CHANGELOG_FILE="CHANGELOG_${MODULE_NAME}.md"
+          
+          echo "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
+          echo "发布时间：$(date +'%Y-%m-%d')" >> $CHANGELOG_FILE
+          echo "" >> $CHANGELOG_FILE
+          
+          # 按类型分类提交
+          LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}$CURRENT_TAG"
+          FEATURES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
+          BUGFIXES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
+          DOCS=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
+          OTHERS=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
+          
+          echo "## 变更内容" >> $CHANGELOG_FILE
+          echo "" >> $CHANGELOG_FILE
+          
+          echo "## 新功能" >> $CHANGELOG_FILE
+          [ -n "$FEATURES" ] && echo "$FEATURES" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          
+          echo -e "\n## 修复" >> $CHANGELOG_FILE
+          [ -n "$BUGFIXES" ] && echo "$BUGFIXES" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          
+          echo -e "\n## 文档" >> $CHANGELOG_FILE
+          [ -n "$DOCS" ] && echo "$DOCS" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          
+          echo -e "\n## 其他变更" >> $CHANGELOG_FILE
+          [ -n "$OTHERS" ] && echo "$OTHERS" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          
+          if [ ! -s "$CHANGELOG_FILE" ] || ! grep -q "\- \[" "$CHANGELOG_FILE"; then
+            echo "- 首次发布模块 $MODULE_NAME v$VERSION" >> $CHANGELOG_FILE
+          fi
+          
+          echo "✅ 更新日志生成完成："
+          cat $CHANGELOG_FILE
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat $CHANGELOG_FILE >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # 更新模块版本号
+      - name: 更新gradle.properties版本号
+        run: |
+          MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
+          VERSION="${{ steps.parse_tag.outputs.version }}"
+          sed -i "s/^version=.*/version=$VERSION/" "$MODULE_NAME/gradle.properties"
+          
+          # 仅在非测试模式下提交变更
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" || !"${{ github.event.inputs.is_test }}" = "true" ]]; then
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add "$MODULE_NAME/gradle.properties"
+            git commit -m "chore: 更新 $MODULE_NAME 版本到 $VERSION"
+            git push origin HEAD
+          else
+            echo "测试模式：不提交版本变更"
+          fi
+
+      # 配置 JDK 并发布模块
+      - name: 配置JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: 发布模块到仓库
+        if: github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test
+        run: |
+          MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
+          ./gradlew :$MODULE_NAME:publish --info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 创建 GitHub Release 并附加更新日志
+      - name: 创建 GitHub Release（含更新日志）
+        if: github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ steps.parse_tag.outputs.module_name }} v${{ steps.parse_tag.outputs.version }}
+          body: ${{ steps.generate_changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 发布成功通知
+      - name: 发布成功通知
+        if: success() && (github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test)
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"body": "🎉 模块 ${{ steps.parse_tag.outputs.module_name }} v${{ steps.parse_tag.outputs.version }} 发布成功！查看更新日志：${{ github.event.repository.html_url }}/releases/tag/${{ github.ref_name }}"}' \
+            "${{ github.event.repository.html_url }}/issues/${{ github.event.number }}/comments"
+
+  rollback:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: failure() && (github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test)
+    steps:
+      - name: 回滚 Tag
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          git tag -d $TAG_NAME
+          git push origin :refs/tags/$TAG_NAME
