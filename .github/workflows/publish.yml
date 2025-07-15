@@ -167,9 +167,9 @@ jobs:
           echo -e "✅ 更新日志生成完成：\n"
           cat "${CHANGELOG_FILE}"
 
-          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
-          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
-          echo "EOF" >> "${GITHUB_OUTPUT}"
+#          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
+#          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
+#          echo "EOF" >> "${GITHUB_OUTPUT}"
 
       # 更新模块版本号
       - name: 更新gradle.properties版本号
@@ -227,19 +227,11 @@ jobs:
             "${{ github.event.repository.html_url }}/issues/${{ github.event.number }}/comments"
 
       # 发布失败通知
-      - name: 失败时收集调试信息
+      - name: 发布失败通知
         if: failure()
         run: |
           echo "📋 当前工作目录:"
           pwd
-          echo "📂 目录内容:"
-          ls -la
-          echo "🔍 Git 状态:"
-          git status
-          echo "🏷️ Git Tag 列表:"
-          git tag -l
-          echo "📝 Log 列表:"
-          git log --oneline -n 20
   rollback:
     runs-on: ubuntu-latest
     needs: publish
