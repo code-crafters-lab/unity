@@ -119,7 +119,7 @@ jobs:
       # 生成更新日志（分类）
       - name: 生成更新日志
         id: generate_changelog
-        if: cancelled()
+        if: false
         run: |
           MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
           CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
@@ -141,44 +141,37 @@ jobs:
           fi
           echo "日志获取范围：${LOG_RANGE}"
           
-          TEST=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" -n 10)
-          
-          echo "提交记录：${TEST}"
-          echo "${TEST}" >> ${CHANGELOG_FILE}
-          
           # 提取提交记录（按类型分类）
           FEATURES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
-          echo "提交记录：${FEATURES}"
-#          BUGFIXES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
-#          DOCS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
-#          OTHERS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
-#
-#
-#          echo "## 变更内容" >> "${CHANGELOG_FILE}"
-#          echo "" >> ${CHANGELOG_FILE}
-#
-#          echo "## 新功能" >> "${CHANGELOG_FILE}"
-#          [ -n "${FEATURES}" ] && echo "${FEATURES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-#
-#          echo -e "\n## 修复" >> "${CHANGELOG_FILE}"
-#          [ -n "${BUGFIXES}" ] && echo "${BUGFIXES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-#
-#          echo -e "\n## 文档" >> "${CHANGELOG_FILE}"
-#          [ -n "${DOCS}" ] && echo "${DOCS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-#
-#          echo -e "\n## 其他" >> "${CHANGELOG_FILE}"
-#          [ -n "${OTHERS}" ] && echo "${OTHERS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-#
-#          if [ ! -s "${CHANGELOG_FILE}" ] || ! grep -q "\- \[" "${CHANGELOG_FILE}"; then
-#            echo "- 首次发布模块 ${MODULE_NAME} v${VERSION}" >> "${CHANGELOG_FILE}"
-#          fi
-#
-#          echo -e "✅ 更新日志生成完成：\n"
-#          cat "${CHANGELOG_FILE}"
+          BUGFIXES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
+          DOCS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
+          OTHERS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
 
-#          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
-#          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
-#          echo "EOF" >> "${GITHUB_OUTPUT}"
+          echo "## 变更内容" >> "${CHANGELOG_FILE}"
+          echo "" >> ${CHANGELOG_FILE}
+
+          echo "## 新功能" >> "${CHANGELOG_FILE}"
+          [ -n "${FEATURES}" ] && echo "${FEATURES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+
+          echo -e "\n## 修复" >> "${CHANGELOG_FILE}"
+          [ -n "${BUGFIXES}" ] && echo "${BUGFIXES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+
+          echo -e "\n## 文档" >> "${CHANGELOG_FILE}"
+          [ -n "${DOCS}" ] && echo "${DOCS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+
+          echo -e "\n## 其他" >> "${CHANGELOG_FILE}"
+          [ -n "${OTHERS}" ] && echo "${OTHERS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+
+          if [ ! -s "${CHANGELOG_FILE}" ] || ! grep -q "\- \[" "${CHANGELOG_FILE}"; then
+            echo "- 首次发布模块 ${MODULE_NAME} v${VERSION}" >> "${CHANGELOG_FILE}"
+          fi
+
+          echo -e "✅ 更新日志生成完成：\n"
+          cat "${CHANGELOG_FILE}"
+
+          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
+          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
+          echo "EOF" >> "${GITHUB_OUTPUT}"
 
       # 更新模块版本号
       - name: 更新gradle.properties版本号
@@ -212,13 +205,15 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test
         run: |
           MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
-          ./gradlew :$MODULE_NAME:publish --info
+          ./gradlew ":${MODULE_NAME}:publish" --info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEV_OPTS_ALIYUN_USERNAME: ${{ secrets.DEV_OPTS_ALIYUN_USERNAME }}
+          DEV_OPTS_ALIYUN_PASSWORD: ${{ secrets.DEV_OPTS_ALIYUN_PASSWORD }}
 
       # 创建 GitHub Release 并附加更新日志
       - name: 创建 GitHub Release（含更新日志）
-        if: github.event_name != 'workflow_dispatch' || !github.event.inputs.is_test
+        if: github.event_name != 'workflow_dispatch' || (!github.event.inputs.is_test && steps.generate_changelog.outcome == 'success')
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
