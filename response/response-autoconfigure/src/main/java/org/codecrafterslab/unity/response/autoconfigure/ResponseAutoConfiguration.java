@@ -1,20 +1,25 @@
 package org.codecrafterslab.unity.response.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codecrafterslab.unity.response.ResultAdvice;
 import org.codecrafterslab.unity.response.ResultErrorController;
-import org.codecrafterslab.unity.response.json.ResultJackson2ObjectMapperBuilder;
+import org.codecrafterslab.unity.response.api.IResult;
+import org.codecrafterslab.unity.response.json.ResultModule;
 import org.codecrafterslab.unity.response.json.ResultSerializer;
 import org.codecrafterslab.unity.response.properties.ResponseProperties;
 import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 /**
  * 配置需要在 ErrorMvcAutoConfiguration 配置前进行，否则无法覆盖默认 BasicErrorController
@@ -26,21 +31,44 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @see ResultAdvice
  */
 @Configuration
-@Import({ResultAdvice.class, ResultErrorController.class})
-@EnableConfigurationProperties({ResponseProperties.class, ResponseWrapperProperties.class})
 @AutoConfigureBefore(ErrorMvcAutoConfiguration.class)
-public class ResponseAutoConfiguration {
+@Import({ResultErrorController.class})
+@EnableConfigurationProperties({ResponseProperties.class, ResponseWrapperProperties.class})
+@ConditionalOnProperty(prefix = "unity.response.wrapper", name = "enable", havingValue = "true", matchIfMissing = true)
+public class ResponseAutoConfiguration implements InitializingBean {
+
+    private final ResponseProperties properties;
+    private final List<ResponsePropertiesCustomizer> responsePropertiesCustomizers;
+
+    public ResponseAutoConfiguration(ResponseProperties properties, List<ResponsePropertiesCustomizer> responsePropertiesCustomizers) {
+        this.properties = properties;
+        this.responsePropertiesCustomizers = responsePropertiesCustomizers;
+    }
 
     @Bean
     @ConditionalOnMissingBean
-    ResultSerializer resultSerializer(ResponseProperties responseProperties) {
-        return new ResultSerializer(responseProperties);
+    ResultSerializer<? extends IResult<?>> resultSerializer() {
+        return new ResultSerializer<>(properties);
     }
 
     @Bean
-    @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
-    ResultJackson2ObjectMapperBuilder resultJackson2ObjectMapperBuilder(ResultSerializer resultSerializer) {
-        return new ResultJackson2ObjectMapperBuilder(resultSerializer);
+    @ConditionalOnMissingBean
+    ResultModule resultModule(ResultSerializer<? extends IResult<?>> resultSerializer) {
+        return new ResultModule(resultSerializer);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    ResultAdvice resultAdvice(ObjectMapper objectMapper) {
+        return new ResultAdvice(properties.getWrapper(), objectMapper);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (!CollectionUtils.isEmpty(this.responsePropertiesCustomizers)) {
+            for (ResponsePropertiesCustomizer customizer : this.responsePropertiesCustomizers) {
+                customizer.customize(this.properties);
+            }
+        }
+    }
 }

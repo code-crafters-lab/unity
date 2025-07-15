@@ -18,12 +18,12 @@ public class ResponseWrapperProperties {
 
     /**
      * <p>是否启用响应结果自动包装，默认 true</p>
-     * <p>局部控制请使用 {@link org.codecrafterslab.unity.response.api.ResponseResult} 注解</p>
+     * <p>局部控制请使用 {@link org.codecrafterslab.unity.response.annotation.ResponseResult} 注解</p>
      */
     private Boolean enable = true;
 
     /**
-     * 全局包装需要忽略的类名称(完全限定名)
+     * 全局包装需要忽略的类名称（完全限定名）或指定返回类型的类名称（完全限定名）
      */
     private List<String> ignoredClass = new ArrayList<>();
 

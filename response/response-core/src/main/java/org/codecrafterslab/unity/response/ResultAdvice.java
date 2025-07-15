@@ -6,10 +6,6 @@ import org.codecrafterslab.unity.response.annotation.ResponseResult;
 import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.response.api.IResult;
-import org.springframework.beans.BeansException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
@@ -17,16 +13,20 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 接口响应数据统一包装为 {@link Result}
@@ -37,13 +37,12 @@ import java.util.Set;
  */
 @Slf4j
 @RestControllerAdvice
-@ConditionalOnProperty(prefix = "unity.response.wrapper", name = "enable", havingValue = "true", matchIfMissing = true)
-public class ResultAdvice implements ResponseBodyAdvice<Object>, ApplicationContextAware {
-
+public class ResultAdvice implements ResponseBodyAdvice<Object> {
     private final Set<String> ignoredClassName = new HashSet<>();
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    private final Class[] annotations = new Class[]{
+    @SuppressWarnings("unchecked")
+    private final Class<? extends Annotation>[] annotations = new Class[]{
             RequestMapping.class,
             GetMapping.class,
             PostMapping.class,
@@ -52,42 +51,43 @@ public class ResultAdvice implements ResponseBodyAdvice<Object>, ApplicationCont
             PatchMapping.class
     };
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ResponseWrapperProperties wrapperProperties = applicationContext.getBean(ResponseWrapperProperties.class);
+    public ResultAdvice(ResponseWrapperProperties wrapperProperties, ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         List<String> ignoredClass = wrapperProperties.getIgnoredClass();
         if (ignoredClass != null) {
             ignoredClassName.addAll(ignoredClass);
         }
-        objectMapper = applicationContext.getBean(ObjectMapper.class);
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(@NonNull MethodParameter methodParameter, @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
         return !this.ignored(methodParameter) && this.supports(methodParameter);
     }
 
     /**
-     * 忽略的类
+     * 忽略的类型（方法所在类或方法返回值）
      *
      * @param methodParameter MethodParameter
      * @return boolean
      */
     private boolean ignored(MethodParameter methodParameter) {
-        String canonicalName = methodParameter.getDeclaringClass().getCanonicalName();
-        return ignoredClassName.stream().anyMatch(clazz -> clazz.equals(canonicalName));
+        Set<String> classes = Stream.of(methodParameter.getDeclaringClass(), methodParameter.getParameterType())
+                .map(Class::getCanonicalName).collect(Collectors.toSet());
+        return ignoredClassName.stream().anyMatch(classes::contains);
     }
 
     @Override
     @Nullable
-    public Object beforeBodyWrite(@Nullable Object body, MethodParameter methodParameter, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+    public Object beforeBodyWrite(Object body, @NonNull MethodParameter methodParameter,
+                                  @NonNull MediaType selectedContentType,
+                                  @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                  @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
         Object out = null;
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         /* 响应结果为 IResult 直接返回 */
         if (body instanceof IResult) {
             out = body;
-        } else if (body != null){
+        } else if (body != null) {
             out = Result.success(body);
         }
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */

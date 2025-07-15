@@ -46,3 +46,5 @@ gradle.local.properties
 *.html
 .idea
 .fastRequest
+*.sh
+*.md
