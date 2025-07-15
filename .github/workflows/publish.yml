@@ -1,5 +1,3 @@
-name: 发布模块并生成更新日志
-
 on:
   push:
     tags:
@@ -124,51 +122,52 @@ jobs:
           VERSION="${{ steps.parse_tag.outputs.version }}"
           TAG_EXISTS="${{ steps.check_current_tag.outputs.tag_exists }}"
           
-          CHANGELOG_FILE="CHANGELOG_${MODULE_NAME}.md"
-          
-          echo "# $MODULE_NAME v$VERSION 更新日志" > $CHANGELOG_FILE
+          CHANGELOG_FILE="${MODULE_NAME}_v${VERSION}_changelog.md"
+  
+          echo "# unity-${MODULE_NAME} v${VERSION} 更新日志" > ${CHANGELOG_FILE}
           echo "发布时间：$(date +'%Y-%m-%d')" >> $CHANGELOG_FILE
-          echo "" >> $CHANGELOG_FILE
+          echo "" >> ${CHANGELOG_FILE}
           
-          # 动态调整日志范围
-          if [ "$TAG_EXISTS" = "true" ]; then
-            LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}$CURRENT_TAG"
+          # 动态调整日志获取范围
+          if [ "${TAG_EXISTS}" = "true" ]; then
+          LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}${CURRENT_TAG}"
           else
-            LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}HEAD"
+          LOG_RANGE="${PREVIOUS_TAG:+$PREVIOUS_TAG..}HEAD"
           fi
-          echo "使用日志范围：$LOG_RANGE"
+          echo "日志获取范围：${LOG_RANGE}"
           
           # 提取提交记录（按类型分类）
-          FEATURES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
-          BUGFIXES=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
-          DOCS=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
-          OTHERS=$(git log $LOG_RANGE --pretty=format:"- [%h] %s" --abbrev-commit -- "$MODULE_NAME/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
+          FEATURES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
+          BUGFIXES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
+          DOCS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
+          OTHERS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
           
-          echo "## 变更内容" >> $CHANGELOG_FILE
-          echo "" >> $CHANGELOG_FILE
           
-          echo "## 新功能" >> $CHANGELOG_FILE
-          [ -n "$FEATURES" ] && echo "$FEATURES" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          echo "## 变更内容" >> "${CHANGELOG_FILE}"
+          echo "" >> ${CHANGELOG_FILE}
           
-          echo -e "\n## 修复" >> $CHANGELOG_FILE
-          [ -n "$BUGFIXES" ] && echo "$BUGFIXES" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          echo "## 新功能" >> "${CHANGELOG_FILE}"
+          [ -n "${FEATURES}" ] && echo "${FEATURES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+        
+          echo -e "\n## 修复" >> "${CHANGELOG_FILE}"
+          [ -n "${BUGFIXES}" ] && echo "${BUGFIXES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
           
-          echo -e "\n## 文档" >> $CHANGELOG_FILE
-          [ -n "$DOCS" ] && echo "$DOCS" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          echo -e "\n## 文档" >> "${CHANGELOG_FILE}"
+          [ -n "${DOCS}" ] && echo "${DOCS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
           
-          echo -e "\n## 其他变更" >> $CHANGELOG_FILE
-          [ -n "$OTHERS" ] && echo "$OTHERS" >> $CHANGELOG_FILE || echo "- 无" >> $CHANGELOG_FILE
+          echo -e "\n## 其他" >> "${CHANGELOG_FILE}"
+          [ -n "${OTHERS}" ] && echo "${OTHERS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
           
-          if [ ! -s "$CHANGELOG_FILE" ] || ! grep -q "\- \[" "$CHANGELOG_FILE"; then
-            echo "- 首次发布模块 $MODULE_NAME v$VERSION" >> $CHANGELOG_FILE
+          if [ ! -s "${CHANGELOG_FILE}" ] || ! grep -q "\- \[" "${CHANGELOG_FILE}"; then
+            echo "- 首次发布模块 ${MODULE_NAME} v${VERSION}" >> "${CHANGELOG_FILE}"
           fi
           
-          echo "✅ 更新日志生成完成："
-          cat $CHANGELOG_FILE
-          
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          cat $CHANGELOG_FILE >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo -e "✅ 更新日志生成完成：\n"
+          cat "${CHANGELOG_FILE}"
+
+          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
+          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
+          echo "EOF" >> "${GITHUB_OUTPUT}"
 
       # 更新模块版本号
       - name: 更新gradle.properties版本号
