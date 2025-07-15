@@ -6,24 +6,16 @@ import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializePropert
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Data
-@ConfigurationProperties(prefix = "dict")
+@ConfigurationProperties(prefix = "unity.dict")
 public class DictProperties {
 
     /**
      * 字典值{@link DictionaryItem#getValue()} 持久化到数据库的方式
      */
     private PersistenceMode valuePersistenceMode = PersistenceMode.COMMA_SPLIT;
-
-    /**
-     * 枚举字典自动扫描路径（已废弃）
-     * @deprecated 使用 {@link #enumDictItemPackages} 替代，支持多个路径配置
-     */
-    @Deprecated
-    private String enumDictItemPackage;
 
     /**
      * 枚举字典自动扫描路径
@@ -49,17 +41,4 @@ public class DictProperties {
         put(Features.FLATTEN_OUTPUT_OBJECT, false);
     }};
 
-
-    /**
-     * 如果用户同时配置了新旧属性，合并它们
-     */
-    @PostConstruct
-    public void init() {
-        if (enumDictItemPackage != null) {
-            if (this.enumDictItemPackages == null) {
-                this.enumDictItemPackages = new HashSet<>();
-            }
-            this.enumDictItemPackages.addAll(Arrays.asList(enumDictItemPackage.split(",")));
-        }
-    }
 }

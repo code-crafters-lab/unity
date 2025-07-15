@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.DictionaryItem;
+import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.combine.Key;
 import org.springframework.util.ObjectUtils;
 
@@ -25,8 +26,8 @@ public class DictionaryItemSerializer<T extends DictionaryItem<?>> extends JsonS
 
     private final SerializeHolder context;
 
-    public DictionaryItemSerializer(DictSerializeProperties serializeProperties) {
-        this.context = new SerializeHolder(serializeProperties);
+    public DictionaryItemSerializer(DictProperties dictProperties) {
+        this.context = new SerializeHolder(dictProperties.getSerialize());
     }
 
     public DictionaryItemSerializer(SerializeHolder context) {

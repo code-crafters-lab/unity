@@ -2,8 +2,10 @@ package org.codecrafterslab.unity.dict.boot.json;
 
 import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.DictJackson2ObjectMapperBuilder;
+import org.codecrafterslab.unity.dict.boot.json.jackson.DictModule;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +18,12 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Configuration
 @EnableConfigurationProperties({DictProperties.class, DictSerializeProperties.class})
 public class DictJsonConfiguration {
-
+    
+    @Bean
+    @ConditionalOnMissingBean
+    DictModule dictModule(ApplicationContext applicationContext) {
+        return new DictModule(applicationContext);
+    }
 
     /**
      * 数据字典序列化自定义处理

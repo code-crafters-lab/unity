@@ -3,7 +3,7 @@ package org.codecrafterslab.unity.dict.boot.app.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.codecrafterslab.unity.dict.boot.MockMvcConfiguration;
-import org.codecrafterslab.unity.dict.boot.ProviderConfiguration;
+import org.codecrafterslab.unity.dict.boot.provider.ProviderConfiguration;
 import org.codecrafterslab.unity.dict.boot.app.entity.Goods;
 import org.codecrafterslab.unity.dict.boot.app.entity.ProductService;
 import org.codecrafterslab.unity.dict.boot.app.entity.Sex;

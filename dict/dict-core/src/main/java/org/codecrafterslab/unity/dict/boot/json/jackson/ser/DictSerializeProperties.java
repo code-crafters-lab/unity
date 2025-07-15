@@ -18,11 +18,12 @@ import java.util.Map;
  * @time 2022/08/14 19:55
  */
 @Data
-@ConfigurationProperties(prefix = "dict.serialize")
+@ConfigurationProperties(prefix = "unity.dict.serialize")
 public class DictSerializeProperties {
 
     /**
      * 全局默认属性序列化范围
+     *
      * @see SerializeScope
      */
     private List<SerializeScope> scopes = Collections.singletonList(SerializeScope.CODE);
@@ -37,6 +38,7 @@ public class DictSerializeProperties {
 
     /**
      * 序列化字段的 key 值
+     *
      * @see Scope
      */
     private Map<Scope, String> keys;

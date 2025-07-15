@@ -12,12 +12,13 @@ logging:
   level:
     root: warn
     org.codecrafterslab.unity.dict: debug
-dict:
-  serialize:
-    scopes: label
-    keys:
-      label: name
-  features:
-    flatten-output-object: false
-    function-point-deserialization: true
-  enum-dict-item-package: org.codecrafterslab.unity.dict
+unity:
+  dict:
+    serialize:
+      scopes: label
+      keys:
+        label: name
+    features:
+      flatten-output-object: false
+      function-point-deserialization: true
+    enum-dict-item-packages: org.codecrafterslab.unity.dict

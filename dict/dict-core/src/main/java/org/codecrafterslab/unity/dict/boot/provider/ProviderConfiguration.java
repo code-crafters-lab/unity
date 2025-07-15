@@ -1,11 +1,9 @@
-package org.codecrafterslab.unity.dict.boot;
+package org.codecrafterslab.unity.dict.boot.provider;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.combine.Scope;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.SerializeScope;
-import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
-import org.codecrafterslab.unity.dict.boot.provider.EnumDictProviderBuilder;
-import org.codecrafterslab.unity.dict.boot.provider.EnumDictProviderBuilderCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

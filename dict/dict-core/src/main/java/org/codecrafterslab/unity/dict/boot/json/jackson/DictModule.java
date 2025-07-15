@@ -7,7 +7,6 @@ import org.codecrafterslab.unity.dict.api.DictionaryItem;
 import org.codecrafterslab.unity.dict.boot.DictProperties;
 import org.codecrafterslab.unity.dict.boot.Features;
 import org.codecrafterslab.unity.dict.boot.json.jackson.deser.EnumDictItemDeserializer;
-import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictSerializeProperties;
 import org.codecrafterslab.unity.dict.boot.json.jackson.ser.DictionaryItemSerializer;
 import org.codecrafterslab.unity.dict.boot.provider.EnumDictProvider;
 import org.springframework.context.ApplicationContext;
@@ -39,10 +38,10 @@ public class DictModule extends SimpleModule {
 
     private void configSerializers() {
         // 获取配置
-        DictSerializeProperties serializeProperties = applicationContext.getBean(DictSerializeProperties.class);
+        DictProperties dictProperties = applicationContext.getBean(DictProperties.class);
 
         // 枚举字典序列化注册
-        addSerializer(DictionaryItem.class, new DictionaryItemSerializer<>(serializeProperties));
+        addSerializer(DictionaryItem.class, new DictionaryItemSerializer<>(dictProperties));
     }
 
     @SuppressWarnings("unchecked")

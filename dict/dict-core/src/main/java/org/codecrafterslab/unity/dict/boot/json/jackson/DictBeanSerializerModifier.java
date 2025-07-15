@@ -74,7 +74,7 @@ public class DictBeanSerializerModifier extends BeanSerializerModifier {
         return newBeanProperties;
     }
 
-    protected boolean canProcess(BeanPropertyWriter beanProperty) {
+    public boolean canProcess(BeanPropertyWriter beanProperty) {
         JavaType type = beanProperty.getType();
         return type instanceof SimpleType && EnumDictItem.class.isAssignableFrom(type.getRawClass());
     }

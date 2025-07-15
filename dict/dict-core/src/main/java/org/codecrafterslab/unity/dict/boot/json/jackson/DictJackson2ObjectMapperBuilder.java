@@ -27,12 +27,9 @@ public class DictJackson2ObjectMapperBuilder implements Jackson2ObjectMapperBuil
         Boolean annoIntrospector = dictProperties.getFeatures().getOrDefault(Features.ANNOTATION_INTROSPECTOR, false);
         if (annoIntrospector) {
             builder.annotationIntrospector(new JacksonAnnotationIntrospector());
-            builder.annotationIntrospector(primary -> AnnotationIntrospectorPair.pair(primary,
-                    new DictAnnotationIntrospector()));
+            builder.annotationIntrospector(primary ->
+                    AnnotationIntrospectorPair.pair(primary, new DictAnnotationIntrospector()));
         }
-
-        DictModule dictModule = new DictModule(applicationContext);
-        builder.modulesToInstall(dictModule);
     }
 
     @Override
