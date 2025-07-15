@@ -114,9 +114,12 @@ jobs:
             echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
           fi
 
+
+
       # 生成更新日志（分类）
       - name: 生成更新日志
         id: generate_changelog
+        if: cancelled()
         run: |
           MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
           CURRENT_TAG="${{ steps.parse_tag.outputs.current_tag }}"
@@ -138,34 +141,40 @@ jobs:
           fi
           echo "日志获取范围：${LOG_RANGE}"
           
+          TEST=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" -n 10)
+          
+          echo "提交记录：${TEST}"
+          echo "${TEST}" >> ${CHANGELOG_FILE}
+          
           # 提取提交记录（按类型分类）
           FEATURES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] feat[:(]')
-          BUGFIXES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
-          DOCS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
-          OTHERS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
-          
-          
-          echo "## 变更内容" >> "${CHANGELOG_FILE}"
-          echo "" >> ${CHANGELOG_FILE}
-          
-          echo "## 新功能" >> "${CHANGELOG_FILE}"
-          [ -n "${FEATURES}" ] && echo "${FEATURES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-        
-          echo -e "\n## 修复" >> "${CHANGELOG_FILE}"
-          [ -n "${BUGFIXES}" ] && echo "${BUGFIXES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-          
-          echo -e "\n## 文档" >> "${CHANGELOG_FILE}"
-          [ -n "${DOCS}" ] && echo "${DOCS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-          
-          echo -e "\n## 其他" >> "${CHANGELOG_FILE}"
-          [ -n "${OTHERS}" ] && echo "${OTHERS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
-          
-          if [ ! -s "${CHANGELOG_FILE}" ] || ! grep -q "\- \[" "${CHANGELOG_FILE}"; then
-            echo "- 首次发布模块 ${MODULE_NAME} v${VERSION}" >> "${CHANGELOG_FILE}"
-          fi
-          
-          echo -e "✅ 更新日志生成完成：\n"
-          cat "${CHANGELOG_FILE}"
+          echo "提交记录：${FEATURES}"
+#          BUGFIXES=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] fix[:(]')
+#          DOCS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -i '^- \[[a-z0-9]*\] docs[:(]')
+#          OTHERS=$(git log "${LOG_RANGE}" --pretty=format:"- [%h] %s" --abbrev-commit -- "${MODULE_NAME}/" | grep -iv '^- \[[a-z0-9]*\] \(feat\|fix\|docs\)[:(]')
+#
+#
+#          echo "## 变更内容" >> "${CHANGELOG_FILE}"
+#          echo "" >> ${CHANGELOG_FILE}
+#
+#          echo "## 新功能" >> "${CHANGELOG_FILE}"
+#          [ -n "${FEATURES}" ] && echo "${FEATURES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+#
+#          echo -e "\n## 修复" >> "${CHANGELOG_FILE}"
+#          [ -n "${BUGFIXES}" ] && echo "${BUGFIXES}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+#
+#          echo -e "\n## 文档" >> "${CHANGELOG_FILE}"
+#          [ -n "${DOCS}" ] && echo "${DOCS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+#
+#          echo -e "\n## 其他" >> "${CHANGELOG_FILE}"
+#          [ -n "${OTHERS}" ] && echo "${OTHERS}" >> "${CHANGELOG_FILE}" || echo "- 无" >> "${CHANGELOG_FILE}"
+#
+#          if [ ! -s "${CHANGELOG_FILE}" ] || ! grep -q "\- \[" "${CHANGELOG_FILE}"; then
+#            echo "- 首次发布模块 ${MODULE_NAME} v${VERSION}" >> "${CHANGELOG_FILE}"
+#          fi
+#
+#          echo -e "✅ 更新日志生成完成：\n"
+#          cat "${CHANGELOG_FILE}"
 
 #          echo "changelog<<EOF" >> "${GITHUB_OUTPUT}"
 #          cat $CHANGELOG_FILE >> "${GITHUB_OUTPUT}"
@@ -188,6 +197,8 @@ jobs:
           else
             echo "测试模式：不提交版本变更"
           fi
+
+
 
       # 配置 JDK 并发布模块
       - name: 配置JDK 17
@@ -230,8 +241,7 @@ jobs:
       - name: 发布失败通知
         if: failure()
         run: |
-          echo "📋 当前工作目录:"
-          pwd
+          echo "📋 TODO 发布失败通知"
   rollback:
     runs-on: ubuntu-latest
     needs: publish
