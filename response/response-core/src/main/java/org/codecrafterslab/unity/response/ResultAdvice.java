@@ -2,10 +2,10 @@ package org.codecrafterslab.unity.response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codecrafterslab.unity.response.annotation.ResponseResult;
-import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.codecrafterslab.unity.response.api.IResult;
+import org.codecrafterslab.unity.response.annotation.ResponseResult;
+import org.codecrafterslab.unity.response.api.Result;
+import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
@@ -84,11 +84,11 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
         Object out = null;
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        /* 响应结果为 IResult 直接返回 */
-        if (body instanceof IResult) {
+        /* 响应结果为 Result 直接返回 */
+        if (body instanceof Result) {
             out = body;
         } else if (body != null) {
-            out = Result.success(body);
+            out = ResultUtils.success(body);
         }
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {

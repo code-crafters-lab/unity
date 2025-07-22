@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @email coffee377@dingtalk.com
  * @time 2022/08/07 08:49
  */
-public interface IResult<T> extends Serializable {
+public interface Result<T> extends Serializable {
 
     /**
      * 是否正常完成业务逻辑

@@ -3,13 +3,13 @@ package org.codecrafterslab.unity.response.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.codecrafterslab.unity.exception.core.BizStatus;
-import org.codecrafterslab.unity.response.api.IPageResult;
-import org.codecrafterslab.unity.response.api.IResult;
-import org.codecrafterslab.unity.response.api.ISummaryResult;
-import org.codecrafterslab.unity.response.properties.ResultJsonProperties;
-import org.codecrafterslab.unity.response.properties.ResponseProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.codecrafterslab.unity.exception.core.BizStatus;
+import org.codecrafterslab.unity.response.api.PageSummaryResult;
+import org.codecrafterslab.unity.response.api.Result;
+import org.codecrafterslab.unity.response.api.SummaryResult;
+import org.codecrafterslab.unity.response.properties.ResponseProperties;
+import org.codecrafterslab.unity.response.properties.ResultJsonProperties;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
  * @time 2021/04/25 13:27
  */
 @Slf4j
-public class ResultSerializer<T extends IResult<?>> extends JsonSerializer<T> {
+public class ResultSerializer<T extends Result<?>> extends JsonSerializer<T> {
 
     private final ResultJsonProperties property;
     private final Class<T> aClass;
@@ -29,7 +29,7 @@ public class ResultSerializer<T extends IResult<?>> extends JsonSerializer<T> {
     @SuppressWarnings("unchecked")
     public ResultSerializer(ResponseProperties resultProperties) {
         this.property = resultProperties.getResult();
-        ResolvableType resolvableType = ResolvableType.forClassWithGenerics(IResult.class, ResolvableType.forClass(Object.class));
+        ResolvableType resolvableType = ResolvableType.forClassWithGenerics(Result.class, ResolvableType.forClass(Object.class));
         aClass = (Class<T>) resolvableType.resolve();
     }
 
@@ -50,15 +50,15 @@ public class ResultSerializer<T extends IResult<?>> extends JsonSerializer<T> {
             gen.writeObjectField(property.getData(), result.getData());
         }
         /* 汇总数据序列化输出 */
-        if (result instanceof ISummaryResult) {
-            Object summary = ((ISummaryResult<?, ?>) result).getSummary();
+        if (result instanceof SummaryResult) {
+            Object summary = ((SummaryResult<?, ?>) result).getSummary();
             if (!ObjectUtils.isEmpty(summary)) {
                 gen.writeObjectField(property.getSummary(), summary);
             }
         }
         /* 数据总数序列化输出 */
-        if (result instanceof IPageResult) {
-            Integer total = ((IPageResult<?, ?>) result).getTotal();
+        if (result instanceof PageSummaryResult) {
+            Integer total = ((PageSummaryResult<?, ?>) result).getTotal();
             if (!ObjectUtils.isEmpty(total)) {
                 gen.writeNumberField(property.getTotal(), total);
             }

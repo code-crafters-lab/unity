@@ -1,6 +1,6 @@
 package org.codecrafterslab.unity.response.api;
 
-public interface ISummaryResult<T, S> extends IResult<T> {
+public interface SummaryResult<D, S> extends Result<D> {
 
     /**
      * 汇总数据
@@ -8,5 +8,5 @@ public interface ISummaryResult<T, S> extends IResult<T> {
      * @return S
      */
     S getSummary();
-
+    
 }

@@ -3,7 +3,7 @@ package org.codecrafterslab.unity.response.json;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import org.codecrafterslab.unity.response.api.IResult;
+import org.codecrafterslab.unity.response.api.Result;
 
 /**
  * @author Wu Yujie
@@ -12,9 +12,9 @@ import org.codecrafterslab.unity.response.api.IResult;
  */
 public class ResultModule extends Module {
 
-    private final ResultSerializer<? extends IResult<?>> resultSerializer;
+    private final ResultSerializer<? extends Result<?>> resultSerializer;
 
-    public ResultModule(ResultSerializer<? extends IResult<?>> resultSerializer) {
+    public ResultModule(ResultSerializer<? extends Result<?>> resultSerializer) {
         this.resultSerializer = resultSerializer;
     }
 

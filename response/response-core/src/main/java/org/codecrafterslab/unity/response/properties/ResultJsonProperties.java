@@ -1,9 +1,14 @@
 package org.codecrafterslab.unity.response.properties;
 
 import lombok.Data;
+import org.codecrafterslab.unity.response.api.PageSummaryResult;
 
 /**
- * {@link org.codecrafterslab.unity.response.Result} 序列化后字段名称配置
+ * 序列化后字段名称配置
+ *
+ * <p>{@link  org.codecrafterslab.unity.response.api.Result}</p>
+ * <p>{@link  org.codecrafterslab.unity.response.api.SummaryResult}</p>
+ * <p>{@link  PageSummaryResult}</p>
  *
  * @author Wu Yujie
  * @email coffee377@dingtalk.com
@@ -13,7 +18,7 @@ import lombok.Data;
 public class ResultJsonProperties {
 
     /**
-     * 请求是否成功字段名称
+     * 请求是否成功字段名称 {@link org.codecrafterslab.unity.response.api.Result#isSuccess()}
      */
     private String success = "success";
 

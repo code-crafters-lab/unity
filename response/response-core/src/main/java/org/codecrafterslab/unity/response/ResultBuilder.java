@@ -3,6 +3,7 @@ package org.codecrafterslab.unity.response;
 import org.codecrafterslab.unity.exception.api.Status;
 import org.codecrafterslab.unity.exception.core.BizException;
 import org.codecrafterslab.unity.exception.core.BizStatus;
+import org.codecrafterslab.unity.response.api.PageSummaryResult;
 import org.springframework.lang.Nullable;
 import org.springframework.web.util.NestedServletException;
 
@@ -157,7 +158,7 @@ class ResultBuilder<D, S> implements Serializable {
      * @return Builder
      */
     public ResultBuilder<D, S> success(@Nullable D data) {
-        return success("ok", data);
+        return success(BizStatus.OK.getMessage().toLowerCase(), data);
     }
 
     /**
@@ -251,8 +252,8 @@ class ResultBuilder<D, S> implements Serializable {
      *
      * @return Result
      */
-    public Result<D, Object> build() {
-        Result<D, Object> result = new Result<>();
+    public PageSummaryResult<D, S> build() {
+        DefaultPageResult<D, S> result = new DefaultPageResult<>();
         result.setSuccess(success);
         result.setCode(code);
         result.setMessage(message);

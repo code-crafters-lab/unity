@@ -3,7 +3,7 @@ package org.codecrafterslab.unity.response.autoconfigure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codecrafterslab.unity.response.ResultAdvice;
 import org.codecrafterslab.unity.response.ResultErrorController;
-import org.codecrafterslab.unity.response.api.IResult;
+import org.codecrafterslab.unity.response.api.Result;
 import org.codecrafterslab.unity.response.json.ResultModule;
 import org.codecrafterslab.unity.response.json.ResultSerializer;
 import org.codecrafterslab.unity.response.properties.ResponseProperties;
@@ -47,13 +47,13 @@ public class ResponseAutoConfiguration implements InitializingBean {
 
     @Bean
     @ConditionalOnMissingBean
-    ResultSerializer<? extends IResult<?>> resultSerializer() {
+    ResultSerializer<? extends Result<?>> resultSerializer() {
         return new ResultSerializer<>(properties);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    ResultModule resultModule(ResultSerializer<? extends IResult<?>> resultSerializer) {
+    ResultModule resultModule(ResultSerializer<? extends Result<?>> resultSerializer) {
         return new ResultModule(resultSerializer);
     }
 

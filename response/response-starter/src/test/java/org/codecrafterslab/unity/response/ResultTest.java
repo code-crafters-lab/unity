@@ -2,6 +2,8 @@ package org.codecrafterslab.unity.response;
 
 import org.codecrafterslab.unity.exception.core.BizException;
 import org.codecrafterslab.unity.exception.core.BizStatus;
+import org.codecrafterslab.unity.response.api.PageResult;
+import org.codecrafterslab.unity.response.api.Result;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,27 +19,25 @@ public class ResultTest {
 
     @Test
     void success() {
-        Result<Object, Object> success = Result.success();
+        Result<?> success = ResultUtils.success();
         Assertions.assertTrue(success.isSuccess());
         Assertions.assertEquals(0, success.getCode());
-        Assertions.assertEquals("ok", success.getMessage());
+        Assertions.assertEquals("success", success.getMessage());
         Assertions.assertNull(success.getData());
-        Assertions.assertNull(success.getTotal());
     }
 
     @Test
     void successData() {
-        Result<List<Integer>, Object> success = Result.success(Arrays.asList(1, 2, 3, 4, 5));
+        Result<List<Integer>> success = ResultUtils.success(Arrays.asList(1, 2, 3, 4, 5));
         Assertions.assertTrue(success.isSuccess());
         Assertions.assertEquals(0, success.getCode());
-        Assertions.assertEquals("ok", success.getMessage());
+        Assertions.assertEquals("success", success.getMessage());
         Assertions.assertNotNull(success.getData());
-        Assertions.assertNull(success.getTotal());
     }
 
     @Test
     void successDataTotal() {
-        Result<List<Integer>, Object> success = Result.success(Arrays.asList(1, 2, 3, 4, 5), 10);
+        PageResult<List<Integer>> success = ResultUtils.success(Arrays.asList(1, 2, 3, 4, 5), 10);
         Assertions.assertTrue(success.isSuccess());
         Assertions.assertEquals(0, success.getCode());
         Assertions.assertNull(success.getMessage());
@@ -48,17 +48,16 @@ public class ResultTest {
 
     @Test
     void successMessageData() {
-        Result<List<Integer>, Object> success = Result.success("测试成功", Arrays.asList(1, 2, 3, 4, 5));
+        Result<List<Integer>> success = ResultUtils.success("测试成功", Arrays.asList(1, 2, 3, 4, 5));
         Assertions.assertTrue(success.isSuccess());
         Assertions.assertEquals(0, success.getCode());
         Assertions.assertEquals("测试成功", success.getMessage());
         Assertions.assertNotNull(success.getData());
-        Assertions.assertNull(success.getTotal());
     }
 
     @Test
     void successMessageDataTotal() {
-        Result<List<Integer>, Object> success = Result.success("测试成功", Arrays.asList(1, 2, 3, 4, 5), 20);
+        PageResult<List<Integer>> success = ResultUtils.success("测试成功", Arrays.asList(1, 2, 3, 4, 5), 20);
         Assertions.assertTrue(success.isSuccess());
         Assertions.assertEquals(0, success.getCode());
         Assertions.assertEquals("测试成功", success.getMessage());
@@ -70,25 +69,25 @@ public class ResultTest {
 
     @Test
     void failureCodeMessageData() {
-        Result<String, Object> failure = Result.failure(1, "测试异常提示", "测试异常数据");
+        Result<String> failure = ResultUtils.failure(1, "测试异常提示", "测试异常数据");
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertNotEquals(0, failure.getCode());
-        Assertions.assertNotEquals("ok", failure.getMessage());
+        Assertions.assertNotEquals("success", failure.getMessage());
         Assertions.assertNotNull(failure.getData());
     }
 
     @Test
     void failureCodeMessage() {
-        Result<String, Object> failure = Result.failure(1, "测试异常提示");
+        Result<Object> failure = ResultUtils.failure(1, "测试异常提示");
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertNotEquals(0, failure.getCode());
-        Assertions.assertNotEquals("ok", failure.getMessage());
+        Assertions.assertNotEquals("success", failure.getMessage());
         Assertions.assertNull(failure.getData());
     }
 
     @Test
     void failureExceptionData() {
-        Result<String, Object> failure = Result.failure(new Exception("任意异常"), "测试异常类");
+        Result<String> failure = ResultUtils.failure(new Exception("任意异常"), "测试异常类");
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertEquals(BizStatus.INTERNAL_SERVER_ERROR.getCode(), failure.getCode());
         Assertions.assertEquals("任意异常", failure.getMessage());
@@ -98,7 +97,7 @@ public class ResultTest {
     @Test
     void failureException() {
         BizException bizException = new BizException(BizStatus.ACCOUNT_EXPIRED);
-        Result<String, Object> failure = Result.failure((Exception) bizException);
+        Result<String> failure = ResultUtils.failure((Exception) bizException);
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertEquals(BizStatus.ACCOUNT_EXPIRED.getCode(), failure.getCode());
         Assertions.assertEquals(BizStatus.ACCOUNT_EXPIRED.getMessage(), failure.getMessage());
@@ -107,7 +106,7 @@ public class ResultTest {
 
     @Test
     void failureBizStatusData() {
-        Result<String, Object> failure = Result.failure(BizStatus.FORBIDDEN, "123");
+        Result<String> failure = ResultUtils.failure(BizStatus.FORBIDDEN, "123");
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertEquals(BizStatus.FORBIDDEN.getCode(), failure.getCode());
         Assertions.assertEquals(BizStatus.FORBIDDEN.getMessage(), failure.getMessage());
@@ -116,7 +115,7 @@ public class ResultTest {
 
     @Test
     void failureBizStatus() {
-        Result<String, Object> failure = Result.failure(BizStatus.FORBIDDEN);
+        Result<String> failure = ResultUtils.failure(BizStatus.FORBIDDEN);
         Assertions.assertFalse(failure.isSuccess());
         Assertions.assertEquals(BizStatus.FORBIDDEN.getCode(), failure.getCode());
         Assertions.assertEquals(BizStatus.FORBIDDEN.getMessage(), failure.getMessage());
