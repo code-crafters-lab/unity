@@ -53,7 +53,7 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
 
     public ResultAdvice(ResponseWrapperProperties wrapperProperties, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        List<String> ignoredClass = wrapperProperties.getIgnoredClass();
+        Set<String> ignoredClass = wrapperProperties.getIgnoredClass();
         if (ignoredClass != null) {
             ignoredClassName.addAll(ignoredClass);
         }
@@ -76,20 +76,18 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
         return ignoredClassName.stream().anyMatch(classes::contains);
     }
 
+    protected boolean unSupportBody(Object body) {
+        return body == null || Result.class.isAssignableFrom(body.getClass()) || ignoredClassName.contains(body.getClass().getCanonicalName());
+    }
+
     @Override
     @Nullable
     public Object beforeBodyWrite(Object body, @NonNull MethodParameter methodParameter,
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        Object out = null;
-        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        /* 响应结果为 Result 直接返回 */
-        if (body instanceof Result) {
-            out = body;
-        } else if (body != null) {
-            out = ResultUtils.success(body);
-        }
+        if (!unSupportBody(body)) return body;
+        Object out = ResultUtils.success(body);
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
             try {
