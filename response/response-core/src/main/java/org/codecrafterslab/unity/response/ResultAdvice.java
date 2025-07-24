@@ -23,7 +23,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,7 +60,11 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(@NonNull MethodParameter methodParameter, @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
-        return !this.ignored(methodParameter) && this.supports(methodParameter);
+        boolean result = !this.ignored(methodParameter) && this.supports(methodParameter);
+        if (log.isDebugEnabled()) {
+            log.debug("supports: {}, {}", result, getClasses(methodParameter));
+        }
+        return result;
     }
 
     /**
@@ -71,13 +74,21 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
      * @return boolean
      */
     private boolean ignored(MethodParameter methodParameter) {
-        Set<String> classes = Stream.of(methodParameter.getDeclaringClass(), methodParameter.getParameterType())
-                .map(Class::getCanonicalName).collect(Collectors.toSet());
+        Set<String> classes = getClasses(methodParameter);
         return ignoredClassName.stream().anyMatch(classes::contains);
     }
 
-    protected boolean unSupportBody(Object body) {
-        return body == null || Result.class.isAssignableFrom(body.getClass()) || ignoredClassName.contains(body.getClass().getCanonicalName());
+    private static Set<String> getClasses(MethodParameter methodParameter) {
+        return Stream.of(methodParameter.getDeclaringClass(), methodParameter.getParameterType())
+                .map(Class::getCanonicalName).collect(Collectors.toSet());
+    }
+
+    protected boolean unsupportedBody(Object body) {
+        boolean result = body == null || Result.class.isAssignableFrom(body.getClass()) || ignoredClassName.contains(body.getClass().getCanonicalName());
+        if (log.isDebugEnabled()) {
+            log.debug("unsupported body: {}, {}", result, body != null ? body.getClass().getCanonicalName() : "");
+        }
+        return result;
     }
 
     @Override
@@ -86,7 +97,7 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        if (!unSupportBody(body)) return body;
+        if (unsupportedBody(body)) return body;
         Object out = ResultUtils.success(body);
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
