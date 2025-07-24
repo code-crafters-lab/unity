@@ -1,7 +1,6 @@
 package org.codecrafterslab.unity.response.properties;
 
 import lombok.Data;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.*;
@@ -13,7 +12,7 @@ import java.util.*;
  */
 @Data
 @ConfigurationProperties(prefix = "unity.response.wrapper")
-public class ResponseWrapperProperties implements InitializingBean {
+public class ResponseWrapperProperties {
 
     /**
      * <p>是否启用响应结果自动包装，默认 true</p>
@@ -40,26 +39,29 @@ public class ResponseWrapperProperties implements InitializingBean {
      */
     private Boolean springfox = false;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        List<String> springDoc = Arrays.asList(
+    public void setSpringdoc(Boolean springdoc) {
+        this.springdoc = springdoc;
+        List<String> list = Arrays.asList(
                 "org.springdoc.webmvc.api.OpenApiWebMvcResource",
                 "org.springdoc.webmvc.api.OpenApiActuatorResource"
         );
+        if (springdoc) {
+            this.ignoredClass.addAll(list);
+        } else {
+            this.ignoredClass.removeAll(list);
+        }
+    }
 
-        List<String> springFox = Arrays.asList(
+    public void setSpringfox(Boolean springfox) {
+        this.springfox = springfox;
+        List<String> list = Arrays.asList(
                 "springfox.documentation.swagger.web.ApiResourceController",
                 "springfox.documentation.spring.web.json.Json"
         );
-        if (springdoc) {
-            this.ignoredClass.addAll(springDoc);
-        } else {
-            this.ignoredClass.removeAll(springDoc);
-        }
         if (springfox) {
-            this.ignoredClass.addAll(springFox);
+            this.ignoredClass.addAll(list);
         } else {
-            this.ignoredClass.removeAll(springFox);
+            this.ignoredClass.removeAll(list);
         }
     }
 }
