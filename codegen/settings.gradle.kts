@@ -1,5 +1,3 @@
-//rootProject.name = "codegen"
-
 pluginManagement {
     includeBuild("../gradle-plugins")
 }
