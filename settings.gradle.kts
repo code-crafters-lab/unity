@@ -14,6 +14,5 @@ includeBuild(".")
 includeBuild("exception")
 includeBuild("dict")
 includeBuild("response")
-
-//includeBuild("oauth2")
+includeBuild("codegen")
 

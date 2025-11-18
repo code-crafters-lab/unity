@@ -1,0 +1,27 @@
+{{> licenseInfo}}
+
+import {request} from '@/utils/request';
+import {Micro} from '@/api/Micro';
+import {RequestOptions} from '@antd-vue/hooks';
+{{#imports}}import { {{classname}} } from "./{{import}}";
+{{/imports}}
+
+export class {{classname}} {
+{{#operations}}{{#operation}}
+    {{nickname}} = (params: any) => {
+    {{!-- 路径参数存在 --}}
+    {{#pathParams}}
+        const url = '{{prefixPath}}{{path}}'{{#pathParams}}.replace('{' + '{{baseName}}' + '}', encodeURIComponent(String({{paramName}}))){{/pathParams}};
+        const opts: RequestOptions = { params, microPrefix: Micro.PROCUREMENT, resultFormat: '$' };
+        return request.{{httpMethod}}(url, opts);
+    {{/pathParams}}
+    {{!--  路径参数不存在 --}}
+    {{^pathParams}}
+        const opts: RequestOptions = { params, microPrefix: Micro.PROCUREMENT, resultFormat: '$' };
+        return request.{{httpMethod}}('{{prefixPath}}{{path}}', opts);
+    {{/pathParams}}
+    };
+{{/operation}}{{/operations}}
+}
+
+export default api = new {{classname}}();

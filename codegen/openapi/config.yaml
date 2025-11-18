@@ -1,0 +1,4 @@
+#templateDir: my_custom_templates
+additionalProperties:
+  npmName: test
+  prefixPath: /api

@@ -1,0 +1,33 @@
+const colProps = { xl: 4, xxl: 4 };
+/**
+* 供应商管理查询条件
+*/
+export const searchSchema: FormSchema[] = [
+{
+field: 'name',
+label: '名称',
+component: 'Input',
+colProps,
+componentProps: {},
+},
+{
+field: 'status',
+label: '状态',
+component: 'Select',
+colProps,
+defaultValue: 'ENABLE',
+componentProps: {
+placeholder: '请选择商品状态',
+options: [
+{
+label: '启用',
+value: 'ENABLE',
+},
+{
+label: '禁用',
+value: 'DISABLE',
+},
+],
+},
+},
+];

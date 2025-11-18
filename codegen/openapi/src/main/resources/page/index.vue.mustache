@@ -1,0 +1,37 @@
+<template>
+  <BasicTable @register="registerTable" :searchInfo="search" size="small">
+    <template #toolbar>
+      <a-button>新增</a-button>
+      <DataExport filename="商品管理" :download="download" :form-action="getForm" />
+    </template>
+
+    <template #bodyCell="{ text, record, column }">
+      <TableAction
+        v-if="column['flag'] === 'ACTION'"
+        :actions="[
+          {
+            label: '修改',
+            tooltip: '修改',
+          },
+          {
+            label: record['status'] == '启用' ? '禁用' : '启用',
+            tooltip: '状态切换',
+            onClick: switchStatus.bind(null, record['id']),
+          },
+        ]"
+      />
+    </template>
+  </BasicTable>
+</template>
+
+<script setup lang="ts">
+import { DataExport } from '@/components/Action';
+import { BasicTable, TableAction } from '@/components/Table';
+import { Button as AButton } from 'ant-design-vue';
+
+import { useCommodityManagementTable } from './hooks';
+
+const { registerTable, search, summary, download, getForm, switchStatus } = useCommodityManagementTable();
+</script>
+
+<style scoped lang="less"></style>
