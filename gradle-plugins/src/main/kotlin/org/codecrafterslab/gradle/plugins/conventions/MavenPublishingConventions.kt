@@ -18,8 +18,6 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.SourceSet
 import org.gradle.jvm.tasks.Jar
 
-private const val MAVEN_OPTIONAL_SET_NAME = "mavenOptional"
-
 @Suppress("unused")
 class MavenPublishingConventions : Plugin<Project> {
 
@@ -85,9 +83,8 @@ class MavenPublishingConventions : Plugin<Project> {
      */
     private fun addMavenOptionalFeature(project: Project, publication: MavenPublication) {
         val extension = project.extensions.getByType(JavaPluginExtension::class.java)
-        extension.sourceSets.create(MAVEN_OPTIONAL_SET_NAME)
-        extension.registerFeature(MAVEN_OPTIONAL_SET_NAME) {
-            usingSourceSet(extension.sourceSets.getByName(MAVEN_OPTIONAL_SET_NAME))
+        extension.registerFeature("mavenOptional") {
+            usingSourceSet(extension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME))
         }
         val javaComponent =
             project.components.findByName(JvmConstants.JAVA_MAIN_COMPONENT_NAME) as AdhocComponentWithVariants
