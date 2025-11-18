@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
-
 plugins {
     id("ccl.bom")
 }
