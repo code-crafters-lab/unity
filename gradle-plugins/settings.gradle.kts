@@ -30,7 +30,7 @@ pluginManagement {
             innerPluginList.forEach {
                 if (requested.id.id.startsWith(it)) {
                     useVersion(extra.properties["inner.plugins.version"].toString())
-                    if (logger.isWarnEnabled) {
+                    if (logger.isDebugEnabled) {
                         logger.warn("plugin {} use version {}", target.id, target.version)
                     }
                 }
