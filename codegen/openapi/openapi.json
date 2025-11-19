@@ -1,0 +1,203 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "项目投标",
+		"description": "",
+		"version": "1.0.0"
+	},
+	"tags": [],
+	"paths": {
+		"/bid/won/project": {
+			"get": {
+				"summary": "中标项目列表",
+				"deprecated": false,
+				"description": "根据名称模糊查询中标项目信息",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "项目名称",
+						"required": false,
+						"example": "四川省民政厅业务系统综合运维项目",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/WonProject"
+									}
+								},
+								"example": [
+									{
+										"project_id": "869a4e6a3b373ff8a636a8f1175d256d",
+										"project_name": "四川省民政厅业务系统综合运维项目",
+										"project_code": "/",
+										"department_name": "数字政企事业部",
+										"total_amount": 1287900,
+										"software_amount": 0,
+										"hardware_amount": 0,
+										"operation_amount": 1287900
+									}
+								]
+							}
+						},
+						"headers": {},
+						"x-apifox-name": "成功"
+					}
+				},
+				"security": [],
+				"x-apifox-folder": "销售合同交互",
+				"x-apifox-status": "developing",
+				"x-run-in-apifox": "https://apifox.com/web/project/7417364/apis/api-377468999-run"
+			}
+		},
+		"/bid/won/project/{id}/contract": {
+			"post": {
+				"summary": "回传合同数据",
+				"deprecated": false,
+				"description": "销售合同保存时，回传合同信息",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "项目 ID",
+						"required": true,
+						"example": "869a4e6a3b373ff8a636a8f1175d256d",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"operator_no": {
+										"type": "string",
+										"title": "操作人工号"
+									},
+									"contract_no": {
+										"type": "string",
+										"title": "销售合同号"
+									},
+									"contract_sign_date": {
+										"type": "string",
+										"title": "销售合同签署日期"
+									}
+								},
+								"x-apifox-orders": [
+									"operator_no",
+									"contract_no",
+									"contract_sign_date"
+								],
+								"required": [
+									"operator_no",
+									"contract_no",
+									"contract_sign_date"
+								],
+								"x-apifox-ignore-properties": []
+							},
+							"example": {}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {},
+									"x-apifox-orders": [],
+									"x-apifox-ignore-properties": []
+								}
+							}
+						},
+						"headers": {},
+						"x-apifox-name": "成功"
+					}
+				},
+				"security": [],
+				"x-apifox-folder": "销售合同交互",
+				"x-apifox-status": "developing",
+				"x-run-in-apifox": "https://apifox.com/web/project/7417364/apis/api-377469830-run"
+			}
+		}
+	},
+	"webhooks": {},
+	"components": {
+		"schemas": {
+			"WonProject": {
+				"type": "object",
+				"properties": {
+					"project_id": {
+						"type": "string",
+						"title": "项目 ID"
+					},
+					"project_name": {
+						"type": "string",
+						"title": "项目名称"
+					},
+					"project_code": {
+						"type": "string",
+						"title": "项目编码"
+					},
+					"department_name": {
+						"type": "string",
+						"title": "项目归属部门"
+					},
+					"total_amount": {
+						"type": "number",
+						"title": "总金额"
+					},
+					"software_amount": {
+						"type": "number",
+						"title": "软件金额"
+					},
+					"hardware_amount": {
+						"type": "number",
+						"title": "硬件金额"
+					},
+					"operation_amount": {
+						"type": "number",
+						"title": "运维金额"
+					}
+				},
+				"x-apifox-orders": [
+					"project_id",
+					"project_name",
+					"project_code",
+					"department_name",
+					"total_amount",
+					"software_amount",
+					"hardware_amount",
+					"operation_amount"
+				],
+				"required": [
+					"project_id",
+					"project_name",
+					"department_name",
+					"total_amount"
+				],
+				"x-apifox-ignore-properties": [],
+				"x-apifox-folder": ""
+			}
+		},
+		"securitySchemes": {}
+	},
+	"servers": []
+}

@@ -89,79 +89,56 @@ public class UISpherePageGenerator extends AbstractTypeScriptClientCodegen {
     public UISpherePageGenerator() {
         super();
         // set the output folder here
-        outputFolder = "generated-code/pages";
-        apiNameSuffix = "API";
-        /*
-         * Models.  You can write model files using the modelTemplateFiles map.
-         * if you want to create one template for file, you can do so here.
-         * for multiple files for model, just put another entry in the `modelTemplateFiles` with
-         * a different extension
-         */
-        modelTemplateFiles.put(
-                "model/models.mustache", // the template to use
-                ".ts");       // the extension for each file to write
-
-        /*
-         * Api classes.  You can write classes for each Api file with the apiTemplateFiles map.
-         * as with models, add multiple entries with different extensions for multiple files per
-         * class
-         */
-        apiTemplateFiles.put(
-                "api.mustache",   // the template to use
-                ".ts");       // the extension for each file to write
-        /*
-         * Template Location.  This is the location which templates will be read from.  The generator
-         * will use the resource stream to attempt to read the templates.
-         */
-        templateDir = "page";
-
-//
-//        /**
-//         * Api Package.  Optional, if needed, this can be used in templates
+//        outputFolder = "generated-code/pages";
+//        apiNameSuffix = "API";
+//        /*
+//         * Models.  You can write model files using the modelTemplateFiles map.
+//         * if you want to create one template for file, you can do so here.
+//         * for multiple files for model, just put another entry in the `modelTemplateFiles` with
+//         * a different extension
 //         */
-//        apiPackage = "org.openapitools.api";
+//        modelTemplateFiles.put(
+//                "model/models.mustache", // the template to use
+//                ".ts");       // the extension for each file to write
 //
-        /*
-         * Model Package.  Optional, if needed, this can be used in templates
-         */
-        modelPackage = "model";
-
-//        /**
-//         * Reserved words.  Override this with reserved words specific to your language
+//        /*
+//         * Api classes.  You can write classes for each Api file with the apiTemplateFiles map.
+//         * as with models, add multiple entries with different extensions for multiple files per
+//         * class
 //         */
-//        reservedWords = new HashSet<String>(
-//                Arrays.asList(
-//                        "sample1",  // replace with static values
-//                        "sample2")
-//        );
+//        apiTemplateFiles.put(
+//                "api.mustache",   // the template to use
+//                ".ts");       // the extension for each file to write
+//        /*
+//         * Template Location.  This is the location which templates will be read from.  The generator
+//         * will use the resource stream to attempt to read the templates.
+//         */
+//        templateDir = "page";
 //
-        /*
-         * Additional Properties.  These values can be passed to the templates and
-         * are available in models, apis, and supporting files
-         */
-        additionalProperties.put("prefixPath", "/api");
-
-        /*
-         * Supporting Files.  You can write single files for the generator with the
-         * entire object tree available.  If the input file has a suffix of `.mustache
-         * it will be processed by the template engine.  Otherwise, it will be copied
-         */
-        supportingFiles.add(new SupportingFile("request.mustache", "", "request.ts"));
-
-        supportingFiles.add(new SupportingFile("hooks/data.ts.mustache", "hooks", "data.ts"));
-        supportingFiles.add(new SupportingFile("hooks/useTable.ts.mustache", "hooks", "useTable.ts"));
-        supportingFiles.add(new SupportingFile("hooks/index.ts.mustache", "hooks", "index.ts"));
-
-        supportingFiles.add(new SupportingFile("model/models.index.mustache", "model", "index.ts"));
-
-//        /**
-//         * Language Specific Primitives.  These types will not trigger imports by
-//         * the client generator
+//        /*
+//         * Model Package.  Optional, if needed, this can be used in templates
 //         */
-//        languageSpecificPrimitives = new HashSet<String>(
-//                Arrays.asList(
-//                        "Type1",      // replace these with your types
-//                        "Type2")
-//        );
+//        modelPackage = "model";
+//
+//        /*
+//         * Additional Properties.  These values can be passed to the templates and
+//         * are available in models, apis, and supporting files
+//         */
+//        additionalProperties.put("prefixPath", "/api");
+//
+//        /*
+//         * Supporting Files.  You can write single files for the generator with the
+//         * entire object tree available.  If the input file has a suffix of `.mustache
+//         * it will be processed by the template engine.  Otherwise, it will be copied
+//         */
+//        supportingFiles.add(new SupportingFile("request.mustache", "", "request.ts"));
+//
+//        supportingFiles.add(new SupportingFile("hooks/data.ts.mustache", "hooks", "data.ts"));
+//        supportingFiles.add(new SupportingFile("hooks/useTable.ts.mustache", "hooks", "useTable.ts"));
+//        supportingFiles.add(new SupportingFile("hooks/index.ts.mustache", "hooks", "index.ts"));
+//
+//        supportingFiles.add(new SupportingFile("model/models.index.mustache", "model", "index.ts"));
+
+
     }
 }
