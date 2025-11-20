@@ -10,10 +10,9 @@ import org.gradle.kotlin.dsl.version
 
 class InnerConventions : Plugin<Settings> {
     private val innerPluginList = listOf(
-        "com.voc.bom", "com.voc.lib", "com.voc.app", "com.voc.publish",
-        "com.voc.repo", "com.voc.settings",
-        "net.jqsoft.nexus3",
-    )
+        "ccl.bom", "ccl.lib", "ccl.app",
+        "ccl.publish", "ccl.publish.aliyun", "ccl.publish.nexus",
+        )
 
     @Suppress("unused")
     private val logger: Logger = Logging.getLogger(Settings::class.java);
