@@ -1,0 +1,16 @@
+package {{appName}};
+
+{{#lambda.lowercase}}BidController{{/lambda.lowercase}}
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+@Slf4j
+@RestController
+public class {{classname}}Controller {
+
+	@Resource
+	private {{classname}}Service {{classname}}Service;
+
+
+}

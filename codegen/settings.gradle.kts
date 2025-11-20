@@ -7,7 +7,6 @@ plugins {
 }
 
 include(":openapi")
-include(":debug")
 
 dependencyResolutionManagement {
     versionCatalogs {

@@ -10,15 +10,12 @@ java {
 }
 
 dependencies {
-    api(platform(libs.junit.bom))
-
-    implementation(libs.openapi.generator)
-
+    implementation(dependencyNotation = libs.openapi.generator) {
+        exclude("org.slf4j", "slf4j-simple")
+    }
     annotationProcessor(libs.google.auto.service)
     annotationProcessor(libs.lombok)
-
-    implementation(libs.openapi.generator.cli)
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    runtimeOnly(libs.openapi.generator.cli)
 }
 
 openApiGenerate {
@@ -31,16 +28,42 @@ openApiGenerate {
 }
 
 tasks {
+    register<JavaExec>("listGenerators") {
+        group = "codegen"
+        description = "List OpenAPI Generators"
+
+        classpath = sourceSets.main.get().runtimeClasspath
+        mainClass.set("org.openapitools.codegen.OpenAPIGenerator")
+        args = listOf("list")
+    }
+
+    register<JavaExec>("generate") {
+        group = "codegen"
+        description = "Generate Code"
+
+        classpath = sourceSets.main.get().runtimeClasspath
+        mainClass.set("org.openapitools.codegen.OpenAPIGenerator")
+
+        args(
+            "generate", "-g", "controller", "-i", "http://127.0.0.1:4523/export/openapi/11?version=3.0",
+            "-o",
+            layout.buildDirectory.dir("generated").get().asFile
+        )
+
+        debugOptions {
+            enabled = true
+            port = 5005
+            server = true
+            suspend = true
+        }
+    }
+
     register<Copy>("copyCli") {
-        group = "build"
+        group = "codegen"
         description = "Copies the OpenAPI Generator CLI to the build directory"
         from(project.configurations.runtimeClasspath)
         include("openapi-generator-cli-*.jar")
         into(File(layout.buildDirectory.get().asFile, "libs"))
-    }
-
-    build {
-        dependsOn("copyCli")
     }
 
     test {

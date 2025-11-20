@@ -1,0 +1,43 @@
+package {{package}};
+
+{{#imports}}import {{import}};
+{{/imports}}
+import java.util.Objects;
+{{#serializableModel}}
+	import java.io.Serializable;
+{{/serializableModel}}
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.annotation.Generated;
+import java.time.*;
+import java.math.*;
+
+{{#models}}
+	{{#model}}
+		{{#description}}
+			/**
+			* {{.}}
+			*/
+		{{/description}}
+		{{>generatedAnnotation}}
+		@Data
+		@ToString
+		@EqualsAndHashCode
+		public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}}{{^parent}}{{#serializableModel}}implements Serializable{{/serializableModel}}{{/parent}} {
+		{{#serializableModel}}
+			private static final long serialVersionUID = 1L;
+		{{/serializableModel}}
+
+		{{#vars}}
+			{{#description}}
+				/**
+				* {{.}}
+				* {{name}}
+				*/
+			{{/description}}
+			@JsonProperty("{{baseName}}")
+			private {{{dataType}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
+
+		{{/vars}}
+		}
+	{{/model }}
+{{/models}}

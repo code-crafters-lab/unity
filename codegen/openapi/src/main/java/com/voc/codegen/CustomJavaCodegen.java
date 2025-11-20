@@ -1,15 +1,123 @@
 package com.voc.codegen;
 
 import com.google.auto.service.AutoService;
-import org.openapitools.codegen.CodegenConfig;
-import org.openapitools.codegen.CodegenType;
+import org.openapitools.codegen.*;
 import org.openapitools.codegen.languages.AbstractJavaCodegen;
+import org.openapitools.codegen.languages.JavaDubboServerCodegen;
+
+import java.io.File;
+import java.util.Map;
 
 @AutoService(CodegenConfig.class)
-public class CustomJavaCodegen extends AbstractJavaCodegen {
+public class CustomJavaCodegen extends JavaDubboServerCodegen {
 
+    protected String basePackage = "net.jqsoft.cds";
+
+    public CustomJavaCodegen() {
+        super();
+        invokerPackage = "net.jqsoft.cds.bid";
+        embeddedTemplateDir = "controller";
+
+        this.apiPackage = this.invokerPackage;
+        this.modelPackage = this.invokerPackage + ".model";
+
+        this.apiTemplateFiles.clear();
+        this.apiTemplateFiles.put("api.mustache", ".java");
+        this.apiTemplateFiles.put("apiImpl.mustache", ".java");
+        this.apiTemplateFiles.put("apiController.mustache", ".java");
+
+        this.apiTestTemplateFiles.clear();
+        this.modelTemplateFiles.clear();
+        this.modelTemplateFiles.put("model.mustache", ".java");
+        this.modelDocTemplateFiles.clear();
+        this.apiDocTemplateFiles.clear();
+
+        cliOptions.add(CliOption.newBoolean("useLombok", "是否使用 lombok", true));
+        cliOptions.add(CliOption.newBoolean("useSlf4j", "是否使用 slf4j", false));
+
+//        supportingFiles.add(new SupportingFile("controller.mustache", "", "AController.java"));
+
+    }
+
+    /**
+     * Configures the type of generator.
+     *
+     * @return the CodegenType for this generator
+     * @see org.openapitools.codegen.CodegenType
+     */
     @Override
     public CodegenType getTag() {
-        return super.getTag();
+        return CodegenType.OTHER;
+    }
+
+    /**
+     * Configures a friendly name for the generator.  This will be used by the generator
+     * to select the library with the -g flag.
+     *
+     * @return the friendly name for the generator
+     */
+    @Override
+    public String getName() {
+        return "controller";
+    }
+
+    /**
+     * Returns human-friendly help for the generator.  Provide the consumer with help
+     * tips, parameters here
+     *
+     * @return A string value for the help message
+     */
+    @Override
+    public String getHelp() {
+        return "gen controller";
+    }
+
+    @Override
+    public void processOpts() {
+        super.processOpts();
+        this.supportingFiles.removeIf((sf) -> sf.getDestinationFilename().equals(".openapi-generator-ignore"));
+    }
+
+    @Override
+    public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
+        objs = super.postProcessSupportingFileData(objs);
+
+        return objs;
+    }
+
+    @Override
+    public String apiFilename(String templateName, String tag) {
+        String suffix = apiTemplateFiles().get(templateName);
+        if (suffix == null) {
+            return null;
+        }
+
+        String folder = getFileFolderForTemplate(templateName);
+        String filename;
+        String apiName = toApiName(tag);
+
+        if ("api.mustache".equals(templateName)) {
+            filename = apiName;
+        } else if ("apiImpl.mustache".equals(templateName)) {
+            filename = apiName + "Impl";
+        } else if ("apiController.mustache".equals(templateName)) {
+            filename = apiName + "Controller";
+        } else {
+            filename = toApiFilename(tag);
+        }
+
+        return folder + File.separator + filename + suffix;
+    }
+
+    public String getFileFolderForTemplate(String templateName) {
+        String baseFolder = String.join(File.separator, outputFolder, "src", "main", "java", apiPackage().replace('.', File.separatorChar));
+        if ("api.mustache".equals(templateName)) {
+            return String.join(File.separator, baseFolder, "service");
+        } else if ("apiImpl.mustache".equals(templateName)) {
+            return String.join(File.separator, baseFolder, "service", "impl");
+        } else if ("apiController.mustache".equals(templateName)) {
+            return String.join(File.separator, baseFolder, "controller");
+        }
+        return baseFolder;
     }
 }

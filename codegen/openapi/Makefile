@@ -30,7 +30,6 @@ GEN_OPTS+=-c config.yaml
 #GEN_OPTS+=--global-property verbose=true
 gen: clean
 	java $(GEN_OPTS)
-#	@java $(GEN_OPTS)
 debug:
 	@make gen -e DEBUG=y
 
