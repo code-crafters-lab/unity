@@ -60,11 +60,12 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(@NonNull MethodParameter methodParameter, @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
-        boolean result = !this.ignored(methodParameter) && this.supports(methodParameter);
+        boolean resultInstance = Result.class.isAssignableFrom(methodParameter.getParameterType());
+        boolean support = !resultInstance && !this.ignored(methodParameter) && this.supports(methodParameter);
         if (log.isDebugEnabled()) {
-            log.debug("supports: {}, {}", result, getClasses(methodParameter));
+            log.debug("supports: {}, {}", support, getClasses(methodParameter));
         }
-        return result;
+        return support;
     }
 
     /**
@@ -83,21 +84,12 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
                 .map(Class::getCanonicalName).collect(Collectors.toSet());
     }
 
-    protected boolean unsupportedBody(Object body) {
-        boolean result = body == null || Result.class.isAssignableFrom(body.getClass()) || ignoredClassName.contains(body.getClass().getCanonicalName());
-        if (log.isDebugEnabled()) {
-            log.debug("unsupported body: {}, {}", result, body != null ? body.getClass().getCanonicalName() : "");
-        }
-        return result;
-    }
-
     @Override
     @Nullable
     public Object beforeBodyWrite(Object body, @NonNull MethodParameter methodParameter,
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        if (unsupportedBody(body)) return body;
         Object out = ResultUtils.success(body);
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
