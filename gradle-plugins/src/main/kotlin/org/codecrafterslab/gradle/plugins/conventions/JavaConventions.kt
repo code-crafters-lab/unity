@@ -103,7 +103,7 @@ class JavaConventions : Plugin<Project> {
             plugins.withType(JavaPlugin::class.java) {
                 with(project.dependencies) {
                     val junitVersion = project.properties.getOrDefault("junit-bom.version", "5.14.1")
-                    add(JavaPlugin.API_CONFIGURATION_NAME, enforcedPlatform("org.junit:junit-bom:${junitVersion}"))
+                    add(JavaPlugin.API_CONFIGURATION_NAME, platform("org.junit:junit-bom:${junitVersion}"))
                     add(
                         JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"
                     )
