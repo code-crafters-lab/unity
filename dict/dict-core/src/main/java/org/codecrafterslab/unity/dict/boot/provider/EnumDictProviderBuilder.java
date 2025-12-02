@@ -1,5 +1,6 @@
 package org.codecrafterslab.unity.dict.boot.provider;
 
+import lombok.Getter;
 import org.codecrafterslab.unity.dict.api.EnumDictItem;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -9,19 +10,21 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
 public class EnumDictProviderBuilder {
     private final Set<Class<? super EnumDictItem<?>>> classes;
     private final List<TypeFilter> excludeFilters;
     private boolean globalScan = false;
-    private List<String> scanPackages;
+    private Set<String> scanPackages;
 
     public EnumDictProviderBuilder() {
         this.classes = new HashSet<>();
         this.excludeFilters = new ArrayList<>();
-        this.scanPackages = new ArrayList<>();
+        this.scanPackages = new HashSet<>();
     }
 
     public EnumDictProviderBuilder globalScan(boolean globalScan) {
@@ -30,7 +33,18 @@ public class EnumDictProviderBuilder {
     }
 
     public EnumDictProviderBuilder scan(List<String> packageNames) {
-        this.scanPackages = packageNames;
+        return packages(list -> list.addAll(packageNames));
+    }
+
+    public EnumDictProviderBuilder scan(String packageName, String... otherPackageNames) {
+        List<String> list = Stream.concat(Stream.of(packageName), Stream.of(otherPackageNames)).collect(Collectors.toList());
+        return scan(list);
+    }
+
+    public EnumDictProviderBuilder packages(Consumer<List<String>> packageNames) {
+        List<String> list = new LinkedList<>(this.scanPackages);
+        packageNames.accept(list);
+        this.scanPackages = new HashSet<>(list);
         return this;
     }
 
@@ -58,9 +72,8 @@ public class EnumDictProviderBuilder {
         return this;
     }
 
-    public EnumDictProviderBuilder reset() {
+    private void reset() {
         classes.clear();
-        return this;
     }
 
     public EnumDictProvider build() {
