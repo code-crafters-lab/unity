@@ -1,8 +1,5 @@
-import org.openapitools.generator.gradle.plugin.tasks.GeneratorsTask
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-    id("org.openapi.generator") version "7.14.0"
 }
 
 java {
@@ -10,21 +7,14 @@ java {
 }
 
 dependencies {
-    implementation(dependencyNotation = libs.openapi.generator) {
-        exclude("org.slf4j", "slf4j-simple")
-    }
-    annotationProcessor(libs.google.auto.service)
+    implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
+    implementation("org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.5.2")
+    implementation("com.mysql:mysql-connector-j:8.4.0")
+    compileOnly("org.mybatis:mybatis:3.5.19")
+    compileOnly("org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.5.2")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
+
     annotationProcessor(libs.lombok)
-    runtimeOnly(libs.openapi.generator.cli)
-}
-
-openApiGenerate {
-    verbose.set(false)
-    generatorName.set("java")
-    inputSpec.set(File(layout.projectDirectory.asFile, "openapi.json").path)
-    outputDir.set(File(layout.buildDirectory.get().asFile, "generated").path)
-
-    cleanupOutput.set(true)
 }
 
 tasks {
@@ -85,14 +75,14 @@ tasks {
         }
     }
 
-    withType(GenerateTask::class) {
-        dependsOn(build, "copyCli")
-
-    }
-
-    withType(GeneratorsTask::class) {
-        dependsOn(build, "copyCli")
-    }
+//    withType(GenerateTask::class) {
+//        dependsOn(build, "copyCli")
+//
+//    }
+//
+//    withType(GeneratorsTask::class) {
+//        dependsOn(build, "copyCli")
+//    }
 
 }
 

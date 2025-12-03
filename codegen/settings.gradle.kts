@@ -7,6 +7,7 @@ plugins {
 }
 
 include(":openapi")
+include(":mybatis")
 
 dependencyResolutionManagement {
     versionCatalogs {

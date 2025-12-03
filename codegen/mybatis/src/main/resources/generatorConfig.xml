@@ -1,0 +1,52 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "https://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 可选：指定外部属性文件（存储数据库连接信息，避免硬编码） -->
+    <properties resource="db.properties"/>
+
+    <context id="MySQLContext" targetRuntime="MyBatis3DynamicSql">
+        <!-- 1. 注册自定义后缀插件（放在 context 标签最前面） -->
+        <plugin type="org.codecrafterslab.unity.codegen.mybatis.EntitySuffixPlugin">
+            <!-- 可选：指定后缀（默认 DO，可改为 PO/Entity 等） -->
+            <!--            <property name="suffix" value="Entity"/>-->
+        </plugin>
+
+        <!-- 核心配置：禁止生成 @Generated 注解 -->
+        <commentGenerator type="org.mybatis.generator.internal.DefaultCommentGenerator">
+            <!-- 抑制日期注释 -->
+            <property name="suppressDate" value="false"/>
+            <!-- 日期格式-->
+            <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+            <!-- 保留字段注释（可选） -->
+            <property name="suppressAllComments" value="false"/>
+            <property name="addRemarkComments" value="true"/>
+            <!-- 可选：若仍生成注解，Spring Boot 2.x 指定为 javax 命名空间（备选） -->
+            <property name="useLegacyGeneratedAnnotation" value="true"/>
+        </commentGenerator>
+
+        <!-- 数据库连接（可引用 properties 文件变量） -->
+        <jdbcConnection driverClass="${db.driver}"
+                        connectionURL="${db.url}"
+                        userId="${db.username}"
+                        password="${db.password}">
+        </jdbcConnection>
+
+        <!-- 类型处理器（支持 Java 8 LocalDateTime -->
+        <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
+            <property name="useJSR310Types" value="true"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="net.jqsoft.cds.bid.model" targetProject="src/main/java">
+            <!--            <property name="enableSubPackages" value="true"/>-->
+            <property name="trimStrings" value="true"/>
+            <property name="useLombok" value="true"/> <!-- 关闭 getter/setter 生成 -->
+        </javaModelGenerator>
+
+        <javaClientGenerator targetPackage="net.jqsoft.cds.bid.mapper" targetProject="src/main/java"/>
+
+        <table tableName="bid_info" catalog="cds_infra" >
+            <!--            <property name="suffix" value="DO"/>-->
+        </table>
+    </context>
+</generatorConfiguration>

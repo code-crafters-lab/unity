@@ -38,6 +38,6 @@ list:
  		org.openapitools.codegen.OpenAPIGenerator list
 help:
 	@java -cp "$(LIB_DIR)/openapi-generator-cli-$(OPENAPI_GENERATOR_CLI_VERSION).jar$(CP_SEP)$(LIB_DIR)/openapi-0.1.0.jar" \
-    	org.openapitools.codegen.OpenAPIGenerator config-help -g page
+    	org.openapitools.codegen.OpenAPIGenerator config-help -g spring
 clean:
 	@rm -rf outdir

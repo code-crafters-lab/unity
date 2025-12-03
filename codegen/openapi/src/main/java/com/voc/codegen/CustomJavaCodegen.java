@@ -1,11 +1,20 @@
 package com.voc.codegen;
 
 import com.google.auto.service.AutoService;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.languages.AbstractJavaCodegen;
 import org.openapitools.codegen.languages.JavaDubboServerCodegen;
+import org.openapitools.codegen.languages.SpringCodegen;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @AutoService(CodegenConfig.class)
@@ -75,13 +84,28 @@ public class CustomJavaCodegen extends JavaDubboServerCodegen {
     @Override
     public void processOpts() {
         super.processOpts();
-        this.supportingFiles.removeIf((sf) -> sf.getDestinationFilename().equals(".openapi-generator-ignore"));
+    }
+
+    @Override
+    public void preprocessOpenAPI(OpenAPI openAPI) {
+        super.preprocessOpenAPI(openAPI);
+        Paths paths = openAPI.getPaths();
+        for (PathItem pathItem : paths.values()) {
+            for (Operation operation : pathItem.readOperations()) {
+                ApiResponses responses = operation.getResponses();
+                for (Map.Entry<String, ApiResponse> entry : responses.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.contains("undefined")) {
+                        responses.remove(key);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
         objs = super.postProcessSupportingFileData(objs);
-
         return objs;
     }
 
@@ -120,4 +144,31 @@ public class CustomJavaCodegen extends JavaDubboServerCodegen {
         }
         return baseFolder;
     }
+
+    @Override
+    public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
+//        if (supportLibraryUseTags() && !useTags) {
+//        String basePath = resourcePath;
+//        if (basePath.startsWith("/")) {
+//            basePath = basePath.substring(1);
+//        }
+//        final int pos = basePath.indexOf("/");
+//        if (pos > 0) {
+//            basePath = basePath.substring(0, pos);
+//        }
+//
+//        if (basePath.isEmpty()) {
+//            basePath = "default";
+//        } else {
+//            co.subresourceOperation = !co.path.isEmpty();
+//        }
+//        final List<CodegenOperation> opList = operations.computeIfAbsent(basePath, k -> new ArrayList<>());
+//        opList.add(co);
+//        co.baseName = basePath;
+//        return;
+//        }
+        super.addOperationToGroup(tag, resourcePath, operation, co, operations);
+
+    }
+
 }
