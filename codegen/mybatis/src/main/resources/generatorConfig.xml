@@ -43,10 +43,18 @@
             <property name="useLombok" value="true"/> <!-- 关闭 getter/setter 生成 -->
         </javaModelGenerator>
 
-        <javaClientGenerator targetPackage="net.jqsoft.cds.bid.mapper" targetProject="src/main/java"/>
+        <javaClientGenerator targetPackage="net.jqsoft.cds.bid.mapper"
+                             targetProject="src/main/java">
+            <property name="dynamicSqlSupportPackage" value="net.jqsoft.cds.bid.mapper.sql"/>
+        </javaClientGenerator>
 
-        <table tableName="bid_info" catalog="cds_infra" >
-            <!--            <property name="suffix" value="DO"/>-->
+        <table tableName="bid_info" catalog="cds_infra"
+               domainObjectName="BidInfoDO"
+               mapperName="BidInfoMapper"
+               sqlProviderName="BidInfoSqlProvider"
+        >
+            <property name="dynamicSqlSupportClassName" value="BidInfoDynamicSqlSupport"/>
+            <property name="dynamicSqlTableObjectName" value="BidInfo"/>
         </table>
     </context>
 </generatorConfiguration>
