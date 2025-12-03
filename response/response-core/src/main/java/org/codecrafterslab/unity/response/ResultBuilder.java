@@ -253,7 +253,7 @@ class ResultBuilder<D, S> implements Serializable {
      * @return Result
      */
     public PageSummaryResult<D, S> build() {
-        DefaultPageResult<D, S> result = new DefaultPageResult<>();
+        DefaultPageSummaryResult<D, S> result = new DefaultPageSummaryResult<>();
         result.setSuccess(success);
         result.setCode(code);
         result.setMessage(message);

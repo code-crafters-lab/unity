@@ -33,19 +33,19 @@ public class ResultUtils {
         return (SummaryResult<D, S>) builder().success(message, data).summary(summary).build();
     }
 
-    public static <D> PageResult<D> success(D data, int total) {
+    public static <D> PageResult<D> success(D data, Integer total) {
         return (PageResult<D>) builder().success(data, total).build();
     }
 
-    public static <D> PageResult<D> success(String message, D data, int total) {
+    public static <D> PageResult<D> success(String message, D data, Integer total) {
         return (PageResult<D>) builder().success(message, data, total).build();
     }
 
-    public static <D, S> PageSummaryResult<D, S> success(D data, int total, S summary) {
+    public static <D, S> PageSummaryResult<D, S> success(D data, Integer total, S summary) {
         return (PageSummaryResult<D, S>) builder().success(data, total).summary(summary).build();
     }
 
-    public static <D, S> PageSummaryResult<D, S> success(String message, D data, int total, S summary) {
+    public static <D, S> PageSummaryResult<D, S> success(String message, D data, Integer total, S summary) {
         return (PageSummaryResult<D, S>) builder().success(message, data, total).summary(summary).build();
     }
 

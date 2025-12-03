@@ -2,11 +2,11 @@ package org.codecrafterslab.unity.response;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.codecrafterslab.unity.response.api.PageSummaryResult;
+import org.codecrafterslab.unity.response.api.PageResult;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class DefaultPageResult<D, S> extends DefaultSummaryResult<D, S> implements PageSummaryResult<D, S> {
+public class DefaultPageResult<D> extends DefaultResult<D> implements PageResult<D> {
 
     /**
      * 分页返回数据时的总数据条数
@@ -17,8 +17,8 @@ public class DefaultPageResult<D, S> extends DefaultSummaryResult<D, S> implemen
         super();
     }
 
-    public DefaultPageResult(boolean success, Long code, String message, D data, Integer total, S summary) {
-        super(success, code, message, data, summary);
+    public DefaultPageResult(boolean success, Long code, String message, D data, Integer total) {
+        super(success, code, message, data);
         this.total = total;
     }
 

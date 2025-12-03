@@ -90,7 +90,14 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        Object out = ResultUtils.success(body);
+        ResultHolder.Data data = ResultHolder.getData();
+        Object out;
+        if (data != null) {
+            out = ResultUtils.success(body, data.getTotal(), data.getSummary());
+            ResultHolder.clear();
+        } else {
+            out = ResultUtils.success(body);
+        }
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
             try {
