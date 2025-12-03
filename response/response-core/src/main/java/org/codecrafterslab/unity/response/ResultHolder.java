@@ -19,6 +19,19 @@ public class ResultHolder {
      *
      * @param total 数据总数
      */
+    public static void setTotal(Long total) {
+        if (total == null) return;
+        if (total > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("total must be less than or equal to " + Integer.MAX_VALUE);
+        }
+        setTotal(total.intValue());
+    }
+
+    /**
+     * 设置数据总数
+     *
+     * @param total 数据总数
+     */
     public static void setTotal(Integer total) {
         Data hodlerData = getData();
         if (hodlerData == null) {
