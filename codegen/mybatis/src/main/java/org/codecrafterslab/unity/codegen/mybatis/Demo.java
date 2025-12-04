@@ -1,10 +1,8 @@
 package org.codecrafterslab.unity.codegen.mybatis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.MyBatisGenerator;
-import org.mybatis.generator.config.Configuration;
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
-import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
+import org.mybatis.generator.config.*;
 import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
@@ -17,6 +15,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class Demo {
 
     /**
@@ -45,22 +44,22 @@ public class Demo {
     public static void main(String[] args) throws Exception {
         List<String> warnings = new ArrayList<>();
         boolean overwrite = true;
-        InputStream configFile = Demo.class.getResourceAsStream("/generatorConfig.xml");
+
         String base = getJarPath(Demo.class);
+        InputStream configFile = Demo.class.getResourceAsStream("/generatorConfig.xml");
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
-//        Configuration config = new Configuration();
+
         for (Context context : config.getContexts()) {
-            JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = context.getJavaClientGeneratorConfiguration();
-            String targetProject = javaClientGeneratorConfiguration.getTargetProject();
+            JavaClientGeneratorConfiguration clientGeneratorConfiguration = context.getJavaClientGeneratorConfiguration();
+            String targetProject = clientGeneratorConfiguration.getTargetProject();
             targetProject = String.join(File.separator, base, targetProject);
-            javaClientGeneratorConfiguration.setTargetProject(targetProject);
+            clientGeneratorConfiguration.setTargetProject(targetProject);
 
             JavaModelGeneratorConfiguration modelGeneratorConfiguration = context.getJavaModelGeneratorConfiguration();
             String targetProject2 = modelGeneratorConfiguration.getTargetProject();
             targetProject2 = String.join(File.separator, base, targetProject2);
             modelGeneratorConfiguration.setTargetProject(targetProject2);
-
         }
 
         DefaultShellCallback callback = new DefaultShellCallback(overwrite);
@@ -68,9 +67,63 @@ public class Demo {
         myBatisGenerator.generate(null);
 
         for (String warning : warnings) {
-            System.out.println(warning);
+            log.warn(warning);
         }
 
     }
 
+    private Configuration calcDynamicConfiguration(String base) {
+        Configuration config = new Configuration();
+        Context context = new Context(ModelType.HIERARCHICAL);
+        context.addProperty("javaFormatter", "org.codecrafterslab.unity.codegen.mybatis.CustomJavaFormatter");
+        config.addContext(context);
+
+        context.setId("mysql");
+        context.setTargetRuntime("MyBatis3DynamicSql");
+        PluginConfiguration pluginConfiguration = new PluginConfiguration();
+        pluginConfiguration.setConfigurationType("org.codecrafterslab.unity.codegen.mybatis.EntitySuffixPlugin");
+        context.addPluginConfiguration(pluginConfiguration);
+
+        CommentGeneratorConfiguration commentGeneratorConfiguration = new CommentGeneratorConfiguration();
+        commentGeneratorConfiguration.addProperty("useLegacyGeneratedAnnotation", "true");
+        commentGeneratorConfiguration.addProperty("addRemarkComments", "true");
+        commentGeneratorConfiguration.addProperty("dateFormat", "yyyy-MM-dd HH:mm:ss");
+        context.setCommentGeneratorConfiguration(commentGeneratorConfiguration);
+
+        JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
+        jdbcConnectionConfiguration.setDriverClass("com.mysql.cj.jdbc.Driver");
+        jdbcConnectionConfiguration.setConnectionURL("jdbc:mysql://localhost:3306/cds_infra?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
+        jdbcConnectionConfiguration.setUserId("root");
+        jdbcConnectionConfiguration.setPassword("root!@@&");
+        context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
+
+        JavaTypeResolverConfiguration javaTypeResolverConfiguration = new JavaTypeResolverConfiguration();
+        javaTypeResolverConfiguration.addProperty("useJSR310Types", "true");
+        context.setJavaTypeResolverConfiguration(javaTypeResolverConfiguration);
+
+        JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
+        javaModelGeneratorConfiguration.setTargetProject(String.join(File.separator, base, "src", "main", "java"));
+        javaModelGeneratorConfiguration.setTargetPackage("net.jqsoft.cds.bid.model");
+        javaModelGeneratorConfiguration.addProperty("trimStrings", "true");
+        context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
+
+
+        JavaClientGeneratorConfiguration clientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
+        clientGeneratorConfiguration.setTargetProject(String.join(File.separator, base, "src", "main", "java"));
+        clientGeneratorConfiguration.setTargetPackage("net.jqsoft.cds.bid.mapper");
+        clientGeneratorConfiguration.addProperty("dynamicSqlSupportPackage", "net.jqsoft.cds.bid.mapper.sql");
+        context.setJavaClientGeneratorConfiguration(clientGeneratorConfiguration);
+
+
+        TableConfiguration tc = new TableConfiguration(context);
+        tc.setCatalog("cds_infra");
+        tc.setTableName("bid_info");
+        tc.setAlias("i");
+        tc.setDomainObjectName("BidInfoRecord");
+        context.addTableConfiguration(tc);
+
+
+        return config;
+
+    }
 }

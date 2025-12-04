@@ -7,7 +7,7 @@ spring-security-oauth2-authorization-server = "0.4.5"
 spring-doc-openapi = "1.7.0"
 dependency-management = "1.1.4"
 
-lombok = "1.18.24"
+lombok = "1.18.42"
 lombok-mapstruct-binding = "0.2.0"
 mapstruct = "1.5.5.Final"
 kotlin = "1.6.21"

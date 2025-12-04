@@ -5,6 +5,7 @@
     <!-- 可选：指定外部属性文件（存储数据库连接信息，避免硬编码） -->
     <properties resource="db.properties"/>
 
+
     <context id="MySQLContext" targetRuntime="MyBatis3DynamicSql">
         <!-- 1. 注册自定义后缀插件（放在 context 标签最前面） -->
         <plugin type="org.codecrafterslab.unity.codegen.mybatis.EntitySuffixPlugin">
@@ -13,9 +14,9 @@
         </plugin>
 
         <!-- 核心配置：禁止生成 @Generated 注解 -->
-        <commentGenerator type="org.mybatis.generator.internal.DefaultCommentGenerator">
+        <commentGenerator type="org.codecrafterslab.unity.codegen.mybatis.CustomCommentGenerator">
             <!-- 抑制日期注释 -->
-            <property name="suppressDate" value="false"/>
+            <property name="suppressDate" value="true"/>
             <!-- 日期格式-->
             <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
             <!-- 保留字段注释（可选） -->
@@ -40,7 +41,6 @@
         <javaModelGenerator targetPackage="net.jqsoft.cds.bid.model" targetProject="src/main/java">
             <!--            <property name="enableSubPackages" value="true"/>-->
             <property name="trimStrings" value="true"/>
-            <property name="useLombok" value="true"/> <!-- 关闭 getter/setter 生成 -->
         </javaModelGenerator>
 
         <javaClientGenerator targetPackage="net.jqsoft.cds.bid.mapper"
@@ -48,13 +48,10 @@
             <property name="dynamicSqlSupportPackage" value="net.jqsoft.cds.bid.mapper.sql"/>
         </javaClientGenerator>
 
-        <table tableName="bid_info" catalog="cds_infra"
-               domainObjectName="BidInfoDO"
-               mapperName="BidInfoMapper"
-               sqlProviderName="BidInfoSqlProvider"
-        >
+        <table catalog="cds_infra" schema="test" tableName="bid_info"
+               domainObjectName="BidInfoRecord" mapperName="BidInfoMapper">
             <property name="dynamicSqlSupportClassName" value="BidInfoDynamicSqlSupport"/>
-            <property name="dynamicSqlTableObjectName" value="BidInfo"/>
+            <property name="dynamicSqlTableObjectName" value="Table"/>
         </table>
     </context>
 </generatorConfiguration>

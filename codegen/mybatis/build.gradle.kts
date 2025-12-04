@@ -1,4 +1,3 @@
-
 plugins {
 }
 
@@ -10,6 +9,11 @@ dependencies {
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
     implementation("org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.5.2")
     implementation("com.mysql:mysql-connector-j:8.4.0")
+    implementation("org.springframework:spring-core:5.3.39")
+    implementation("ch.qos.logback:logback-classic:1.5.21")
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.43.0")
+    implementation("org.eclipse.platform:org.eclipse.text:3.14.400")
+
     compileOnly("org.mybatis:mybatis:3.5.19")
     compileOnly("org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.5.2")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
