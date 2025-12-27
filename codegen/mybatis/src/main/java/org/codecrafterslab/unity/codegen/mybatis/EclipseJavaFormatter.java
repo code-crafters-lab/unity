@@ -20,7 +20,7 @@ import java.util.Properties;
  * 无需修改模板，拦截生成过程直接格式化
  */
 @Slf4j
-public class CustomJavaFormatter extends DefaultJavaFormatter implements JavaFormatter {
+public class EclipseJavaFormatter extends DefaultJavaFormatter implements JavaFormatter {
 
     @Override
     public String visit(TopLevelClass topLevelClass) {

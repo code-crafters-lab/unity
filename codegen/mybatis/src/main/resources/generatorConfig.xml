@@ -5,12 +5,13 @@
     <!-- 可选：指定外部属性文件（存储数据库连接信息，避免硬编码） -->
     <properties resource="db.properties"/>
 
-
     <context id="MySQLContext" targetRuntime="MyBatis3DynamicSql">
+        <property name="javaFormatter" value="org.codecrafterslab.unity.codegen.mybatis.EclipseJavaFormatter"/>
+
         <!-- 1. 注册自定义后缀插件（放在 context 标签最前面） -->
         <plugin type="org.codecrafterslab.unity.codegen.mybatis.EntitySuffixPlugin">
-            <!-- 可选：指定后缀（默认 DO，可改为 PO/Entity 等） -->
-            <!--            <property name="suffix" value="Entity"/>-->
+            <!-- 可选：指定 model 后缀（默认 DO，可改为 PO/Entity 等） -->
+            <property name="modelSuffix" value="Record"/>
         </plugin>
 
         <!-- 核心配置：禁止生成 @Generated 注解 -->
@@ -38,7 +39,7 @@
             <property name="useJSR310Types" value="true"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="net.jqsoft.cds.bid.model" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="net.jqsoft.cds.bid.model.record" targetProject="src/main/java">
             <!--            <property name="enableSubPackages" value="true"/>-->
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
@@ -48,10 +49,16 @@
             <property name="dynamicSqlSupportPackage" value="net.jqsoft.cds.bid.mapper.sql"/>
         </javaClientGenerator>
 
-        <table catalog="cds_infra" schema="test" tableName="bid_info"
-               domainObjectName="BidInfoRecord" mapperName="BidInfoMapper">
-            <property name="dynamicSqlSupportClassName" value="BidInfoDynamicSqlSupport"/>
+        <!--        <table catalog="cds_infra" schema="test" tableName="bid_info"-->
+        <!--               domainObjectName="BidInfoRecord" mapperName="BidInfoMapper">-->
+        <!--            <property name="dynamicSqlSupportClassName" value="BidInfoDynamicSqlSupport"/>-->
+        <!--            <property name="dynamicSqlTableObjectName" value="Table"/>-->
+        <!--        </table>-->
+
+        <table catalog="cds_infra" schema="test" tableName="bid_%">
+            <!--            <property name="dynamicSqlSupportClassName" value="$1DynamicSqlSupport"/>-->
             <property name="dynamicSqlTableObjectName" value="Table"/>
+            <!--            <domainObjectRenamingRule searchString="^(.*)(Record$)?" replaceString="$1Record"/>-->
         </table>
     </context>
 </generatorConfiguration>

@@ -22,14 +22,6 @@ dependencies {
 }
 
 tasks {
-    register<JavaExec>("listGenerators") {
-        group = "codegen"
-        description = "List OpenAPI Generators"
-
-        classpath = sourceSets.main.get().runtimeClasspath
-        mainClass.set("org.openapitools.codegen.OpenAPIGenerator")
-        args = listOf("list")
-    }
 
     register<Delete>("clear") {
         group = "codegen"
@@ -60,12 +52,13 @@ tasks {
         }
     }
 
-    register<Copy>("copyCli") {
+    register<Copy>("copyMybatisCode") {
         group = "codegen"
-        description = "Copies the OpenAPI Generator CLI to the build directory"
-        from(project.configurations.runtimeClasspath)
-        include("openapi-generator-cli-*.jar")
-        into(File(layout.buildDirectory.get().asFile, "libs"))
+        description = "Copy generated code to mybatis project"
+        from(sourceSets.main.get().java.srcDirs) {
+            include("net/jqsoft/**/*.java")
+        }
+        into(File("/Users/wuyujie/Project/jqsoft/teamwork/cds-bid", "src/main/java"))
     }
 
     build {
@@ -78,15 +71,6 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
-
-//    withType(GenerateTask::class) {
-//        dependsOn(build, "copyCli")
-//
-//    }
-//
-//    withType(GeneratorsTask::class) {
-//        dependsOn(build, "copyCli")
-//    }
 
 }
 
