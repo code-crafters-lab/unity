@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.util.NestedServletException;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author Wu Yujie
@@ -230,7 +231,9 @@ class ResultBuilder<D, S> implements Serializable {
             this.message = bizException.getMessage();
         } else {
             this.code = (long) BizStatus.INTERNAL_SERVER_ERROR.getCode();
-            this.message = exception.getMessage();
+            this.message = Optional.ofNullable(exception)
+                    .map(Throwable::getLocalizedMessage)
+                    .orElse(BizStatus.INTERNAL_SERVER_ERROR.getMessage());
         }
         this.data = data;
         return this;
