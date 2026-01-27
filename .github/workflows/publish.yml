@@ -188,7 +188,8 @@ jobs:
           sed -i "s/^version=.*/version=$VERSION/" "$MODULE_NAME/gradle.properties"
           
           # 仅在非测试模式下提交变更
-          if [[ "${{ github.event_name }}" != "workflow_dispatch" || !"${{ github.event.inputs.is_test }}" = "true" ]]; then
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" || "${{ github.event.inputs.is_test }}" != "true" 
+          ]]; then
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
             git add "$MODULE_NAME/gradle.properties"
