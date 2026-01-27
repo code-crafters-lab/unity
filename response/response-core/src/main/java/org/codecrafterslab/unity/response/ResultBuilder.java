@@ -5,9 +5,13 @@ import org.codecrafterslab.unity.exception.core.BizException;
 import org.codecrafterslab.unity.exception.core.BizStatus;
 import org.codecrafterslab.unity.response.api.PageSummaryResult;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.util.NestedServletException;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -218,25 +222,34 @@ class ResultBuilder<D, S> implements Serializable {
      */
     public ResultBuilder<D, S> failure(Exception exception, @Nullable D data) {
         this.success = false;
+        this.code = (long) BizStatus.INTERNAL_SERVER_ERROR.getCode();
         if (exception instanceof NestedServletException) {
             Throwable cause = exception.getCause();
             if (cause instanceof BizException) {
-                BizException bizException = (BizException) cause;
-                this.code = (long) bizException.getCode();
-                this.message = bizException.getMessage();
+                processBizException((BizException) cause);
+            } else {
+                this.message = cause.toString();
             }
         } else if (exception instanceof BizException) {
-            BizException bizException = (BizException) exception;
-            this.code = (long) bizException.getCode();
-            this.message = bizException.getMessage();
+            processBizException((BizException) exception);
+        } else if (exception instanceof BindException) {
+            BindingResult bindingResult = ((BindException) exception).getBindingResult();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            FieldError first = fieldErrors.getFirst();
+            this.code = (long) BizStatus.ENTITY_VALIDATED_ERROR.getCode();
+            this.message = first.getDefaultMessage();
         } else {
-            this.code = (long) BizStatus.INTERNAL_SERVER_ERROR.getCode();
             this.message = Optional.ofNullable(exception)
                     .map(Throwable::getLocalizedMessage)
                     .orElse(BizStatus.INTERNAL_SERVER_ERROR.getMessage());
         }
         this.data = data;
         return this;
+    }
+
+    private void processBizException(BizException bizException) {
+        this.code = (long) bizException.getCode();
+        this.message = bizException.getMessage();
     }
 
 

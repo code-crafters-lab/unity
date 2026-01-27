@@ -50,7 +50,7 @@ public enum BizStatus implements ModuleStatus {
     JSON_DESERIALIZE_EXCEPTION("反序列化异常"),
 
     ENTITY_VALIDATED_ERROR("实体属性校验错误", 400),
-    REQUEST_ADDRESS_NOT_MATCH("请求地址与实体ID不一致"),
+    REQUEST_ADDRESS_NOT_MATCH("请求地址与实体 ID 不一致"),
     INSERT_DATA_ERROR("新增数据异常"),
     UPDATE_DATA_ERROR("更新数据异常"),
     DELETE_DATA_ERROR("删除数据异常"),
