@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.util.NestedServletException;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -235,7 +236,7 @@ class ResultBuilder<D, S> implements Serializable {
         } else if (exception instanceof BindException) {
             BindingResult bindingResult = ((BindException) exception).getBindingResult();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            FieldError first = fieldErrors.getFirst();
+            FieldError first = fieldErrors.get(0);
             this.code = (long) BizStatus.ENTITY_VALIDATED_ERROR.getCode();
             this.message = first.getDefaultMessage();
         } else {
