@@ -7,6 +7,7 @@ import org.codecrafterslab.unity.response.annotation.ResponseResult;
 import org.codecrafterslab.unity.response.api.Result;
 import org.codecrafterslab.unity.response.properties.ResponseWrapperProperties;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,6 +24,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +38,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RestControllerAdvice
-public class ResultAdvice implements ResponseBodyAdvice<Object> {
+public class ResultAdvice implements ResponseBodyAdvice<Object>, Ordered {
     private final Set<String> ignoredClassName = new HashSet<>();
     private final ObjectMapper objectMapper;
 
@@ -85,19 +87,26 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
     }
 
     @Override
+    public int getOrder() {
+        return 0;
+    }
+
+    @Override
     @Nullable
     public Object beforeBodyWrite(Object body, @NonNull MethodParameter methodParameter,
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        ResultHolder.Data data = ResultHolder.getData();
         Object out;
-        if (data != null) {
+        Optional<ResultHolder.Data> optionalData = Optional.ofNullable(ResultHolder.getData());
+        if (optionalData.isPresent()) {
+            // 响应结果含有记录数和汇总数据
+            ResultHolder.Data data = optionalData.get();
             out = ResultUtils.success(body, data.getTotal(), data.getSummary());
-            ResultHolder.clear();
         } else {
             out = ResultUtils.success(body);
         }
+
         /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
             try {
