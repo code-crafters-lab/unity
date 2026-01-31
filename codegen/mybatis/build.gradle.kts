@@ -29,29 +29,6 @@ tasks {
         delete = setOf(File(layout.buildDirectory.get().asFile, "generated"))
     }
 
-    register<JavaExec>("generate") {
-        group = "codegen"
-        description = "Generate Code"
-
-        dependsOn("clear")
-
-        classpath = sourceSets.main.get().runtimeClasspath
-        mainClass.set("org.openapitools.codegen.OpenAPIGenerator")
-
-        args(
-            "generate", "-g", "controller", "-i", "http://127.0.0.1:4523/export/openapi/5?version=3.0",
-            "-o",
-            layout.buildDirectory.dir("generated").get().asFile
-        )
-
-        debugOptions {
-//            enabled = true
-            port = 5005
-            server = true
-            suspend = true
-        }
-    }
-
     register<Copy>("copyMybatisCode") {
         group = "codegen"
         description = "Copy generated code to mybatis project"
