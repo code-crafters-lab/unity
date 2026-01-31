@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.codecrafterslab.unity.exception.core.BizStatus;
-import org.codecrafterslab.unity.response.api.PageSummaryResult;
+import org.codecrafterslab.unity.response.api.PageResult;
 import org.codecrafterslab.unity.response.api.Result;
 import org.codecrafterslab.unity.response.api.SummaryResult;
 import org.codecrafterslab.unity.response.properties.ResponseProperties;
@@ -57,8 +57,8 @@ public class ResultSerializer<T extends Result<?>> extends JsonSerializer<T> {
             }
         }
         /* 数据总数序列化输出 */
-        if (result instanceof PageSummaryResult) {
-            Integer total = ((PageSummaryResult<?, ?>) result).getTotal();
+        if (result instanceof PageResult) {
+            Integer total = ((PageResult<?>) result).getTotal();
             if (!ObjectUtils.isEmpty(total)) {
                 gen.writeNumberField(property.getTotal(), total);
             }
