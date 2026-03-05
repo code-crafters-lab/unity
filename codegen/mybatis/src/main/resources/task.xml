@@ -39,22 +39,22 @@
             <property name="useJSR310Types" value="true"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="net.jqsoft.teamwork.procure.model.record" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="net.jqsoft.cds.task.model.record" targetProject="src/main/java">
             <!--            <property name="enableSubPackages" value="true"/>-->
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <javaClientGenerator targetPackage="net.jqsoft.teamwork.procure.mapper"
+        <javaClientGenerator targetPackage="net.jqsoft.cds.task.mapper"
                              targetProject="src/main/java">
-            <property name="dynamicSqlSupportPackage" value="net.jqsoft.teamwork.procure.mapper.sql"/>
+            <property name="dynamicSqlSupportPackage" value="net.jqsoft.cds.task.mapper.sql"/>
         </javaClientGenerator>
 
-        <table catalog="cds_infra" tableName="cg_purchase_task"
-               domainObjectName="PurchaseTaskRecord"
-               mapperName="PurchaseTaskMapper">
-            <property name="dynamicSqlSupportClassName" value="PurchaseTaskDynamicSqlSupport"/>
+        <table catalog="cds_infra" tableName="sys_task_log"
+               domainObjectName="TaskLogRecord"
+               mapperName="TaskLogMapper">
+            <property name="dynamicSqlSupportClassName" value="TaskLogDynamicSqlSupport"/>
             <property name="dynamicSqlTableObjectName" value="Table"/>
         </table>
-        
+
     </context>
 </generatorConfiguration>

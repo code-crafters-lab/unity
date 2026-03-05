@@ -53,33 +53,33 @@ tasks {
         into(File("${baseDir}/cds-bid", "src/main/java"))
     }
 
-    register<Delete>("procure-clear") {
+    register<Delete>("task-clear") {
         group = "codegen"
-        description = "clean procure generated code"
+        description = "clean task generated code"
         delete = setOf(
             File(
                 layout.buildDirectory.get().asFile.parentFile,
-                String.format("src/main/java/net/jqsoft/%s", "teamwork/procure")
+                String.format("src/main/java/net/jqsoft/%s", "cds/task")
             )
         )
     }
 
-    register<JavaExec>("procure-gen") {
-        dependsOn("procure-clear")
+    register<JavaExec>("task-gen") {
+        dependsOn("task-clear")
         group = "codegen"
         mainClass.set("org.codecrafterslab.unity.codegen.mybatis.Generator")
         classpath = sourceSets.main.get().runtimeClasspath
-        args = listOf("procure")
+        args = listOf("task")
     }
 
-    register<Copy>("procure") {
-        dependsOn("procure-gen")
+    register<Copy>("task") {
+        dependsOn("task-gen")
         group = "codegen"
         description = "copy generated code to mybatis project"
         from(sourceSets.main.get().java.srcDirs) {
-            include("net/jqsoft/teamwork/procure/**/*.java")
+            include("net/jqsoft/cds/task/**/*.java")
         }
-        into(File("${baseDir}/teamwork-procure", "src/main/java"))
+        into(File("${baseDir}/cds-bid", "src/main/java"))
     }
 
     build {
