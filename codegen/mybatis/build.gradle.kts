@@ -20,26 +20,69 @@ dependencies {
 
     annotationProcessor(libs.lombok)
 }
+val baseDir = "/Users/wuyujie/Project/jqsoft/teamwork"
 
 tasks {
 
-    register<Delete>("clear") {
+    register<Delete>("bid-clear") {
         group = "codegen"
-        description = "Clean generated code"
-        delete = setOf(File(layout.buildDirectory.get().asFile, "generated"))
+        description = "clean bid generated code"
+        delete = setOf(
+            File(
+                layout.buildDirectory.get().asFile.parentFile,
+                String.format("src/main/java/net/jqsoft/%s", "cds/bid")
+            )
+        )
     }
 
-    register<Copy>("copyMybatisCode") {
+    register<JavaExec>("bid-gen") {
+        dependsOn("bid-clear")
         group = "codegen"
-        description = "Copy generated code to mybatis project"
+        mainClass.set("org.codecrafterslab.unity.codegen.mybatis.Generator")
+        classpath = sourceSets.main.get().runtimeClasspath
+        args = listOf("bid")
+    }
+
+    register<Copy>("bid") {
+        dependsOn("bid-gen")
+        group = "codegen"
+        description = "copy generated code to mybatis project"
         from(sourceSets.main.get().java.srcDirs) {
-            include("net/jqsoft/**/*.java")
+            include("net/jqsoft/cds/bid/**/*.java")
         }
-        into(File("/Users/wuyujie/Project/jqsoft/teamwork/cds-bid", "src/main/java"))
+        into(File("${baseDir}/cds-bid", "src/main/java"))
+    }
+
+    register<Delete>("procure-clear") {
+        group = "codegen"
+        description = "clean procure generated code"
+        delete = setOf(
+            File(
+                layout.buildDirectory.get().asFile.parentFile,
+                String.format("src/main/java/net/jqsoft/%s", "teamwork/procure")
+            )
+        )
+    }
+
+    register<JavaExec>("procure-gen") {
+        dependsOn("procure-clear")
+        group = "codegen"
+        mainClass.set("org.codecrafterslab.unity.codegen.mybatis.Generator")
+        classpath = sourceSets.main.get().runtimeClasspath
+        args = listOf("procure")
+    }
+
+    register<Copy>("procure") {
+        dependsOn("procure-gen")
+        group = "codegen"
+        description = "copy generated code to mybatis project"
+        from(sourceSets.main.get().java.srcDirs) {
+            include("net/jqsoft/teamwork/procure/**/*.java")
+        }
+        into(File("${baseDir}/teamwork-procure", "src/main/java"))
     }
 
     build {
-        dependsOn("copyCli")
     }
 
     test {

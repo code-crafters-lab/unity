@@ -39,26 +39,22 @@
             <property name="useJSR310Types" value="true"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="net.jqsoft.cds.bid.model.record" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="net.jqsoft.teamwork.procure.model.record" targetProject="src/main/java">
             <!--            <property name="enableSubPackages" value="true"/>-->
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <javaClientGenerator targetPackage="net.jqsoft.cds.bid.mapper"
+        <javaClientGenerator targetPackage="net.jqsoft.teamwork.procure.mapper"
                              targetProject="src/main/java">
-            <property name="dynamicSqlSupportPackage" value="net.jqsoft.cds.bid.mapper.sql"/>
+            <property name="dynamicSqlSupportPackage" value="net.jqsoft.teamwork.procure.mapper.sql"/>
         </javaClientGenerator>
 
-        <!--        <table catalog="cds_infra" schema="test" tableName="bid_info"-->
-        <!--               domainObjectName="BidInfoRecord" mapperName="BidInfoMapper">-->
-        <!--            <property name="dynamicSqlSupportClassName" value="BidInfoDynamicSqlSupport"/>-->
-        <!--            <property name="dynamicSqlTableObjectName" value="Table"/>-->
-        <!--        </table>-->
-
-        <table catalog="cds_infra" schema="test" tableName="bid_%">
-            <!--            <property name="dynamicSqlSupportClassName" value="$1DynamicSqlSupport"/>-->
+        <table catalog="cds_infra" tableName="cg_purchase_task"
+               domainObjectName="PurchaseTaskRecord"
+               mapperName="PurchaseTaskMapper">
+            <property name="dynamicSqlSupportClassName" value="PurchaseTaskDynamicSqlSupport"/>
             <property name="dynamicSqlTableObjectName" value="Table"/>
-            <!--            <domainObjectRenamingRule searchString="^(.*)(Record$)?" replaceString="$1Record"/>-->
         </table>
+        
     </context>
 </generatorConfiguration>

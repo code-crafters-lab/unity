@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class Demo {
+public class Generator {
 
     /**
      * 获取当前 JAR 包所在的文件路径（或 IDE 中 classes 目录路径）
@@ -42,11 +42,16 @@ public class Demo {
     }
 
     public static void main(String[] args) throws Exception {
+        if (args == null || args.length == 0) {
+            throw new RuntimeException("请输入配置文件路径");
+        }
+
+        String configName = args[0];
         List<String> warnings = new ArrayList<>();
         boolean overwrite = true;
 
-        String base = getJarPath(Demo.class);
-        InputStream configFile = Demo.class.getResourceAsStream("/generatorConfig.xml");
+        String base = getJarPath(Generator.class);
+        InputStream configFile = Generator.class.getResourceAsStream(String.format("/%s.xml", configName));
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
 
