@@ -2,18 +2,17 @@ package org.codecrafterslab.unity.codegen.mybatis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.FullyQualifiedTable;
+import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.*;
-import org.mybatis.generator.config.TableConfiguration;
 import org.mybatis.generator.internal.util.StringUtility;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 批量给实体类加后缀 PO（仅匹配指定前缀的表）
@@ -45,6 +44,11 @@ public class EntitySuffixPlugin extends PluginAdapter {
     private String clientSuffix;  // client 结尾
     private String exampleSuffix; // example 结尾
 
+    // 配置项：需要排除的公共字段名（可通过配置文件自定义）
+    private List<String> excludeFields;
+    // 配置项：BaseRecord的全限定类名
+    private String baseRecordFullClassName;
+
     @Override
     public boolean validate(List<String> warnings) {
 //        Properties properties = this.getProperties();
@@ -63,6 +67,13 @@ public class EntitySuffixPlugin extends PluginAdapter {
         this.modelSuffix = properties.getProperty(PRO_MODEL_SUFFIX, "DO");
         this.clientSuffix = properties.getProperty(PRO_CLIENT_SUFFIX);
         this.exampleSuffix = properties.getProperty(PRO_EXAMPLE_SUFFIX);
+
+        // 从配置文件读取排除的字段（逗号分隔）
+        this.excludeFields = Optional.of(properties.getProperty("excludeFields", ""))
+                .map(s -> Stream.of(s.split(",")).collect(Collectors.toList())).orElse(Collections.emptyList());
+
+        // 从配置文件读取 BaseRecord 全限定类名（默认值）
+        baseRecordFullClassName = properties.getProperty("baseRecordFullClassName", "net.jqsoft.cds.model.record.BaseRecord");
     }
 
     // 表初始化时，给匹配前缀的表加后缀
@@ -114,6 +125,35 @@ public class EntitySuffixPlugin extends PluginAdapter {
         addModelSuffix(introspectedTable);
     }
 
+    /**
+     * 拦截实体类生成：让实体类继承指定类
+     */
+    @Override
+    public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        setSuperClass(topLevelClass, baseRecordFullClassName);
+        return true;
+    }
+
+    @Override
+    public boolean modelFieldGenerated(Field field, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, ModelClassType modelClassType) {
+        // 获取字段名（驼峰命名），判断是否在排除列表中
+        String fieldName = field.getName();
+        // 返回false表示不生成该字段
+        return excludeField(fieldName);
+    }
+
+    @Override
+    public boolean modelGetterMethodGenerated(org.mybatis.generator.api.dom.java.Method method, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, ModelClassType modelClassType) {
+        String fieldName = getFieldNameFrom(method);
+        return excludeField(fieldName);
+    }
+
+    @Override
+    public boolean modelSetterMethodGenerated(org.mybatis.generator.api.dom.java.Method method, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, ModelClassType modelClassType) {
+        String fieldName = getFieldNameFrom(method);
+        return excludeField(fieldName);
+    }
+
     @Override
     public boolean clientDeleteByPrimaryKeyMethodGenerated(org.mybatis.generator.api.dom.java.Method method, Interface interfaze, IntrospectedTable introspectedTable) {
         renameIdUnderline(method);
@@ -124,6 +164,29 @@ public class EntitySuffixPlugin extends PluginAdapter {
     public boolean clientSelectByPrimaryKeyMethodGenerated(org.mybatis.generator.api.dom.java.Method method, Interface interfaze, IntrospectedTable introspectedTable) {
         renameIdUnderline(method);
         return super.clientSelectByPrimaryKeyMethodGenerated(method, interfaze, introspectedTable);
+    }
+
+    private boolean excludeField(String fieldName) {
+        return excludeFields.isEmpty() || !excludeFields.contains(fieldName);
+    }
+
+    private String getFieldNameFrom(org.mybatis.generator.api.dom.java.Method method) {
+        String methodName = method.getName();
+        if (methodName.startsWith("get") || methodName.startsWith("set")) {
+            return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+        } else if (methodName.startsWith("is")) { // 布尔类型字段
+            return Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+        }
+        return methodName;
+    }
+
+    private void setSuperClass(TopLevelClass topLevelClass, String baseRecordFullClassName) {
+        if (baseRecordFullClassName != null && !baseRecordFullClassName.isEmpty()) {
+            // 导入父类
+            topLevelClass.addImportedType(new FullyQualifiedJavaType(baseRecordFullClassName));
+            // 设置父类
+            topLevelClass.setSuperClass(new FullyQualifiedJavaType(baseRecordFullClassName));
+        }
     }
 
     private static void renameIdUnderline(org.mybatis.generator.api.dom.java.Method method) {

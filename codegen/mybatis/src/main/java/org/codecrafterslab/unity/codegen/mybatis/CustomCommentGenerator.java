@@ -1,10 +1,8 @@
 package org.codecrafterslab.unity.codegen.mybatis;
 
-import lombok.Getter;
 import org.mybatis.generator.api.*;
 import org.mybatis.generator.api.dom.java.InnerClass;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
-import org.mybatis.generator.internal.util.StringUtility;
 
 import java.text.SimpleDateFormat;
 import java.util.Properties;

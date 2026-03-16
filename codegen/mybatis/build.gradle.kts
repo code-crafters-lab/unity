@@ -44,7 +44,7 @@ tasks {
     }
 
     register<Copy>("bid") {
-        dependsOn("bid-gen")
+        dependsOn("bid-clear", "bid-gen")
         group = "codegen"
         description = "copy generated code to mybatis project"
         from(sourceSets.main.get().java.srcDirs) {
@@ -73,7 +73,7 @@ tasks {
     }
 
     register<Copy>("task") {
-        dependsOn("task-gen")
+        dependsOn("task-clear", "task-gen")
         group = "codegen"
         description = "copy generated code to mybatis project"
         from(sourceSets.main.get().java.srcDirs) {

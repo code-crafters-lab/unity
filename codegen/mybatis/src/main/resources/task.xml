@@ -12,6 +12,10 @@
         <plugin type="org.codecrafterslab.unity.codegen.mybatis.EntitySuffixPlugin">
             <!-- 可选：指定 model 后缀（默认 DO，可改为 PO/Entity 等） -->
             <property name="modelSuffix" value="Record"/>
+            <!-- 可选：需要排除的公共字段（逗号分隔，与BaseRecord字段对应） -->
+            <property name="excludeFields" value="createdAt,createdBy,updatedAt,updatedBy"/>
+            <!-- 可选：BaseRecord的全限定类名（确保包路径正确） -->
+            <property name="baseRecordFullClassName" value="net.jqsoft.cds.model.record.BaseRecord"/>
         </plugin>
 
         <!-- 核心配置：禁止生成 @Generated 注解 -->
@@ -50,7 +54,7 @@
         </javaClientGenerator>
 
         <table catalog="cds_infra" tableName="sys_task_log"
-               domainObjectName="TaskLogRecord"
+               domainObjectName="TaskLog"
                mapperName="TaskLogMapper">
             <property name="dynamicSqlSupportClassName" value="TaskLogDynamicSqlSupport"/>
             <property name="dynamicSqlTableObjectName" value="Table"/>
