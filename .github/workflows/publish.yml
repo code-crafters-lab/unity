@@ -182,6 +182,11 @@ jobs:
 
       # 更新模块版本号
       - name: 更新gradle.properties版本号
+        env:
+          # 引用仓库 Secret 中的 PAT_TOKEN
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO_OWNER: code-crafters-lab
+          REPO_NAME: unity
         run: |
           MODULE_NAME="${{ steps.parse_tag.outputs.module_name }}"
           VERSION="${{ steps.parse_tag.outputs.version }}"
@@ -192,6 +197,7 @@ jobs:
           ]]; then
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
+            git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git
             git add "$MODULE_NAME/gradle.properties"
             git commit -m "chore: 更新 $MODULE_NAME 版本到 $VERSION"
             git push origin HEAD
