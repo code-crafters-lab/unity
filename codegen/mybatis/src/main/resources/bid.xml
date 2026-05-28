@@ -38,7 +38,7 @@
                         password="${db.password}">
         </jdbcConnection>
 
-        <!-- 类型处理器（支持 Java 8 LocalDateTime -->
+        <!-- 类型处理器（支持 Java 8 LocalDateTime) -->
         <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
             <property name="useJSR310Types" value="true"/>
         </javaTypeResolver>
