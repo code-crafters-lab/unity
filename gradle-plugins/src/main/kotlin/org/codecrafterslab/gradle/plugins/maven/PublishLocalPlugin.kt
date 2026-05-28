@@ -81,7 +81,7 @@ class PublishLocalPlugin : Plugin<Project> {
         project.configurations.getByName(sourceConfigurationName).dependencies.withType(ProjectDependency::class.java)
             .all {
                 val dependencyDescriptor: MutableMap<String, String?> = HashMap()
-                dependencyDescriptor["path"] = this.dependencyProject.path
+                dependencyDescriptor["path"] = this.path
                 dependencyDescriptor["configuration"] = MAVEN_REPOSITORY_CONFIGURATION_NAME
                 target.add(project.dependencies.project(dependencyDescriptor))
             }

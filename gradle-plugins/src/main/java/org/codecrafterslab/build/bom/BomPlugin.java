@@ -65,7 +65,6 @@ public class BomPlugin implements Plugin<Project> {
                 (configuration) -> {
                     configuration.setCanBeConsumed(false);
                     configuration.setCanBeResolved(false);
-                    configuration.setVisible(false);
                     configuration.attributes(attributeContainer -> {
 //                        attributeContainer.attribute(Usage.USAGE_ATTRIBUTE, Usage.JAVA_RUNTIME);
                     });
