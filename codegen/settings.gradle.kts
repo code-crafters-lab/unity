@@ -6,7 +6,7 @@ plugins {
     id("ccl.repo")
 }
 
-include(":openapi")
+//include(":openapi")
 include(":mybatis")
 
 dependencyResolutionManagement {

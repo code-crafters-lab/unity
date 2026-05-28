@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("ccl.lib")
     id("ccl.publish.aliyun")
-    id("ccl.publish.nexus3")
+    id("ccl.publish.nexus")
     `kotlin-dsl`
     `java-gradle-plugin`
 }

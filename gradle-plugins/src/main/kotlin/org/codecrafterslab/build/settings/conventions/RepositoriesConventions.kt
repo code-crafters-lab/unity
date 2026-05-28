@@ -42,7 +42,7 @@ class RepositoriesConventions : Plugin<Settings> {
             url = uri(File(rootDir, arrayOf(Project.DEFAULT_BUILD_DIR_NAME, "maven-repository").joinToString("/")))
         }
         mavenLocal()
-        maven { url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public"); isAllowInsecureProtocol = true }
+        // maven { url = uri("http://nexus.jqk8s.jqsoft.net/repository/maven-public"); isAllowInsecureProtocol = true }
         maven {
             url = uri("https://packages.aliyun.com/5f6a9b06d24814603933faab/maven/2038604-snapshot-xnrepo")
             credentials {
