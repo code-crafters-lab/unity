@@ -9,6 +9,7 @@ import org.gradle.api.plugins.JavaPluginExtension
  * 可选依赖插件
  * @since 0.4.0
  */
+@Deprecated("")
 class OptionalPlugin : Plugin<Project> {
     companion object {
         /**

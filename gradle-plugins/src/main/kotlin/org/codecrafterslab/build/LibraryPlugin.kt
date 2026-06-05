@@ -10,6 +10,7 @@ import org.gradle.api.plugins.JavaLibraryPlugin
  * 组件库插件
  * @since 0.4.0
  */
+@Suppress("unused")
 class LibraryPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply(JavaLibraryPlugin::class.java)

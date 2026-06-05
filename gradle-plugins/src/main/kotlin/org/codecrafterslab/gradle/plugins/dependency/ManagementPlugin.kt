@@ -25,7 +25,6 @@ class ManagementPlugin : Plugin<Project> {
         val configurations = project.configurations
         val management = configurations.create(MANAGEMENT_CONFIGURATION_NAME)
 
-        management.isVisible = false
         management.isCanBeConsumed = false
         management.isCanBeResolved = false
 
