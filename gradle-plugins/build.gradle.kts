@@ -18,13 +18,13 @@ dependencies {
     implementation(platform("org.junit:junit-bom:5.11.3"))
 
     implementation("org.springframework:spring-core")
-    implementation("org.apache.maven:maven-artifact:3.9.6")
+    implementation("org.apache.maven:maven-artifact:3.9.16")
     implementation("de.skuzzle:semantic-version:2.1.1")
 
     /* gradle 插件 */
-    implementation("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.10.0")
     implementation("org.gradle:test-retry-gradle-plugin:1.5.6")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21")
 
     /* 内置插件应用 */
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -87,9 +87,7 @@ tasks {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
-
     }
-
     withType(Jar::class.java) {
         /* 重复文件策略 */
         // duplicatesStrategy = DuplicatesStrategy.INCLUDE
