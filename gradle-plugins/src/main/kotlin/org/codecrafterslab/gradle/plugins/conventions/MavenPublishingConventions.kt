@@ -18,7 +18,6 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.tasks.SourceSet
 import org.gradle.jvm.tasks.Jar
 
-@Suppress("unused")
 class MavenPublishingConventions : Plugin<Project> {
 
     override fun apply(project: Project) {
@@ -40,14 +39,14 @@ class MavenPublishingConventions : Plugin<Project> {
     }
 
     private fun customizeMavenPublication(publication: MavenPublication, project: Project) {
-        customizePom(publication.pom, project)
         project.plugins.withType(JavaPlugin::class.java).all {
             customizeJavaMavenPublication(publication, project)
         }
+        customizePom(publication.pom, project)
     }
 
     private fun customizeJavaMavenPublication(publication: MavenPublication, project: Project) {
-        addMavenOptionalFeature(project, publication)
+        // addMavenOptionalFeature(project, publication)
         configureSoftwareComponent(project, publication)
         configureVersionMapping(publication)
     }
@@ -108,18 +107,45 @@ class MavenPublishingConventions : Plugin<Project> {
             developers { customizeDevelopers(this) }
             scm { customizeScm(this, project) }
             withXml { customizeXml(this, project) }
-
         }
     }
 
     private fun customizeXml(xmlProvider: XmlProvider, project: Project) {
         val root = xmlProvider.asNode()
-
+        addOptionalDependenciesToPom(root, project)
         // 移除 platform 插件自动生成的 dependencyManagement
 //        val dependencyManagement = findDependencyManagement(root)
 //        if (dependencyManagement != null) {
 //            root.remove(dependencyManagement)
 //        }
+    }
+
+    private fun addOptionalDependenciesToPom(root: Node, project: Project) {
+        // 1. 获取 optional 配置中的所有依赖坐标
+        val optionalDeps = project.configurations.filter {
+            listOf(
+                JvmConstants.IMPLEMENTATION_CONFIGURATION_NAME,
+                JvmConstants.COMPILE_ONLY_CONFIGURATION_NAME
+            ).contains(it.name) && it.dependencies.isNotEmpty()
+        }.flatMap { it.dependencies.map { dep -> "${dep.group}:${dep.name}" } }
+
+        if (optionalDeps.isEmpty()) return
+
+        optionalDeps.forEach { dep -> println(dep)}
+
+        // 2. 遍历 POM 中的 <dependencies>
+        val dependencies = root.get("dependencies") as? Node ?: return
+        for (dependency in dependencies.children()) {
+            if (dependency is Node) {
+                val groupId = (dependency.get("groupId") as? Node)?.text()
+                val artifactId = (dependency.get("artifactId") as? Node)?.text()
+
+                // 3. 匹配并添加 <optional>true</optional>
+                if ("$groupId:$artifactId" in optionalDeps) {
+                    dependency.appendNode("optional", "true")
+                }
+            }
+        }
     }
 
     private fun findDependencyManagement(parent: Node): Node? {
