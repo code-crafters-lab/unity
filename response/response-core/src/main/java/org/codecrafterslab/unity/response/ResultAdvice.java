@@ -107,10 +107,10 @@ public class ResultAdvice implements ResponseBodyAdvice<Object>, Ordered {
             out = ResultUtils.success(body);
         }
 
-        /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化后返回 */
+        /* 如果是 StringHttpMessageConverter，说明返回的数据是字符，用 objectMapper 序列化包装结果后返回 */
         if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)) {
             try {
-                out = objectMapper.writeValueAsString(body);
+                out = objectMapper.writeValueAsString(out);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage(), e);
             }
